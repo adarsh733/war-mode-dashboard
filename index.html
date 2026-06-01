@@ -4,6 +4,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
 <title>WAR MODE · Adarsh</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="WAR MODE">
+<meta name="theme-color" content="#1c1916">
+<link rel="apple-touch-icon" href="appicon-180.png">
+<link rel="icon" type="image/png" sizes="192x192" href="appicon-192.png">
+<link rel="manifest" href="manifest.json">
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -212,6 +219,7 @@ details.acc .acc-body{padding:0 18px 18px}
 .dstrip-day.today::after{content:"";position:absolute;left:18%;right:18%;bottom:0;height:3px;background:var(--green);border-radius:3px 3px 0 0}
 .dstrip-day.future{opacity:.4}
 .dstrip-day .pipe{position:absolute;top:6px;right:6px;width:6px;height:6px;border-radius:50%}
+.dstrip-day .goalflag{position:absolute;top:3px;left:5px;font-size:.7rem}
 @media(max-width:560px){.dstrip-day .dd{font-size:1.05rem}.dstrip-day .dn{font-size:.6rem}}
 
 /* ── week grid (spreadsheet) ── */
@@ -258,7 +266,7 @@ table.weekgrid input.gnum:focus{background:var(--green-bg)}
       <div class="wm">WAR MODE</div>
       <div class="mk"><span>M</span></div>
     </div>
-    <div class="creed-line">NEVER BACK DOWN · ADARSH · DAY 145</div>
+    <div class="creed-line">NEVER BACK DOWN · ADARSH · <span id="dayCountTop">DAY —</span></div>
     <div class="seg">
       <button class="on" data-sec="fitness" onclick="setSec('fitness')">🏋️ Fitness</button>
       <button data-sec="health" onclick="setSec('health')">🩺 Health</button>
@@ -328,7 +336,7 @@ table.weekgrid input.gnum:focus{background:var(--green-bg)}
 <!-- FIT HOME -->
 <section class="page active" id="fit-home">
   <div class="banner">
-    <div class="bk">War Mode · Day 145 &amp; counting</div>
+    <div class="bk">War Mode · <span id="dayCountBanner">Day —</span> &amp; counting</div>
     <h2>The scale stayed still. I didn't.</h2>
     <p>Five months. The number on the scale barely flinched — so it tried to tell me nothing changed. It lied. Tummy down 2.5 inches. Muscle in the "excellent" tier. And the thyroid that fought me for eight months finally cracked. That wasn't a stall — it was a recomposition won with the handbrake on. Now the handbrake comes off, and the real cut begins.</p>
     <div class="creed">
@@ -878,6 +886,33 @@ table.weekgrid input.gnum:focus{background:var(--green-bg)}
   <h1 class="title">Log the Week</h1>
   <p class="lede">Log weight in the morning, fill the rest whenever you get time — every cell saves on its own, nothing has to be done at once. Numbers auto-tick their habit (sleep ≥8h, protein ≥180g, calories &lt;2000, steps ≥10k). Mark 🌙 Rest day (e.g. Sundays) and gym/cardio/steps won't count against your score.</p>
 
+  <!-- editable phase goals (time-versioned) -->
+  <div class="card" style="margin-top:18px;padding:16px 18px">
+    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+      <span style="font-family:'Oswald';font-weight:600;font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)">Current Goal</span>
+      <span id="goalSummary" class="subtle" style="font-size:.82rem"></span>
+      <button onclick="toggleGoals()" id="goalEditBtn" style="margin-left:auto;background:var(--paper2);border:1px solid var(--line2);border-radius:8px;padding:6px 14px;font-family:'Oswald';font-weight:600;font-size:.72rem;letter-spacing:.04em;text-transform:uppercase;cursor:pointer;color:var(--ink2)">Change</button>
+    </div>
+    <div id="goalEditor" style="display:none;margin-top:14px">
+      <div class="note info" style="margin-bottom:14px"><span class="ni">i</span><div>Set a goal that applies <b>from a chosen date forward</b>. Past days keep the goal that was active then — changing this <b>never re-scores history</b>.</div></div>
+      <div class="metric-grid">
+        <div class="metric"><label>Applies from (date)</label><input type="date" id="g_from"></div>
+        <div class="metric"><label>Phase name</label><input type="text" id="g_phase" placeholder="e.g. Boss 2B — Lean Gain"></div>
+        <div class="metric"><label>Protein goal (g)</label><input type="number" id="g_protein" step="1"></div>
+        <div class="metric"><label>Calorie ceiling (kcal)</label><input type="number" id="g_cal" step="10"></div>
+        <div class="metric"><label>Sleep goal (hrs)</label><input type="number" id="g_sleep" step="0.5"></div>
+        <div class="metric"><label>Steps goal</label><input type="number" id="g_steps" step="500"></div>
+        <div class="metric"><label>Water goal (L)</label><input type="number" id="g_water" step="0.5"></div>
+      </div>
+      <div style="display:flex;gap:10px;margin-top:12px;align-items:center;flex-wrap:wrap">
+        <button onclick="saveGoals()" style="background:var(--green);color:#fff;border:none;border-radius:9px;padding:10px 20px;font-family:'Oswald';font-weight:600;font-size:.78rem;letter-spacing:.04em;text-transform:uppercase;cursor:pointer">Save Goal Period</button>
+        <span class="subtle" style="font-size:.78rem">Days from this date onward use the new thresholds.</span>
+      </div>
+      <div class="sec-label" style="margin-top:20px">Goal history</div>
+      <div id="goalHistory"></div>
+    </div>
+  </div>
+
   <!-- date strip -->
   <div class="datestrip" id="dateStrip"></div>
 
@@ -889,9 +924,9 @@ table.weekgrid input.gnum:focus{background:var(--green-bg)}
   </div>
 
   <div style="display:flex;align-items:center;gap:12px;margin-top:16px;flex-wrap:wrap">
-    <button onclick="saveWeek()" style="background:var(--green);color:#fff;border:none;border-radius:10px;padding:12px 26px;font-family:'Oswald';font-weight:600;font-size:.88rem;letter-spacing:.05em;text-transform:uppercase;cursor:pointer;box-shadow:var(--shadow-sm)">Save Week</button>
+    <button onclick="saveWeek()" style="background:var(--green);color:#fff;border:none;border-radius:10px;padding:12px 26px;font-family:'Oswald';font-weight:600;font-size:.88rem;letter-spacing:.05em;text-transform:uppercase;cursor:pointer;box-shadow:var(--shadow-sm)">✓ Force Sync</button>
     <span id="saveMsg" style="font-size:.85rem;color:var(--green);font-weight:600;opacity:0;transition:opacity .3s">✓ Saved</span>
-    <span class="subtle" style="margin-left:auto">Autosaves as you type · changes are instant</span>
+    <span class="subtle" style="margin-left:auto">Every cell autosaves instantly — one day or all seven, no need to press anything</span>
   </div>
 
   <div class="note info" style="margin-top:16px"><span class="ni">i</span><div><b>Saved to the cloud.</b> Every change syncs to your private Supabase database — log on your phone, see it on your laptop. The <b>☁ Synced</b> badge confirms it; if it ever says <b>Local only</b>, you're offline and it'll sync when you're back. Numbers auto-tick their habit; manual toggles still work for water, gym, cardio, omega-3, thyroid. Measurements are in the expandable row — only fill when you measure.</div></div>
@@ -1036,16 +1071,32 @@ function buildCharts(id){
 
 
 /* ══════════ TRACKER ENGINE (week grid) ══════════ */
+const START_DATE='2026-01-08';   // War Mode day 1
+// Time-versioned goals: each period applies FROM its date until the next period starts.
+// A day is always judged by the period active ON that day — changing a goal never alters the past.
+const DEFAULT_PERIODS=[{from:'2026-01-08',phase:'Boss 1 & 2A — The Cut',protein:180,cal:2000,sleep:8,steps:10000,water:4}];
+let PERIODS=JSON.parse(JSON.stringify(DEFAULT_PERIODS));
+
+// resolve which goal applied on a given date
+function goalOn(dt){
+  let g=PERIODS[0];
+  for(const p of PERIODS){ if(p.from<=dt) g=p; else break; }
+  return g;
+}
+// the goal in effect TODAY (used for labels in the editor / current week display)
+function curGoal(){ return goalOn(todayStr()); }
+
+// HABITS: thresholds & labels are resolved per-day via goalOn(dt)
 const HABITS=[
-  {k:'thyroid',label:'💊 Thyroid',auto:null},
-  {k:'water',label:'💧 Water 4L',auto:null},
-  {k:'protein',label:'🥩 Protein 180g',auto:{metric:'proteinAmt',test:v=>v>=180}},
-  {k:'sleep8',label:'😴 Sleep 8h',auto:{metric:'sleepHrs',test:v=>v>=8}},
-  {k:'gym',label:'🏋️ Gym',auto:null},
-  {k:'cardio',label:'🏃 Cardio 15m',auto:null},
-  {k:'steps10k',label:'👣 Steps 10k',auto:{metric:'steps',test:v=>v>=10000}},
-  {k:'omega3',label:'Ω Omega 3',auto:null},
-  {k:'under2k',label:'🔥 Under 2000',auto:{metric:'calories',test:v=>v>0&&v<2000}}
+  {k:'thyroid', lbl:g=>'💊 Thyroid', auto:null},
+  {k:'water',   lbl:g=>'💧 Water '+g.water+'L', auto:null},
+  {k:'protein', lbl:g=>'🥩 Protein '+g.protein+'g', auto:{metric:'proteinAmt',test:(v,g)=>v>=g.protein}},
+  {k:'sleep8',  lbl:g=>'😴 Sleep '+g.sleep+'h', auto:{metric:'sleepHrs',test:(v,g)=>v>=g.sleep}},
+  {k:'gym',     lbl:g=>'🏋️ Gym', auto:null},
+  {k:'cardio',  lbl:g=>'🏃 Cardio 15m', auto:null},
+  {k:'steps10k',lbl:g=>'👣 Steps '+(g.steps/1000)+'k', auto:{metric:'steps',test:(v,g)=>v>=g.steps}},
+  {k:'omega3',  lbl:g=>'Ω Omega 3', auto:null},
+  {k:'under2k', lbl:g=>'🔥 Under '+g.cal, auto:{metric:'calories',test:(v,g)=>v>0&&v<g.cal}}
 ];
 const METRICS=[
   {k:'weight',label:'⚖️ Weight kg',step:'0.1'},
@@ -1094,7 +1145,7 @@ async function loadDB(){
       const {data,error}=await supa.from('tracker_days').select('date,data');
       if(error)throw error;
       cloudOK=true;
-      const cloud={};(data||[]).forEach(r=>{cloud[r.date]=r.data;});
+      const cloud={};(data||[]).forEach(r=>{if(r.date!=='__goals__'&&r.date!=='__periods__')cloud[r.date]=r.data;});
       if(Object.keys(cloud).length===0){
         setSyncBadge('sync','⟳ Uploading history…');
         await pushAll(DB);                       // first run: seed history → cloud
@@ -1127,6 +1178,36 @@ function persist(changedDate){
 }
 /* ════════════════════════════════════════════════════════════════════════════ */
 
+/* ── GOALS persistence (cloud + local) + day counter ── */
+const GOALS_KEY='warmode_periods_v1';
+function sortPeriods(){PERIODS.sort((a,b)=>a.from<b.from?-1:1);}
+async function loadGoals(){
+  try{const raw=localStorage.getItem(GOALS_KEY);if(raw){const p=JSON.parse(raw);if(Array.isArray(p)&&p.length)PERIODS=p;}}catch(e){}
+  try{
+    if(supa){
+      const {data,error}=await supa.from('tracker_days').select('data').eq('date','__periods__').maybeSingle();
+      if(!error&&data&&data.data&&Array.isArray(data.data)&&data.data.length)PERIODS=data.data;
+    }
+  }catch(e){}
+  sortPeriods();
+  try{localStorage.setItem(GOALS_KEY,JSON.stringify(PERIODS));}catch(e){}
+}
+function persistGoals(){
+  sortPeriods();
+  try{localStorage.setItem(GOALS_KEY,JSON.stringify(PERIODS));}catch(e){}
+  if(cloudOK&&supa){setSyncBadge('sync');supa.from('tracker_days').upsert({date:'__periods__',data:PERIODS}).then(({error})=>setSyncBadge(error?'off':'ok'));}
+}
+function dayCount(){
+  const ms=new Date(todayStr()+'T00:00:00')-new Date(START_DATE+'T00:00:00');
+  return Math.max(1,Math.floor(ms/86400000)+1);
+}
+function paintDayCount(){
+  const n=dayCount();
+  const a=document.getElementById('dayCountTop'); if(a)a.textContent='DAY '+n;
+  const b=document.getElementById('dayCountBanner'); if(b)b.textContent='Day '+n;
+}
+
+
 const SEED={"2026-01-08":{"thyroid":1,"water":1,"protein":1,"under2k":1,"gym":1,"cardio":1,"steps10k":1,"puffiness":10.0,"weight":85.5,"proteinAmt":194.0,"sleepHrs":6.11,"steps":13473.0},"2026-01-09":{"thyroid":1,"water":1,"protein":1,"under2k":1,"gym":1,"cardio":1,"steps10k":1,"puffiness":9.0,"weight":85.2,"proteinAmt":180.0,"sleepHrs":7.1,"steps":10275.0},"2026-01-10":{"thyroid":1,"water":1,"protein":1,"under2k":1,"sleep8":1,"gym":1,"cardio":1,"steps10k":1,"puffiness":8.0,"weight":85.2,"proteinAmt":180.0,"sleepHrs":8.67,"steps":10575.0},"2026-01-11":{"thyroid":1,"sleep8":1,"steps10k":1,"puffiness":8.0,"proteinAmt":146.0,"sleepHrs":9.23,"steps":10557.0,"waist":37.0,"tummy":38.0,"chest":42.0},"2026-01-12":{"thyroid":1,"water":1,"protein":1,"under2k":1,"gym":1,"cardio":1,"steps10k":1,"puffiness":7.0,"weight":84.5,"proteinAmt":199.0,"sleepHrs":7.2,"steps":10547.0},"2026-01-13":{"thyroid":1,"water":1,"protein":1,"under2k":1,"sleep8":1,"gym":1,"cardio":1,"puffiness":7.0,"weight":84.5,"proteinAmt":184.0,"sleepHrs":8.13,"steps":7346.0},"2026-01-14":{"thyroid":1,"water":1,"protein":1,"sleep8":1,"gym":1,"cardio":1,"steps10k":1,"puffiness":6.0,"weight":84.5,"proteinAmt":182.0,"sleepHrs":8.05,"steps":10338.0},"2026-01-15":{"thyroid":1,"water":1,"protein":1,"under2k":1,"sleep8":1,"gym":1,"cardio":1,"steps10k":1,"puffiness":7.0,"weight":84.8,"proteinAmt":214.0,"sleepHrs":8.17,"steps":13332.0},"2026-01-16":{"thyroid":1,"water":1,"protein":1,"under2k":1,"gym":1,"cardio":1,"steps10k":1,"puffiness":7.0,"weight":84.5,"proteinAmt":228.0,"sleepHrs":7.0,"steps":10077.0},"2026-01-17":{"thyroid":1,"water":1,"protein":1,"under2k":1,"gym":1,"cardio":1,"steps10k":1,"puffiness":7.0,"weight":84.8,"proteinAmt":197.0,"sleepHrs":6.62,"steps":14487.0},"2026-01-18":{"thyroid":1,"water":1,"protein":1,"under2k":1,"puffiness":7.0,"weight":84.8,"proteinAmt":191.0,"sleepHrs":7.0,"steps":5430.0},"2026-01-19":{"thyroid":1,"water":1,"protein":1,"under2k":1,"sleep8":1,"gym":1,"cardio":1,"steps10k":1,"puffiness":7.0,"weight":85.2,"proteinAmt":188.0,"sleepHrs":8.0,"steps":7596.0},"2026-01-20":{"thyroid":1,"water":1,"protein":1,"under2k":1,"gym":1,"cardio":1,"steps10k":1,"puffiness":7.0,"weight":84.8,"proteinAmt":194.0,"sleepHrs":6.35,"steps":10111.0},"2026-01-21":{"thyroid":1,"protein":1,"under2k":1,"gym":1,"cardio":1,"steps10k":1,"puffiness":6.0,"weight":84.6,"proteinAmt":194.0,"sleepHrs":7.5,"steps":10483.0},"2026-01-22":{"thyroid":1,"water":1,"protein":1,"under2k":1,"sleep8":1,"gym":1,"cardio":1,"steps10k":1,"puffiness":7.0,"weight":84.7,"proteinAmt":194.0,"sleepHrs":9.0,"steps":10033.0},"2026-01-23":{"thyroid":1,"protein":1,"under2k":1,"sleep8":1,"gym":1,"cardio":1,"steps10k":1,"puffiness":7.0,"weight":85.5,"proteinAmt":181.0,"sleepHrs":8.0,"steps":10026.0},"2026-01-24":{"thyroid":1,"water":1,"protein":1,"under2k":1,"gym":1,"cardio":1,"steps10k":1,"puffiness":6.0,"weight":85.5,"proteinAmt":195.0,"sleepHrs":6.7,"steps":8483.0},"2026-01-25":{"thyroid":1,"steps10k":1,"puffiness":6.0,"weight":85.5,"proteinAmt":165.0,"sleepHrs":6.73,"steps":10510.0},"2026-01-26":{"thyroid":1,"under2k":1,"steps10k":1,"puffiness":6.0,"weight":85.5,"proteinAmt":113.0,"sleepHrs":7.13,"steps":10291.0},"2026-01-27":{"thyroid":1,"water":1,"protein":1,"under2k":1,"sleep8":1,"gym":1,"cardio":1,"puffiness":6.0,"weight":85.7,"proteinAmt":201.0,"sleepHrs":8.77,"steps":6371.0},"2026-01-28":{"thyroid":1,"water":1,"under2k":1,"gym":1,"cardio":1,"steps10k":1,"puffiness":6.0,"weight":85.8,"proteinAmt":163.0,"sleepHrs":4.0,"steps":10255.0},"2026-01-29":{"thyroid":1,"water":1,"sleep8":1,"gym":1,"cardio":1,"puffiness":6.0,"weight":85.4,"proteinAmt":171.0,"sleepHrs":8.0,"steps":9275.0},"2026-01-30":{"thyroid":1,"under2k":1,"steps10k":1,"puffiness":6.0,"weight":85.4,"proteinAmt":128.0,"sleepHrs":2.0,"steps":10010.0},"2026-01-31":{"thyroid":1,"under2k":1,"sleep8":1,"gym":1,"cardio":1,"steps10k":1,"puffiness":6.0,"weight":85.4,"proteinAmt":134.0,"sleepHrs":9.6,"steps":10000.0},"2026-02-01":{"thyroid":1,"under2k":1,"sleep8":1,"steps10k":1,"puffiness":6.0,"weight":84.5,"proteinAmt":50.0,"sleepHrs":9.32,"steps":10232.0},"2026-02-02":{"thyroid":1,"puffiness":6.0,"weight":84.5,"proteinAmt":60.0,"sleepHrs":7.0,"steps":8844.0},"2026-02-03":{"thyroid":1,"steps10k":1,"puffiness":6.0,"weight":84.5,"proteinAmt":70.0,"sleepHrs":4.77,"steps":11598.0},"2026-02-04":{"thyroid":1,"sleep8":1,"steps10k":1,"puffiness":5.0,"weight":84.5,"proteinAmt":70.0,"sleepHrs":8.27,"steps":10124.0,"waist":37.0,"tummy":38.0,"chest":42.0},"2026-02-05":{"thyroid":1,"steps10k":1,"puffiness":5.0,"weight":84.5,"proteinAmt":70.0,"sleepHrs":6.0,"steps":18271.0},"2026-02-06":{"thyroid":1,"steps10k":1,"puffiness":5.0,"weight":84.5,"proteinAmt":100.0,"sleepHrs":6.73,"steps":10771.0},"2026-02-07":{"thyroid":1,"protein":1,"sleep8":1,"gym":1,"cardio":1,"steps10k":1,"puffiness":6.0,"weight":84.5,"proteinAmt":206.0,"sleepHrs":8.0,"steps":10555.0},"2026-02-08":{"thyroid":1,"protein":1,"sleep8":1,"steps10k":1,"puffiness":6.0,"weight":84.8,"proteinAmt":176.0,"sleepHrs":8.77,"steps":10260.0},"2026-02-09":{"thyroid":1,"gym":1,"cardio":1,"steps10k":1,"puffiness":6.0,"weight":85.0,"proteinAmt":165.0,"sleepHrs":7.0,"steps":10281.0},"2026-02-10":{"thyroid":1,"protein":1,"gym":1,"cardio":1,"steps10k":1,"puffiness":6.0,"weight":84.5,"proteinAmt":180.0,"sleepHrs":7.62,"steps":11000.0},"2026-02-11":{"thyroid":1,"sleep8":1,"steps10k":1,"puffiness":5.0,"weight":84.7,"proteinAmt":167.0,"sleepHrs":8.62,"steps":11343.0},"2026-02-12":{"thyroid":1,"protein":1,"under2k":1,"sleep8":1,"gym":1,"cardio":1,"puffiness":5.0,"weight":85.0,"proteinAmt":192.0,"sleepHrs":8.0,"steps":8000.0},"2026-02-13":{"thyroid":1,"protein":1,"gym":1,"cardio":1,"puffiness":6.0,"weight":85.0,"proteinAmt":187.0,"sleepHrs":6.0,"steps":7196.0},"2026-02-14":{"thyroid":1,"protein":1,"gym":1,"cardio":1,"steps10k":1,"puffiness":7.0,"weight":85.0,"proteinAmt":217.0,"sleepHrs":6.17,"steps":11173.0},"2026-02-15":{"thyroid":1,"sleep8":1,"steps10k":1,"puffiness":7.0,"weight":85.0,"proteinAmt":100.0,"sleepHrs":8.5,"steps":12195.0},"2026-02-16":{"thyroid":1,"under2k":1,"gym":1,"cardio":1,"puffiness":7.0,"weight":85.0,"proteinAmt":166.0,"sleepHrs":7.5,"steps":8833.0},"2026-02-17":{"thyroid":1,"puffiness":7.0,"weight":85.0,"proteinAmt":132.0,"sleepHrs":7.5,"steps":4767.0},"2026-02-18":{"thyroid":1,"sleep8":1,"puffiness":5.0,"weight":85.0,"proteinAmt":80.0,"sleepHrs":8.0,"steps":5325.0},"2026-02-19":{"thyroid":1,"puffiness":5.0,"weight":85.0,"proteinAmt":80.0,"sleepHrs":4.5,"steps":7988.0},"2026-02-20":{"thyroid":1,"puffiness":5.0,"weight":85.0,"proteinAmt":100.0,"sleepHrs":6.5,"steps":14253.0},"2026-02-21":{"thyroid":1,"puffiness":5.0,"weight":85.0,"proteinAmt":45.0,"sleepHrs":5.0,"steps":12504.0},"2026-02-22":{"thyroid":1,"puffiness":5.0,"weight":85.0,"proteinAmt":115.0,"sleepHrs":7.5,"steps":3241.0},"2026-02-23":{"thyroid":1,"water":1,"protein":1,"under2k":1,"sleep8":1,"gym":1,"cardio":1,"steps10k":1,"puffiness":5.0,"weight":85.2,"proteinAmt":212.0,"sleepHrs":8.0,"steps":10000.0},"2026-02-24":{"thyroid":1,"water":1,"protein":1,"sleep8":1,"gym":1,"cardio":1,"puffiness":5.0,"weight":84.2,"proteinAmt":202.0,"sleepHrs":8.5,"steps":9293.0},"2026-02-25":{"thyroid":1,"puffiness":5.0,"weight":84.2,"proteinAmt":100.0,"sleepHrs":5.28,"steps":9312.0},"2026-02-26":{"thyroid":1,"puffiness":5.0,"weight":84.2,"proteinAmt":80.0,"sleepHrs":6.0,"steps":12616.0},"2026-02-27":{"thyroid":1,"sleep8":1,"puffiness":5.0,"weight":84.2,"proteinAmt":80.0,"sleepHrs":10.0,"steps":7007.0},"2026-02-28":{"thyroid":1,"water":1,"under2k":1,"puffiness":5.0,"weight":84.2,"proteinAmt":169.0,"sleepHrs":6.6,"steps":10139.0,"waist":37.7,"tummy":37.5,"chest":42.0,"bicep":14.5},"2026-03-01":{"thyroid":1,"water":1,"under2k":1,"gym":1,"cardio":1,"steps10k":1,"puffiness":5.0,"weight":85.1,"proteinAmt":161.0,"sleepHrs":7.0,"steps":10139.0},"2026-03-02":{"thyroid":1,"water":1,"protein":1,"under2k":1,"sleep8":1,"gym":1,"cardio":1,"steps10k":1,"puffiness":5.0,"weight":85.1,"proteinAmt":200.0,"sleepHrs":8.0,"steps":11161.0},"2026-03-03":{"thyroid":1,"water":1,"protein":1,"gym":1,"cardio":1,"steps10k":1,"puffiness":5.0,"weight":86.1,"proteinAmt":229.0,"sleepHrs":8.0,"steps":11120.0},"2026-03-04":{"thyroid":1,"water":1,"protein":1,"steps10k":1,"puffiness":5.0,"proteinAmt":206.0,"sleepHrs":7.2,"steps":11526.0},"2026-03-05":{"thyroid":1,"water":1,"protein":1,"under2k":1,"gym":1,"cardio":1,"steps10k":1,"puffiness":5.0,"weight":84.2,"proteinAmt":180.0,"sleepHrs":7.2,"steps":12193.0},"2026-03-06":{"thyroid":1,"water":1,"protein":1,"under2k":1,"gym":1,"cardio":1,"steps10k":1,"puffiness":5.0,"weight":84.1,"proteinAmt":188.0,"sleepHrs":6.3,"steps":13273.0},"2026-03-07":{"thyroid":1,"water":1,"protein":1,"under2k":1,"sleep8":1,"puffiness":5.0,"weight":84.5,"proteinAmt":180.0,"sleepHrs":8.0,"steps":9196.0},"2026-03-08":{"thyroid":1,"water":1,"protein":1,"gym":1,"cardio":1,"puffiness":5.0,"weight":84.5,"proteinAmt":215.0,"sleepHrs":6.0,"steps":9744.0},"2026-03-09":{"thyroid":1,"water":1,"protein":1,"sleep8":1,"gym":1,"cardio":1,"puffiness":5.0,"weight":85.2,"proteinAmt":180.0,"sleepHrs":8.0,"steps":7366.0},"2026-03-10":{"thyroid":1,"water":1,"protein":1,"sleep8":1,"gym":1,"cardio":1,"steps10k":1,"puffiness":5.0,"weight":84.55,"proteinAmt":183.0,"sleepHrs":8.0,"steps":10746.0},"2026-03-11":{"thyroid":1,"water":1,"protein":1,"under2k":1,"sleep8":1,"gym":1,"cardio":1,"steps10k":1,"puffiness":5.0,"weight":85.5,"proteinAmt":149.0,"sleepHrs":8.0,"steps":9748.0},"2026-03-12":{"thyroid":1,"water":1,"protein":1,"under2k":1,"sleep8":1,"gym":1,"cardio":1,"steps10k":1,"puffiness":5.0,"weight":84.8,"proteinAmt":180.0,"sleepHrs":8.0,"steps":10000.0},"2026-03-13":{"thyroid":1,"water":1,"protein":1,"sleep8":1,"gym":1,"cardio":1,"steps10k":1,"puffiness":5.0,"weight":85.0,"proteinAmt":186.0,"sleepHrs":8.0,"steps":10311.0},"2026-03-14":{"thyroid":1,"water":1,"gym":1,"cardio":1,"puffiness":6.0,"weight":84.95,"proteinAmt":167.0,"sleepHrs":5.5,"steps":8552.0},"2026-03-15":{"thyroid":1,"water":1,"sleep8":1,"puffiness":6.0,"weight":84.9,"proteinAmt":150.0,"sleepHrs":8.0,"steps":10323.0},"2026-03-16":{"thyroid":1,"water":1,"protein":1,"under2k":1,"sleep8":1,"gym":1,"cardio":1,"puffiness":6.0,"weight":84.85,"proteinAmt":194.0,"sleepHrs":8.0,"steps":9208.0},"2026-03-17":{"thyroid":1,"water":1,"protein":1,"under2k":1,"gym":1,"cardio":1,"steps10k":1,"puffiness":6.0,"weight":85.2,"proteinAmt":199.0,"sleepHrs":6.1,"steps":11043.0},"2026-03-18":{"thyroid":1,"water":1,"protein":1,"under2k":1,"gym":1,"cardio":1,"steps10k":1,"puffiness":5.0,"weight":85.2,"proteinAmt":183.0,"sleepHrs":7.11,"steps":10322.0},"2026-03-19":{"thyroid":1,"water":1,"sleep8":1,"gym":1,"cardio":1,"steps10k":1,"puffiness":5.0,"weight":84.65,"proteinAmt":169.0,"sleepHrs":7.2,"steps":12363.0},"2026-03-20":{"thyroid":1,"sleep8":1,"gym":1,"cardio":1,"puffiness":5.0,"weight":84.65,"proteinAmt":205.0,"sleepHrs":8.0,"steps":11282.0},"2026-03-21":{"thyroid":1,"water":1,"gym":1,"cardio":1,"steps10k":1,"puffiness":5.0,"weight":85.15,"proteinAmt":173.0,"sleepHrs":7.2,"steps":13886.0},"2026-03-22":{"thyroid":1,"water":1,"puffiness":5.0,"weight":85.2,"proteinAmt":82.0,"sleepHrs":6.2,"steps":5869.0},"2026-03-23":{"thyroid":1,"water":1,"protein":1,"gym":1,"cardio":1,"steps10k":1,"puffiness":5.0,"weight":85.5,"proteinAmt":191.0,"sleepHrs":6.5,"steps":12303.0},"2026-03-24":{"thyroid":1,"water":1,"protein":1,"under2k":1,"sleep8":1,"gym":1,"cardio":1,"steps10k":1,"puffiness":5.0,"weight":84.9,"proteinAmt":197.0,"sleepHrs":8.6,"steps":10233.0},"2026-03-25":{"thyroid":1,"water":1},"2026-03-26":{"thyroid":1,"water":1,"steps":5506.0},"2026-03-27":{"thyroid":1,"water":1,"gym":1,"cardio":1,"steps":9113.0},"2026-03-28":{"thyroid":1,"water":1,"protein":1,"under2k":1,"puffiness":5.0,"proteinAmt":183.0,"sleepHrs":7.0,"steps":7500.0},"2026-03-29":{"thyroid":1,"water":1,"steps10k":1,"puffiness":5.0,"proteinAmt":167.0,"sleepHrs":6.0,"steps":10000.0},"2026-03-30":{"thyroid":1,"water":1,"protein":1,"under2k":1,"gym":1,"cardio":1,"steps10k":1,"puffiness":6.0,"weight":85.9,"proteinAmt":224.0,"sleepHrs":7.2,"steps":11070.0},"2026-03-31":{"thyroid":1,"water":1,"protein":1,"under2k":1,"sleep8":1,"gym":1,"cardio":1,"steps10k":1,"puffiness":6.0,"weight":86.3,"proteinAmt":203.0,"sleepHrs":8.0,"steps":11415.0},"2026-04-01":{"thyroid":1,"water":1,"protein":1,"gym":1,"cardio":1,"steps10k":1,"omega3":1,"puffiness":7.0,"weight":86.7,"proteinAmt":219.0,"calories":2060.0,"sleepHrs":7.5,"steps":10493.0},"2026-04-02":{"water":1,"protein":1,"sleep8":1,"omega3":1,"under2k":1,"puffiness":7.0,"weight":86.7,"proteinAmt":114.0,"calories":1956.0,"sleepHrs":8.83,"steps":3698.0,"comments":"Didn't workout as was not feeling great. Need to figure out something for thyroid"},"2026-04-03":{"thyroid":1,"water":1,"protein":1,"under2k":1,"gym":1,"cardio":1,"steps10k":1,"omega3":1,"puffiness":7.0,"weight":86.7,"proteinAmt":201.0,"calories":1800.0,"sleepHrs":7.0,"steps":10456.0},"2026-04-04":{"thyroid":1,"water":1,"protein":1,"under2k":1,"sleep8":1,"gym":1,"cardio":1,"steps10k":1,"omega3":1,"puffiness":7.0,"weight":86.0,"proteinAmt":185.0,"calories":1967.0,"sleepHrs":8.0,"steps":10260.0},"2026-04-05":{"thyroid":1,"steps10k":1,"omega3":1,"puffiness":6.0,"weight":86.0,"proteinAmt":144.0,"calories":2110.0,"sleepHrs":6.5,"steps":10000.0},"2026-04-06":{"thyroid":1,"water":1,"protein":1,"under2k":1,"sleep8":1,"gym":1,"cardio":1,"steps10k":1,"omega3":1,"puffiness":6.0,"weight":85.5,"proteinAmt":186.0,"calories":1886.0,"sleepHrs":8.0,"steps":10711.0},"2026-04-07":{"thyroid":1,"water":1,"protein":1,"under2k":1,"sleep8":1,"gym":1,"cardio":1,"steps10k":1,"omega3":1,"puffiness":5.0,"weight":85.2,"proteinAmt":209.0,"calories":1950.0,"sleepHrs":8.5,"steps":10308.0,"waist":37.0,"tummy":36.5,"chest":42.0,"bicep":14.5},"2026-04-08":{"thyroid":1,"under2k":1,"gym":1,"cardio":1,"omega3":1,"puffiness":5.0,"weight":83.3,"proteinAmt":159.0,"calories":1444.0,"sleepHrs":7.0,"steps":9153.0},"2026-04-09":{"thyroid":1,"under2k":1,"sleep8":1,"gym":1,"cardio":1,"steps10k":1,"omega3":1,"puffiness":5.0,"weight":86.3,"sleepHrs":8.0,"steps":10039.0},"2026-04-10":{"thyroid":1,"water":1,"protein":1,"under2k":1,"gym":1,"cardio":1,"steps10k":1,"omega3":1,"puffiness":5.0,"weight":86.0,"proteinAmt":187.0,"calories":1848.0,"sleepHrs":6.5,"steps":11178.0},"2026-04-11":{"thyroid":1,"water":1,"sleep8":1,"omega3":1,"under2k":1,"puffiness":5.0,"weight":86.0,"proteinAmt":133.0,"calories":1815.0,"sleepHrs":8.8,"steps":6879.0},"2026-04-12":{"thyroid":1,"water":1,"under2k":1,"steps10k":1,"omega3":1,"puffiness":5.0,"weight":86.0,"proteinAmt":132.0,"calories":2002.0,"sleepHrs":5.75,"steps":11562.0},"2026-04-13":{"thyroid":1,"water":1,"protein":1,"gym":1,"cardio":1,"steps10k":1,"omega3":1,"under2k":1,"puffiness":6.0,"weight":85.7,"proteinAmt":172.0,"calories":1716.0,"sleepHrs":7.0,"steps":11991.0},"2026-04-14":{"thyroid":1,"water":1,"protein":1,"under2k":1,"gym":1,"cardio":1,"steps10k":1,"omega3":1,"puffiness":5.0,"weight":85.3,"proteinAmt":181.0,"calories":1922.0,"sleepHrs":8.0,"steps":10000.0},"2026-04-15":{"thyroid":1,"water":1,"protein":1,"under2k":1,"gym":1,"cardio":1,"steps10k":1,"omega3":1,"puffiness":5.0,"weight":82.8,"proteinAmt":181.0,"calories":1783.0,"sleepHrs":6.3,"steps":10500.0,"comments":"Good sleep today"},"2026-04-16":{"thyroid":1,"water":1,"under2k":1,"gym":1,"cardio":1,"steps10k":1,"omega3":1,"puffiness":5.0,"weight":84.6,"proteinAmt":173.0,"calories":1780.0,"sleepHrs":7.0,"steps":11611.0,"waist":36.75,"tummy":36.5,"chest":42.5,"bicep":14.2},"2026-04-17":{"thyroid":1,"water":1,"under2k":1,"gym":1,"cardio":1,"steps10k":1,"omega3":1,"puffiness":5.0,"weight":85.8,"proteinAmt":117.0,"calories":1904.0,"sleepHrs":7.5,"steps":12092.0},"2026-04-18":{"thyroid":1,"water":1,"under2k":1,"gym":1,"cardio":1,"omega3":1,"puffiness":5.0,"weight":84.2,"proteinAmt":100.0,"calories":1900.0,"sleepHrs":7.0,"steps":4000.0},"2026-04-19":{"thyroid":1,"water":1,"gym":1,"cardio":1,"steps10k":1,"omega3":1,"puffiness":5.0,"weight":85.4,"proteinAmt":140.0,"calories":2260.0,"sleepHrs":6.0,"steps":10929.0},"2026-04-20":{"thyroid":1,"water":1,"protein":1,"gym":1,"cardio":1,"omega3":1,"puffiness":5.0,"weight":85.4,"proteinAmt":180.0,"calories":2105.0,"sleepHrs":7.6,"steps":4047.0},"2026-04-21":{"thyroid":1,"water":1,"under2k":1,"gym":1,"cardio":1,"omega3":1,"puffiness":5.0,"weight":85.0,"proteinAmt":158.0,"calories":1875.0,"sleepHrs":7.7,"steps":8000.0},"2026-04-22":{"thyroid":1,"water":1,"protein":1,"under2k":1,"gym":1,"cardio":1,"steps10k":1,"puffiness":5.0,"weight":85.3,"proteinAmt":176.0,"calories":1916.0,"sleepHrs":7.2,"steps":13048.0},"2026-04-23":{"thyroid":1,"water":1,"protein":1,"under2k":1,"puffiness":5.0,"weight":85.2,"proteinAmt":185.0,"calories":1918.0,"sleepHrs":7.0,"steps":6345.0},"2026-04-24":{"thyroid":1,"water":1,"protein":1,"sleep8":1,"gym":1,"cardio":1,"steps10k":1,"omega3":1,"puffiness":5.0,"weight":85.2,"proteinAmt":150.0,"calories":2000.0,"sleepHrs":8.0,"steps":10250.0},"2026-04-25":{"thyroid":1,"protein":1,"sleep8":1,"omega3":1,"puffiness":5.0,"weight":85.7,"proteinAmt":202.0,"calories":2900.0,"sleepHrs":8.0,"steps":10609.0},"2026-04-26":{"thyroid":1,"omega3":1,"under2k":1,"puffiness":5.0,"weight":85.8,"proteinAmt":120.0,"calories":1600.0,"sleepHrs":5.0,"steps":6063.0},"2026-04-27":{"thyroid":1,"water":1,"protein":1,"under2k":1,"gym":1,"cardio":1,"steps10k":1,"omega3":1,"puffiness":5.0,"weight":85.9,"proteinAmt":194.0,"calories":1876.0,"sleepHrs":6.5,"steps":11316.0},"2026-04-28":{"thyroid":1,"water":1,"protein":1,"under2k":1,"sleep8":1,"gym":1,"cardio":1,"steps10k":1,"omega3":1,"puffiness":5.0,"weight":84.6,"proteinAmt":190.0,"calories":1897.0,"sleepHrs":8.0,"steps":11091.0},"2026-04-29":{"thyroid":1,"sleep8":1,"omega3":1,"under2k":1,"puffiness":5.0,"weight":85.0,"proteinAmt":100.0,"calories":1600.0,"sleepHrs":8.0,"steps":12491.0},"2026-04-30":{"thyroid":1,"sleep8":1,"under2k":1,"puffiness":5.0,"weight":85.0,"proteinAmt":100.0,"calories":1500.0,"sleepHrs":8.0,"steps":4211.0},"2026-05-01":{"thyroid":1,"gym":1,"cardio":1,"steps10k":1,"omega3":1,"puffiness":6.0,"weight":85.8,"proteinAmt":136.0,"calories":2000.0,"sleepHrs":6.5,"steps":10843.0},"2026-05-02":{"thyroid":1,"gym":1,"cardio":1,"omega3":1,"puffiness":6.0,"weight":85.5,"proteinAmt":135.0,"calories":2200.0,"sleepHrs":7.5,"steps":9452.0},"2026-05-03":{"puffiness":6.0,"proteinAmt":86.0,"calories":1500.0,"sleepHrs":7.0,"steps":11000.0,"travel":1},"2026-05-04":{"thyroid":1,"water":1,"protein":1,"sleep8":1,"gym":1,"cardio":1,"steps10k":1,"omega3":1,"puffiness":6.0,"weight":85.2,"proteinAmt":180.0,"calories":2000.0,"sleepHrs":8.0,"steps":10119.0},"2026-05-05":{"thyroid":1,"water":1,"protein":1,"sleep8":1,"gym":1,"cardio":1,"omega3":1,"under2k":1,"puffiness":5.0,"weight":84.8,"proteinAmt":191.0,"calories":1963.0,"sleepHrs":8.0,"steps":9059.0},"2026-05-06":{"thyroid":1,"water":1,"protein":1,"gym":1,"cardio":1,"steps10k":1,"omega3":1,"under2k":1,"puffiness":5.0,"weight":84.5,"proteinAmt":174.0,"calories":1302.0,"sleepHrs":7.15,"steps":12030.0},"2026-05-07":{"thyroid":1,"omega3":1,"puffiness":5.0,"weight":84.5,"proteinAmt":154.0,"calories":2339.0,"sleepHrs":6.2,"steps":4462.0},"2026-05-08":{"thyroid":1,"water":1,"gym":1,"cardio":1,"steps10k":1,"omega3":1,"under2k":1,"puffiness":5.0,"weight":84.5,"proteinAmt":159.0,"calories":1630.0,"sleepHrs":6.75,"steps":12401.0},"2026-05-09":{"thyroid":1,"water":1,"steps10k":1,"omega3":1,"puffiness":5.0,"weight":84.5,"proteinAmt":102.0,"calories":2045.0,"sleepHrs":4.0,"steps":11406.0},"2026-05-10":{"puffiness":5.0,"weight":84.5,"sleepHrs":8.5,"steps":7747.0,"travel":1},"2026-05-11":{"thyroid":1,"water":1,"steps10k":1,"omega3":1,"under2k":1,"puffiness":5.0,"weight":84.5,"proteinAmt":128.0,"calories":1373.0,"sleepHrs":7.5,"steps":11071.0},"2026-05-12":{"thyroid":1,"water":1,"omega3":1,"puffiness":5.0,"weight":84.5,"sleepHrs":5.2,"steps":5798.0,"waist":36.2,"tummy":35.0,"chest":42.5,"bicep":14.0},"2026-05-13":{"thyroid":1,"water":1,"protein":1,"steps10k":1,"omega3":1,"under2k":1,"puffiness":5.0,"weight":84.5,"proteinAmt":195.0,"calories":1659.0,"sleepHrs":7.0,"steps":10420.0},"2026-05-14":{"thyroid":1,"water":1,"gym":1,"cardio":1,"steps10k":1,"omega3":1,"puffiness":5.0,"weight":84.8,"proteinAmt":170.0,"calories":2079.0,"sleepHrs":7.2,"steps":11104.0},"2026-05-15":{"thyroid":1,"water":1,"gym":1,"cardio":1,"steps10k":1,"omega3":1,"puffiness":5.0,"weight":84.6,"sleepHrs":6.7,"steps":16876.0},"2026-05-16":{"thyroid":1,"water":1,"protein":1,"gym":1,"cardio":1,"omega3":1,"puffiness":5.0,"weight":85.4,"proteinAmt":220.0,"calories":3154.0,"sleepHrs":7.5,"steps":8342.0},"2026-05-17":{"puffiness":5.0,"proteinAmt":132.0,"calories":2125.0,"sleepHrs":7.0,"steps":9486.0,"travel":1},"2026-05-18":{"thyroid":1,"water":1,"protein":1,"gym":1,"cardio":1,"steps10k":1,"omega3":1,"under2k":1,"puffiness":5.0,"weight":84.8,"proteinAmt":178.0,"calories":1820.0,"sleepHrs":6.15,"steps":10663.0},"2026-05-19":{"thyroid":1,"water":1,"protein":1,"sleep8":1,"gym":1,"cardio":1,"steps10k":1,"omega3":1,"under2k":1,"puffiness":5.0,"weight":84.4,"proteinAmt":208.0,"calories":1810.0,"sleepHrs":8.5,"steps":10624.0},"2026-05-20":{"thyroid":1,"water":1,"protein":1,"sleep8":1,"gym":1,"cardio":1,"steps10k":1,"omega3":1,"under2k":1,"puffiness":5.0,"weight":84.0,"proteinAmt":192.0,"calories":1952.0,"sleepHrs":8.0,"steps":9652.0},"2026-05-21":{"thyroid":1,"protein":1,"gym":1,"cardio":1,"steps10k":1,"omega3":1,"under2k":1,"puffiness":5.0,"weight":84.6,"proteinAmt":205.0,"calories":1956.0,"sleepHrs":7.2,"steps":10260.0},"2026-05-22":{"thyroid":1,"water":1,"gym":1,"cardio":1,"puffiness":5.0,"weight":84.2,"proteinAmt":182.0,"calories":2076.0,"sleepHrs":7.4,"steps":12031.0,"waist":36.2,"tummy":36.6,"chest":42.5,"bicep":14.0},"2026-05-23":{"puffiness":5.0,"proteinAmt":121.0,"calories":2354.0,"sleepHrs":7.75,"steps":15082.0,"travel":1},"2026-05-24":{"thyroid":1,"water":1,"gym":1,"cardio":1,"omega3":1,"under2k":1,"puffiness":5.0,"weight":84.5,"proteinAmt":134.0,"calories":1854.0,"sleepHrs":5.8,"steps":8686.0},"2026-05-25":{"thyroid":1,"water":1,"protein":1,"sleep8":1,"gym":1,"cardio":1,"omega3":1,"under2k":1,"puffiness":5.0,"weight":85.0,"proteinAmt":183.0,"calories":1917.0,"sleepHrs":8.0,"steps":9653.0},"2026-05-26":{"thyroid":1,"water":1,"protein":1,"gym":1,"cardio":1,"steps10k":1,"omega3":1,"under2k":1,"puffiness":5.0,"weight":84.5,"proteinAmt":189.0,"calories":1981.0,"sleepHrs":6.2,"steps":11737.0},"2026-05-27":{"thyroid":1,"water":1,"gym":1,"cardio":1,"steps10k":1,"under2k":1,"puffiness":5.0,"weight":84.5,"proteinAmt":177.0,"calories":1999.0,"sleepHrs":7.25,"steps":10271.0},"2026-05-28":{"thyroid":1,"water":1,"sleep8":1,"gym":1,"cardio":1,"steps10k":1,"under2k":1,"puffiness":5.0,"weight":84.5,"proteinAmt":121.0,"calories":1801.0,"sleepHrs":8.5,"steps":10000.0},"2026-05-29":{"thyroid":1,"water":1,"gym":1,"cardio":1,"steps10k":1,"under2k":1,"puffiness":5.0,"weight":84.5,"proteinAmt":166.0,"calories":1589.0,"sleepHrs":6.5,"steps":10437.0,"waist":36.0,"tummy":35.5,"chest":42.5,"bicep":14.3},"2026-05-30":{"thyroid":1,"water":1,"sleep8":1,"gym":1,"cardio":1,"under2k":1,"puffiness":5.0,"weight":84.5,"proteinAmt":167.0,"calories":1897.0,"sleepHrs":8.5,"steps":7611.0},"2026-05-31":{"puffiness":5.0,"sleepHrs":7.0,"travel":1}};
 
 /* date helpers */
@@ -1136,6 +1217,7 @@ function addDays(s,n){const d=new Date(s+'T00:00:00');d.setDate(d.getDate()+n);r
 function dowName(s){return ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][new Date(s+'T00:00:00').getDay()];}
 function dayNum(s){return s.split('-')[2];}
 function monName(s){return ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][parseInt(s.split('-')[1])-1];}
+function fmtDate(s){const[y,m,d]=s.split('-');return parseInt(d)+' '+monName(s)+" '"+y.slice(2);}
 function monthKey(s){return s.slice(0,7);}
 
 /* week anchored to Monday */
@@ -1143,8 +1225,9 @@ let weekStart=null;
 function mondayOf(s){const d=new Date(s+'T00:00:00');const diff=(d.getDay()+6)%7;d.setDate(d.getDate()-diff);return iso(d);}
 function weekDates(){return Array.from({length:7},(_,i)=>addDays(weekStart,i));}
 
-function applyAuto(d){
-  HABITS.forEach(h=>{if(h.auto){const v=d[h.auto.metric];if(v!=null&&v!==''){if(h.auto.test(parseFloat(v)))d[h.k]=1;else delete d[h.k];}}});
+function applyAuto(d,dt){
+  const g=goalOn(dt||todayStr());
+  HABITS.forEach(h=>{if(h.auto){const v=d[h.auto.metric];if(v!=null&&v!==''){if(h.auto.test(parseFloat(v),g))d[h.k]=1;else delete d[h.k];}}});
 }
 function scoreFor(d){
   const skip=d.rest?['gym','cardio','steps10k']:[];let hit=0,total=0;
@@ -1156,17 +1239,84 @@ function scoreColor(p){return p>=78?'p-green':p>=50?'p-amber':'p-red';}
 /* ---- WEEK GRID ---- */
 function renderWeek(){
   if(!weekStart)weekStart=mondayOf(todayStr());
+  paintGoalSummary();
   renderStrip();
   renderGrid();
 }
+function paintGoalSummary(){
+  const el=document.getElementById('goalSummary'); if(!el)return;
+  const g=curGoal();
+  el.innerHTML=`<b style="color:var(--ink)">${g.phase}</b> · ${g.protein}g protein · &lt;${g.cal} kcal · ${g.sleep}h sleep · ${(g.steps/1000)}k steps`;
+}
+function renderGoalHistory(){
+  const el=document.getElementById('goalHistory'); if(!el)return;
+  sortPeriods();
+  el.innerHTML=PERIODS.map((p,i)=>{
+    const next=PERIODS[i+1];
+    const range=next?`${fmtDate(p.from)} → ${fmtDate(addDays(next.from,-1))}`:`${fmtDate(p.from)} → now`;
+    const canDel=PERIODS.length>1;
+    return `<div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--line)">
+      <span class="pill p-blue" style="flex-shrink:0">📍 ${fmtDate(p.from)}</span>
+      <div style="flex:1"><b style="font-size:.88rem">${p.phase}</b><div class="subtle" style="font-size:.76rem">${range} · ${p.protein}g · &lt;${p.cal}kcal · ${p.sleep}h · ${(p.steps/1000)}k</div></div>
+      ${canDel?`<button onclick="deletePeriod(${i})" style="background:none;border:none;color:var(--red);cursor:pointer;font-size:.8rem;font-weight:600">Remove</button>`:''}
+    </div>`;
+  }).join('');
+}
+function toggleGoals(){
+  const ed=document.getElementById('goalEditor');const open=ed.style.display!=='none';
+  if(open){ed.style.display='none';document.getElementById('goalEditBtn').textContent='Change';}
+  else{
+    const g=curGoal();
+    document.getElementById('g_from').value=todayStr();
+    document.getElementById('g_phase').value=g.phase;
+    document.getElementById('g_protein').value=g.protein;
+    document.getElementById('g_cal').value=g.cal;
+    document.getElementById('g_sleep').value=g.sleep;
+    document.getElementById('g_steps').value=g.steps;
+    document.getElementById('g_water').value=g.water;
+    ed.style.display='';document.getElementById('goalEditBtn').textContent='Close';
+    renderGoalHistory();
+  }
+}
+function saveGoals(){
+  const from=document.getElementById('g_from').value||todayStr();
+  const period={
+    from,
+    phase:document.getElementById('g_phase').value||'New phase',
+    protein:parseFloat(document.getElementById('g_protein').value)||180,
+    cal:parseFloat(document.getElementById('g_cal').value)||2000,
+    sleep:parseFloat(document.getElementById('g_sleep').value)||8,
+    steps:parseFloat(document.getElementById('g_steps').value)||10000,
+    water:parseFloat(document.getElementById('g_water').value)||4
+  };
+  // replace if a period already starts on that exact date, else add
+  const idx=PERIODS.findIndex(p=>p.from===from);
+  if(idx>=0)PERIODS[idx]=period; else PERIODS.push(period);
+  persistGoals();
+  // re-evaluate auto-ticks ONLY for days on/after this date (past periods untouched)
+  Object.keys(DB).forEach(dt=>{ if(dt>=from) applyAuto(DB[dt],dt); });
+  persist();
+  paintGoalSummary();renderGoalHistory();renderGrid();renderStrip();flashSaved();
+}
+function deletePeriod(i){
+  if(PERIODS.length<=1)return;
+  if(!confirm('Remove this goal period? Days in its range will fall back to the previous goal.'))return;
+  PERIODS.splice(i,1);persistGoals();
+  // re-evaluate everything since a boundary moved
+  Object.keys(DB).forEach(dt=>applyAuto(DB[dt],dt));
+  persist();
+  paintGoalSummary();renderGoalHistory();renderGrid();renderStrip();
+}
 function renderStrip(){
   const dates=weekDates();const t=todayStr();
+  const periodStarts=new Set(PERIODS.map(p=>p.from));
   document.getElementById('dateStrip').innerHTML=
     `<button class="arw" onclick="shiftWeek(-1)">‹</button><div class="days">`+
     dates.map(dt=>{
       const future=dt>t;const has=!!DB[dt];
       const pip=has?`<span class="pipe" style="background:var(--green)"></span>`:'';
-      return `<div class="dstrip-day ${dt===t?'today':''} ${future?'future':''}" onclick="jumpDay('${dt}')">${pip}<div class="dn">${dowName(dt)}</div><div class="dd">${dayNum(dt)}</div><div class="dm">${monName(dt)}</div></div>`;
+      const flag=periodStarts.has(dt)?`<span class="goalflag" title="Goal changed here">📍</span>`:'';
+      return `<div class="dstrip-day ${dt===t?'today':''} ${future?'future':''}" onclick="jumpDay('${dt}')">${pip}${flag}<div class="dn">${dowName(dt)}</div><div class="dd">${dayNum(dt)}</div><div class="dm">${monName(dt)}</div></div>`;
     }).join('')+`</div><button class="arw" onclick="shiftWeek(1)">›</button>`;
 }
 function shiftWeek(n){weekStart=addDays(weekStart,n*7);renderWeek();}
@@ -1192,10 +1342,11 @@ function renderGrid(){
       return `<td class="daycell ${dt===t?'today-col':''}"><input class="gnum" type="number" inputmode="decimal" step="${m.step}" value="${v}" onchange="setNum('${dt}','${m.k}',this.value)"></td>`;
     }).join('')+`</tr>`;
   });
-  // habits group
+  // habits group — labels reflect the goal active at this week's end
+  const weekGoal=goalOn(dates[6]);
   rows+=`<tr class="rowgroup-h"><td colspan="8">Habits — ✓ tap to toggle · dashed = auto-ticks from numbers</td></tr>`;
   HABITS.forEach(h=>{
-    rows+=`<tr><td class="rowlabel">${h.label}</td>`+dates.map(dt=>{
+    rows+=`<tr><td class="rowlabel">${h.lbl(weekGoal)}</td>`+dates.map(dt=>{
       const d=DB[dt]||{};const on=d[h.k];const auto=h.auto?'auto':'';
       const excused=d.rest&&['gym','cardio','steps10k'].includes(h.k);
       if(excused)return `<td class="daycell ${dt===t?'today-col':''}"><span class="gcheck excused" title="Rest day — not counted">–</span></td>`;
@@ -1231,7 +1382,7 @@ function ensure(dt){if(!DB[dt])DB[dt]={};return DB[dt];}
 function setNum(dt,k,val){
   const d=ensure(dt);
   if(val===''||val==null){delete d[k];}else{d[k]=parseFloat(val);}
-  applyAuto(d);
+  applyAuto(d,dt);
   if(Object.keys(d).length===0)delete DB[dt];
   persist(dt);
   renderGrid();renderStrip();flashSaved();
@@ -1332,7 +1483,7 @@ function exportCSV(){
   lines.push(['Date',...dates].map(esc).join(','));
   // habit rows (True/False like Excel; travel days blank)
   HABITS.forEach(h=>{
-    const row=[h.label];
+    const row=[h.lbl(curGoal())];
     dates.forEach(dt=>{const d=DB[dt]||{};
       if(d.rest&&(h.k==='gym'||h.k==='cardio'||h.k==='steps10k')){row.push('REST');}
       else row.push(d[h.k]?'TRUE':'FALSE');
@@ -1357,8 +1508,10 @@ function exportCSV(){
   a.href=URL.createObjectURL(blob);a.download='WAR_MODE_tracker_export.csv';a.click();
 }
 
-loadDB().then(()=>{
-  // once cloud data arrives, refresh whichever tracker page is open
+paintDayCount();
+loadDB().then(async ()=>{
+  await loadGoals();
+  paintDayCount();
   const active=document.querySelector('.page.active');
   if(active&&active.id==='t-log')renderWeek();
   if(active&&active.id==='t-history')renderHistory();
