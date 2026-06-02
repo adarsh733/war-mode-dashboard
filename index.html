@@ -442,12 +442,12 @@ table.weekgrid input.gnum:focus{background:var(--green-bg)}
   <h1 class="title">Progress &amp; Trends</h1>
   <p class="lede">What the scale hides, the tape measure reveals. All measurements Jan → May.</p>
 
-  <div class="sec-label">Measurements now vs start</div>
+  <div class="sec-label">Measurements now vs start <span class="subtle" style="font-weight:400;text-transform:none;letter-spacing:0">(live · vs Jan 8)</span></div>
   <div class="grid g4 stack">
-    <div class="stat"><div class="bar" style="background:var(--green)"></div><div class="k">Waist</div><div class="v">36.0<small>″</small></div><div class="d up">▼ −1.0 from 37.0</div></div>
-    <div class="stat"><div class="bar" style="background:var(--green)"></div><div class="k">Tummy</div><div class="v">35.5<small>″</small></div><div class="d up">▼ −2.5 from 38.0</div></div>
-    <div class="stat"><div class="bar" style="background:var(--blue)"></div><div class="k">Chest</div><div class="v">42.5<small>″</small></div><div class="d up">▲ from 42.0</div></div>
-    <div class="stat"><div class="bar" style="background:var(--amber)"></div><div class="k">Bicep</div><div class="v">14.3<small>″</small></div><div class="d flat">≈ holding</div></div>
+    <div class="stat" id="statWaist"><div class="bar" style="background:var(--green)"></div><div class="k">Waist</div><div class="v">36.0<small>″</small></div><div class="d up">▼ −1.0 from 37.0</div></div>
+    <div class="stat" id="statTummy"><div class="bar" style="background:var(--green)"></div><div class="k">Tummy</div><div class="v">35.5<small>″</small></div><div class="d up">▼ −2.5 from 38.0</div></div>
+    <div class="stat" id="statChest"><div class="bar" style="background:var(--blue)"></div><div class="k">Chest</div><div class="v">42.5<small>″</small></div><div class="d up">▲ from 42.0</div></div>
+    <div class="stat" id="statBicep"><div class="bar" style="background:var(--amber)"></div><div class="k">Bicep</div><div class="v">14.3<small>″</small></div><div class="d flat">≈ holding</div></div>
   </div>
 
   <div class="grid g2 stack" style="margin-top:16px">
@@ -1223,20 +1223,95 @@ function bars(id,labels,series,opt={}){
   charts[id]=new Chart(el,{type:'bar',data:{labels,datasets:series.map(s=>({label:s.l,data:s.d,backgroundColor:s.c,borderRadius:5,maxBarThickness:opt.thick||40}))},
     options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:series.length>1,position:'bottom',labels:{usePointStyle:true,pointStyle:'circle',padding:14,color:cssv('--ink2')}},tooltip:{backgroundColor:cssv('--ink'),padding:9,cornerRadius:7,callbacks:opt.pct?{label:c=>c.dataset.label+': '+c.parsed.y+'%'}:{}}},scales:axes(opt.y||{})}});
 }
+/* ── live monthly aggregation from DB ── */
+function monthsInDB(){
+  // ordered list of YYYY-MM present in DB (excludes special keys)
+  const set=new Set();
+  Object.keys(DB).forEach(dt=>{if(/^\d{4}-\d{2}-\d{2}$/.test(dt))set.add(dt.slice(0,7));});
+  return [...set].sort();
+}
+function monthLabel(mk){const[y,m]=mk.split('-');return ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][parseInt(m)-1]+" '"+y.slice(2);}
+// average of a numeric metric per month (null months => null so the line spans gaps)
+function monthlyAvg(metric){
+  const mks=monthsInDB();
+  return mks.map(mk=>{
+    let sum=0,n=0;
+    Object.keys(DB).forEach(dt=>{
+      if(dt.slice(0,7)!==mk)return;
+      const v=DB[dt][metric];
+      if(v!=null&&v!==''&&!Number.isNaN(parseFloat(v))){sum+=parseFloat(v);n++;}
+    });
+    return n?+(sum/n).toFixed(1):null;
+  });
+}
+// last (most recent) logged value of a metric per month — for measurements logged sparsely
+function monthlyLast(metric){
+  const mks=monthsInDB();
+  return mks.map(mk=>{
+    const days=Object.keys(DB).filter(dt=>dt.slice(0,7)===mk&&DB[dt][metric]!=null&&DB[dt][metric]!=='').sort();
+    return days.length?+parseFloat(DB[days[days.length-1]][metric]).toFixed(1):null;
+  });
+}
+// monthly % compliance for a habit (excludes rest-day-skipped habits from the denominator)
+function monthlyCompliance(habitKey,skipOnRest){
+  const mks=monthsInDB();
+  return mks.map(mk=>{
+    let hit=0,tot=0;
+    Object.keys(DB).forEach(dt=>{
+      if(dt.slice(0,7)!==mk)return;const d=DB[dt];
+      if(skipOnRest&&d.rest)return;
+      tot++;if(d[habitKey])hit++;
+    });
+    return tot?Math.round(hit/tot*100):0;
+  });
+}
+// latest logged value of a metric across all DB, and value on/after a start date
+function latestVal(metric){
+  const days=Object.keys(DB).filter(dt=>/^\d{4}-\d{2}-\d{2}$/.test(dt)&&DB[dt][metric]!=null&&DB[dt][metric]!=='').sort();
+  return days.length?parseFloat(DB[days[days.length-1]][metric]):null;
+}
+function valFromDate(metric,fromDate){
+  const days=Object.keys(DB).filter(dt=>/^\d{4}-\d{2}-\d{2}$/.test(dt)&&dt>=fromDate&&DB[dt][metric]!=null&&DB[dt][metric]!=='').sort();
+  return days.length?parseFloat(DB[days[0]][metric]):null;
+}
+// paint the "now vs start" measurement stat cards live
+function paintProgressStats(){
+  const defs=[['waist','statWaist','green',true],['tummy','statTummy','green',true],['chest','statChest','blue',false],['bicep','statBicep','amber',false]];
+  defs.forEach(([k,id,col,lowerGood])=>{
+    const card=document.getElementById(id);if(!card)return;
+    const now=latestVal(k), start=valFromDate(k,START_DATE);
+    const vEl=card.querySelector('.v'), dEl=card.querySelector('.d');
+    if(now==null){if(vEl)vEl.innerHTML='—';if(dEl){dEl.textContent='no data';dEl.className='d flat';}return;}
+    if(vEl)vEl.innerHTML=now+'<small>″</small>';
+    if(start==null||dEl==null){if(dEl){dEl.textContent='—';dEl.className='d flat';}return;}
+    const diff=+(now-start).toFixed(1);
+    if(diff===0){dEl.textContent='≈ holding from '+start;dEl.className='d flat';}
+    else{
+      const good=lowerGood?diff<0:diff>0;
+      const arrow=diff<0?'▼':'▲';
+      dEl.textContent=`${arrow} ${diff>0?'+':''}${diff} from ${start}`;
+      dEl.className='d '+(good?'up':'down');
+    }
+  });
+}
 function buildCharts(id){
   if(id==='fit-progress'){
-    line('cWaist',['Jan','Apr','May'],[{l:'Waist',d:[37,36.75,36.0],c:cssv('--green')},{l:'Tummy',d:[38,36.5,35.5],c:cssv('--accent')}]);
-    line('cChest',['Jan','Apr','May'],[{l:'Chest',d:[42,42.5,42.5],c:cssv('--blue')},{l:'Bicep',d:[14.5,14.2,14.3],c:cssv('--amber')}],{y:{min:13,max:43}});
-    line('cWeight',['Jan','Feb','Mar','Apr','May'],[{l:'Weight',d:[85.1,84.7,85.0,85.4,84.7],c:cssv('--blue')}],{y:{min:83,max:87}});
-    bars('cProt',['Jan','Feb','Mar','Apr','May'],[{l:'Protein',d:[180,128,183,162,162],c:cssv('--accent')}]);
-    line('cPuff',['Jan','Feb','Mar','Apr','May'],[{l:'Puffiness',d:[6.9,5.6,5.2,5.4,5.1],c:cssv('--amber')}],{y:{min:4,max:8,reverse:true}});
+    paintProgressStats();
+    const mLabels=monthsInDB().map(monthLabel);
+    line('cWaist',mLabels,[{l:'Waist',d:monthlyLast('waist'),c:cssv('--green')},{l:'Tummy',d:monthlyLast('tummy'),c:cssv('--accent')}]);
+    line('cChest',mLabels,[{l:'Chest',d:monthlyLast('chest'),c:cssv('--blue')},{l:'Bicep',d:monthlyLast('bicep'),c:cssv('--amber')}],{y:{min:13,max:43}});
+    line('cWeight',mLabels,[{l:'Weight',d:monthlyAvg('weight'),c:cssv('--blue')}],{y:{min:80,max:88}});
+    bars('cProt',mLabels,[{l:'Protein',d:monthlyAvg('proteinAmt'),c:cssv('--accent')}]);
+    line('cPuff',mLabels,[{l:'Puffiness',d:monthlyAvg('puffiness'),c:cssv('--amber')}],{y:{min:3,max:10,reverse:true}});
   }
   if(id==='fit-compliance'){
-    bars('cComp',['Jan','Feb','Mar','Apr','May'],[
-      {l:'Gym',d:[86,32,74,70,81],c:cssv('--green')},
-      {l:'Protein ≥160g',d:[83,43,89,55,59],c:cssv('--accent')},
-      {l:'Steps 10k',d:[83,46,61,63,65],c:cssv('--blue')},
-      {l:'Sleep 8h',d:[46,39,42,37,27],c:cssv('--amber')}
+    const mLabels=monthsInDB().map(monthLabel);
+    const g=curGoal();
+    bars('cComp',mLabels,[
+      {l:'Gym',d:monthlyCompliance('gym',true),c:cssv('--green')},
+      {l:'Protein '+g.protein+'g',d:monthlyCompliance('protein',false),c:cssv('--accent')},
+      {l:'Steps '+(g.steps/1000)+'k',d:monthlyCompliance('steps10k',true),c:cssv('--blue')},
+      {l:'Sleep '+g.sleep+'h',d:monthlyCompliance('sleep8',false),c:cssv('--amber')}
     ],{pct:true,thick:22,y:{min:0,max:100,ticks:{callback:v=>v+'%',color:cssv('--muted')}}});
   }
   if(id==='h-thyroid'){
@@ -2043,12 +2118,38 @@ async function saveCheckin(){
     }
     CHECKINS[dt]=rec;ciStaged={};
     persistCheckins();updateCheckinBadge();
+    // ── mirror measurements into the daily tracker (DB) so progress charts update ──
+    mirrorCheckinToDB(dt,rec);
     const m=document.getElementById('ciSaveMsg');m.style.opacity='1';setTimeout(()=>m.style.opacity='0',1800);
   }catch(e){
     alert('Photo upload failed: '+e.message+'\n\nMake sure the progress-photos bucket exists and the anon INSERT policy is set.');
     ciSync('off');
   }
   btn.disabled=false;btn.textContent='Save Check-In';
+}
+/* Copy check-in weight + measurements into that day's DB row so the
+   fit-progress charts and stat cards (which read from DB) stay in sync.
+   Only writes fields the user actually filled; never wipes existing DB data,
+   and never overwrites a value the daily log already has unless the check-in
+   provides a (newer) explicit value. Weight is mirrored too. */
+function mirrorCheckinToDB(dt,rec){
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(dt))return;
+  const day=DB[dt]||{};
+  let changed=false;
+  ['weight','waist','tummy','chest','bicep'].forEach(k=>{
+    if(rec[k]!=null&&rec[k]!==''){ if(day[k]!==rec[k]){day[k]=rec[k];changed=true;} }
+  });
+  if(!changed)return;
+  DB[dt]=day;
+  applyAuto(day,dt);            // re-evaluate auto habits (e.g. weight doesn't gate any, but keeps DB consistent)
+  persist(dt);                  // local + cloud single-day upsert
+  // if a tracker view is currently showing, refresh it
+  const active=document.querySelector('.page.active');
+  if(active){
+    if(active.id==='t-log')renderWeek();
+    if(active.id==='t-history')renderHistory();
+    if(active.id==='fit-progress')buildCharts('fit-progress');
+  }
 }
 function deleteCheckin(dt){
   if(!confirm('Delete the entire '+fmtDate(dt)+' check-in (all photos & measurements)?'))return;
