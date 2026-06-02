@@ -16,48 +16,48 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root{
-  --bg:#f3f1ea; --paper:#fcfaf5; --paper2:#efeae0; --ink:#1c1916; --ink2:#5c564b;
-  --muted:#948c7d; --line:#e5dfd2; --line2:#d6cdbb;
-  --accent:#a3331d;            /* battle red-clay */
-  --accent2:#c4441f;
-  --accent-soft:#f4e0da;
-  --gold:#a87b1e;
-  --green:#3d7a4c; --green-bg:#e6efe4;
-  --amber:#b07914; --amber-bg:#f6ecd4;
-  --red:#b1362a;   --red-bg:#f7e2dd;
-  --blue:#2d597f;  --blue-bg:#e1eaf1;
-  --shadow:0 1px 2px rgba(40,28,18,.05),0 10px 30px rgba(60,40,25,.08);
-  --shadow-sm:0 1px 2px rgba(40,28,18,.06);
-  --r:14px;--r-sm:9px;--t:.22s ease;
+  --bg:#f5f4ef; --paper:#fffdfa; --paper2:#ece8df; --ink:#17191b; --ink2:#4f5453;
+  --muted:#8b8d86; --line:#e2ddd2; --line2:#cec7b8;
+  --accent:#a43a24;
+  --accent2:#cc4e2d;
+  --accent-soft:#f2ddd5;
+  --gold:#9b741e;
+  --green:#2f7652; --green-bg:#e3efe8;
+  --amber:#ad7a1d; --amber-bg:#f3ead2;
+  --red:#b63c31;   --red-bg:#f3ddd8;
+  --blue:#275d7c;  --blue-bg:#dfeaf0;
+  --shadow:0 1px 2px rgba(27,30,28,.05),0 16px 42px rgba(35,36,30,.08);
+  --shadow-sm:0 1px 2px rgba(27,30,28,.06);
+  --r:10px;--r-sm:7px;--t:.22s ease;
 }
 *{margin:0;padding:0;box-sizing:border-box}
 html{scroll-behavior:smooth;font-size:16px;-webkit-text-size-adjust:100%}
-body{background:var(--bg);color:var(--ink);font-family:'DM Sans',sans-serif;line-height:1.6;-webkit-font-smoothing:antialiased}
+body{background:linear-gradient(180deg,#f8f7f2 0%,var(--bg) 260px);color:var(--ink);font-family:'DM Sans',sans-serif;line-height:1.6;-webkit-font-smoothing:antialiased}
 canvas{max-width:100%}
 ::selection{background:var(--accent-soft)}
 
 /* ── FROZEN TOP BAR: centered WAR MODE, toggle below ── */
 .topbar{position:sticky;top:0;z-index:80;background:rgba(243,241,234,.95);backdrop-filter:blur(14px);
   border-bottom:1px solid var(--line)}
-.tb-inner{max-width:1080px;margin:0 auto;padding:14px 22px 12px;display:flex;flex-direction:column;align-items:center;gap:9px;position:relative}
+.tb-inner{max-width:1080px;margin:0 auto;padding:11px 22px 10px;display:flex;flex-direction:column;align-items:center;gap:7px;position:relative}
 .masthead{display:flex;align-items:center;gap:14px}
 .masthead .mk{width:30px;height:30px;border-radius:7px;background:var(--ink);display:grid;place-items:center;
   color:#fff;font-family:'Oswald';font-weight:700;font-size:.95rem}
 .masthead .mk:last-child{background:var(--accent)}
-.wm{font-family:'Oswald';font-weight:700;font-size:2.3rem;letter-spacing:.12em;line-height:.9;
+.wm{font-family:'Oswald';font-weight:700;font-size:2.05rem;letter-spacing:.12em;line-height:.9;
   background:linear-gradient(180deg,var(--ink),#3a2620);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
 @media(max-width:600px){.wm{font-size:1.7rem;letter-spacing:.08em}.masthead .mk{width:26px;height:26px;font-size:.85rem}}
-.creed-line{font-family:'Oswald';font-weight:500;font-size:.62rem;letter-spacing:.26em;text-transform:uppercase;color:var(--muted)}
+.creed-line{font-family:'Oswald';font-weight:500;font-size:.58rem;letter-spacing:.22em;text-transform:uppercase;color:var(--muted)}
 .seg{display:flex;background:var(--paper2);border:1px solid var(--line2);border-radius:30px;padding:4px;gap:3px}
-.seg button{font-family:'Oswald';font-weight:600;font-size:.82rem;letter-spacing:.06em;text-transform:uppercase;
-  border:none;background:none;cursor:pointer;padding:8px 22px;border-radius:24px;color:var(--ink2);transition:all var(--t);white-space:nowrap}
+.seg button{font-family:'Oswald';font-weight:600;font-size:.78rem;letter-spacing:.05em;text-transform:uppercase;
+  border:none;background:none;cursor:pointer;padding:7px 20px;border-radius:24px;color:var(--ink2);transition:all var(--t);white-space:nowrap}
 .seg button.on{background:var(--ink);color:#fff;box-shadow:var(--shadow-sm)}
 .seg button.on[data-sec="health"]{background:var(--accent)}
 .seg button.on[data-sec="tracker"]{background:var(--green)}
 .menu-btn{position:absolute;left:22px;top:14px;display:none;border:1px solid var(--line2);background:var(--paper);border-radius:8px;width:38px;height:38px;cursor:pointer;font-size:1.1rem}
 
 /* subnav strip — refined pill rail */
-.subnav{position:sticky;top:0;z-index:70;background:var(--paper);border-bottom:1px solid var(--line);box-shadow:var(--shadow-sm);overflow-x:auto;-webkit-overflow-scrolling:touch}
+.subnav{position:sticky;top:105px;z-index:70;background:rgba(255,253,250,.96);backdrop-filter:blur(12px);border-bottom:1px solid var(--line);box-shadow:var(--shadow-sm);overflow-x:auto;-webkit-overflow-scrolling:touch}
 .subnav::-webkit-scrollbar{display:none}
 .subnav-inner{max-width:1080px;margin:0 auto;padding:0 18px;display:flex}
 .chip-group[data-for="fitness"],.chip-group[data-for="health"],.chip-group[data-for="tracker"]{display:none;gap:2px}
@@ -82,7 +82,7 @@ h1.title{font-family:'Fraunces',serif;font-weight:600;font-size:2.2rem;line-heig
 .sec-label{font-family:'Oswald';font-weight:600;font-size:.8rem;letter-spacing:.13em;text-transform:uppercase;color:var(--ink);margin:38px 0 16px;display:flex;align-items:center;gap:12px}
 .sec-label::after{content:"";flex:1;height:1px;background:var(--line)}
 
-.card{background:var(--paper);border:1px solid var(--line);border-radius:var(--r);padding:22px;box-shadow:var(--shadow-sm)}
+.card{background:var(--paper);border:1px solid var(--line);border-radius:var(--r);padding:20px;box-shadow:var(--shadow-sm)}
 .card+.card{margin-top:16px}
 .grid{display:grid;gap:14px}
 .g2{grid-template-columns:1fr 1fr}.g3{grid-template-columns:repeat(3,1fr)}.g4{grid-template-columns:repeat(4,1fr)}
@@ -220,6 +220,7 @@ details.acc .acc-body{padding:0 18px 18px}
 .dstrip-day.future{opacity:.4}
 .dstrip-day .pipe{position:absolute;top:6px;right:6px;width:6px;height:6px;border-radius:50%}
 .dstrip-day .goalflag{position:absolute;top:3px;left:5px;font-size:.7rem}
+.dstrip-day .tagbar{position:absolute;left:18%;right:18%;bottom:2px;height:3px;border-radius:3px}
 @media(max-width:560px){.dstrip-day .dd{font-size:1.05rem}.dstrip-day .dn{font-size:.6rem}}
 
 /* ── week grid (spreadsheet) ── */
@@ -240,6 +241,37 @@ table.weekgrid input.gnum:focus{background:var(--green-bg)}
 .gcheck.rest{font-size:.9rem}
 .gcheck.rest.on{background:var(--blue);border-color:var(--blue);color:#fff}
 .gcheck.excused{background:var(--paper2);border-color:var(--line);color:var(--muted);cursor:default}
+
+/* ── check-in ── */
+.ci-badge{display:inline-block;min-width:8px;height:8px;background:var(--red);border-radius:50%;margin-left:5px;vertical-align:middle;box-shadow:0 0 0 3px var(--red-bg)}
+.ci-tab{font-family:'Oswald';font-weight:600;font-size:.8rem;letter-spacing:.03em;border:1px solid var(--line2);background:var(--paper);color:var(--ink2);padding:9px 16px;border-radius:30px;cursor:pointer;transition:all var(--t)}
+.ci-tab.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.ci-slots{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+@media(max-width:600px){.ci-slots{grid-template-columns:1fr 1fr}}
+.ci-slot{position:relative;border:1.5px dashed var(--line2);border-radius:12px;aspect-ratio:3/4;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;overflow:hidden;background:var(--paper2);transition:border var(--t)}
+.ci-slot:hover{border-color:var(--accent)}
+.ci-slot.filled{border-style:solid;border-color:var(--green)}
+.ci-slot img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.ci-slot .ci-cap{position:absolute;bottom:0;left:0;right:0;background:rgba(20,18,16,.7);color:#fff;font-size:.68rem;font-family:'Oswald';font-weight:600;letter-spacing:.05em;text-transform:uppercase;padding:4px;text-align:center;z-index:2}
+.ci-slot .ci-ic{font-size:1.4rem;color:var(--muted)}
+.ci-slot .ci-up{position:absolute;top:5px;right:5px;background:var(--red);color:#fff;border:none;width:22px;height:22px;border-radius:50%;cursor:pointer;font-size:.85rem;z-index:3;display:none}
+.ci-slot.filled .ci-up{display:block}
+.ci-sel{width:100%;border:1px solid var(--line2);border-radius:9px;padding:10px 12px;font-family:inherit;font-size:.95rem;background:var(--bg);color:var(--ink)}
+.ci-card{border:1px solid var(--line);border-radius:14px;padding:16px;background:var(--paper);box-shadow:var(--shadow-sm);margin-bottom:14px}
+.ci-card .ci-row{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:10px}
+@media(max-width:600px){.ci-card .ci-row{grid-template-columns:1fr 1fr}}
+/* journey strip scrollable row */
+#journeyStrip{scrollbar-width:thin;scrollbar-color:var(--line2) transparent}
+#journeyStrip::-webkit-scrollbar{height:4px}
+#journeyStrip::-webkit-scrollbar-track{background:transparent}
+#journeyStrip::-webkit-scrollbar-thumb{background:var(--line2);border-radius:2px}
+.ci-thumb{aspect-ratio:3/4;border-radius:9px;overflow:hidden;background:var(--paper2);position:relative;cursor:pointer}
+.ci-thumb img{width:100%;height:100%;object-fit:cover}
+.ci-thumb .lbl{position:absolute;bottom:0;left:0;right:0;background:rgba(20,18,16,.65);color:#fff;font-size:.6rem;text-align:center;padding:2px;text-transform:uppercase;letter-spacing:.04em}
+.cmp-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.lightbox{position:fixed;inset:0;background:rgba(10,8,6,.92);z-index:200;display:none;align-items:center;justify-content:center;padding:20px}
+.lightbox.show{display:flex}
+.lightbox img{max-width:100%;max-height:92vh;border-radius:8px}
 .rowgroup-h td{background:var(--paper2);font-family:'Oswald';font-weight:600;font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);text-align:left;padding:6px 11px;position:sticky;left:0}
 .measure-toggle{cursor:pointer;user-select:none}
 
@@ -253,6 +285,30 @@ table.weekgrid input.gnum:focus{background:var(--green-bg)}
 .drawer button.dlink{display:block;width:100%;text-align:left;border:none;background:none;font-family:'DM Sans';font-size:.92rem;color:var(--ink2);padding:9px 10px;border-radius:8px;cursor:pointer}
 .drawer button.dlink.on{background:var(--accent-soft);color:var(--accent);font-weight:600}
 .drawer .dsearch{width:100%;border:1px solid var(--line2);border-radius:8px;padding:9px 12px;font-family:inherit;font-size:.88rem;outline:none}
+
+/* v2 daily command surface */
+.command{
+  margin-top:18px;background:#17191b;color:#f8f4eb;border-radius:12px;padding:18px;border:1px solid rgba(255,255,255,.08);
+  box-shadow:var(--shadow);display:grid;grid-template-columns:1.1fr 1.4fr .9fr;gap:14px;align-items:stretch
+}
+.command .panel{background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.08);border-radius:9px;padding:14px}
+.command .eyebrow{font-family:'Oswald';font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;color:#bdb5a6;margin-bottom:6px}
+.command .big{font-family:'Fraunces',serif;font-size:2.1rem;font-weight:650;line-height:1}
+.command .sub{font-size:.82rem;color:#cbc3b6;margin-top:5px}
+.command .metricline{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.command .mini{border-left:2px solid rgba(255,255,255,.16);padding-left:9px}
+.command .mini b{display:block;font-family:'Oswald';font-size:.68rem;letter-spacing:.06em;text-transform:uppercase;color:#d8d0c1}
+.command .mini span{display:block;font-size:.92rem;color:#fff;margin-top:2px;white-space:nowrap}
+.command .miss{display:flex;flex-wrap:wrap;gap:7px;margin-top:8px}
+.command .miss span{font-size:.75rem;font-weight:700;background:#f8f4eb;color:#17191b;border-radius:999px;padding:4px 9px}
+.command .miss span.done{background:rgba(47,118,82,.18);color:#d6f0df;border:1px solid rgba(214,240,223,.25)}
+.command .focus{font-family:'Fraunces',serif;font-size:1.05rem;line-height:1.22}
+.quiet-note{font-size:.78rem;color:var(--muted);margin-top:8px}
+@media(max-width:860px){.command{grid-template-columns:1fr}.command .metricline{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:520px){
+  .subnav{top:96px}.command{padding:14px}.command .metricline{grid-template-columns:1fr 1fr}.command .big{font-size:1.75rem}
+  .seg button{padding:7px 13px}.menu-btn{display:block}.tb-inner{padding-left:56px;padding-right:12px}
+}
 </style>
 </head>
 <body>
@@ -268,9 +324,9 @@ table.weekgrid input.gnum:focus{background:var(--green-bg)}
     </div>
     <div class="creed-line">NEVER BACK DOWN · ADARSH · <span id="dayCountTop">DAY —</span></div>
     <div class="seg">
-      <button class="on" data-sec="fitness" onclick="setSec('fitness')">🏋️ Fitness</button>
+      <button data-sec="fitness" onclick="setSec('fitness')">🏋️ Fitness</button>
       <button data-sec="health" onclick="setSec('health')">🩺 Health</button>
-      <button data-sec="tracker" onclick="setSec('tracker')">📓 Tracker</button>
+      <button class="on" data-sec="tracker" onclick="setSec('tracker')">📓 Tracker</button>
     </div>
   </div>
 </div>
@@ -278,7 +334,7 @@ table.weekgrid input.gnum:focus{background:var(--green-bg)}
 <!-- sub-nav chips -->
 <div class="subnav">
   <div class="subnav-inner">
-    <div class="chip-group show" data-for="fitness">
+    <div class="chip-group" data-for="fitness">
       <button class="chip on" data-p="fit-home">Home</button>
       <button class="chip" data-p="fit-progress">Progress</button>
       <button class="chip" data-p="fit-compliance">Compliance</button>
@@ -296,9 +352,10 @@ table.weekgrid input.gnum:focus{background:var(--green-bg)}
       <button class="chip" data-p="h-meds">Meds &amp; Stack</button>
       <button class="chip" data-p="h-actions">Action Items</button>
     </div>
-    <div class="chip-group" data-for="tracker">
+    <div class="chip-group show" data-for="tracker">
       <button class="chip on" data-p="t-log">Log the Week</button>
       <button class="chip" data-p="t-history">History &amp; Stats</button>
+      <button class="chip" data-p="t-checkin">Check-In <span id="checkinBadge" class="ci-badge" style="display:none"></span></button>
     </div>
   </div>
 </div>
@@ -325,8 +382,9 @@ table.weekgrid input.gnum:focus{background:var(--green-bg)}
   <button class="dlink" data-p="h-meds">Meds &amp; Stack</button>
   <button class="dlink" data-p="h-actions">Action Items</button>
   <h4>📓 Tracker</h4>
-  <button class="dlink" data-p="t-log">Log Today</button>
-  <button class="dlink" data-p="t-history">History</button>
+  <button class="dlink" data-p="t-log">Log the Week</button>
+  <button class="dlink" data-p="t-history">History &amp; Stats</button>
+  <button class="dlink" data-p="t-checkin">Check-In</button>
 </aside>
 
 <div class="wrap">
@@ -334,7 +392,7 @@ table.weekgrid input.gnum:focus{background:var(--green-bg)}
 <!-- ══════════ FITNESS ══════════ -->
 
 <!-- FIT HOME -->
-<section class="page active" id="fit-home">
+<section class="page" id="fit-home">
   <div class="banner">
     <div class="bk">War Mode · <span id="dayCountBanner">Day —</span> &amp; counting</div>
     <h2>The scale stayed still. I didn't.</h2>
@@ -881,35 +939,27 @@ table.weekgrid input.gnum:focus{background:var(--green-bg)}
 <!-- ══════════ TRACKER ══════════ -->
 
 <!-- LOG (week grid) -->
-<section class="page" id="t-log">
+<section class="page active" id="t-log">
   <div class="kicker" style="display:flex;align-items:center;gap:12px">Tracker · Weekly Log <span id="syncBadge" class="pill p-amber" style="margin-left:auto">⟳ Connecting…</span></div>
   <h1 class="title">Log the Week</h1>
-  <p class="lede">Log weight in the morning, fill the rest whenever you get time — every cell saves on its own, nothing has to be done at once. Numbers auto-tick their habit (sleep ≥8h, protein ≥180g, calories &lt;2000, steps ≥10k). Mark 🌙 Rest day (e.g. Sundays) and gym/cardio/steps won't count against your score.</p>
+  <p class="lede">A calmer daily cockpit: see today's state first, then log the week below. Every cell still saves on its own and the existing cloud sync stays untouched.</p>
 
-  <!-- editable phase goals (time-versioned) -->
-  <div class="card" style="margin-top:18px;padding:16px 18px">
-    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
-      <span style="font-family:'Oswald';font-weight:600;font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)">Current Goal</span>
-      <span id="goalSummary" class="subtle" style="font-size:.82rem"></span>
-      <button onclick="toggleGoals()" id="goalEditBtn" style="margin-left:auto;background:var(--paper2);border:1px solid var(--line2);border-radius:8px;padding:6px 14px;font-family:'Oswald';font-weight:600;font-size:.72rem;letter-spacing:.04em;text-transform:uppercase;cursor:pointer;color:var(--ink2)">Change</button>
+  <div class="command" id="todayCommand" aria-live="polite">
+    <div class="panel">
+      <div class="eyebrow">Today</div>
+      <div class="big" id="cmdScore">--%</div>
+      <div class="sub" id="cmdDate">Loading today...</div>
+      <div class="sub" id="cmdPhase"></div>
     </div>
-    <div id="goalEditor" style="display:none;margin-top:14px">
-      <div class="note info" style="margin-bottom:14px"><span class="ni">i</span><div>Set a goal that applies <b>from a chosen date forward</b>. Past days keep the goal that was active then — changing this <b>never re-scores history</b>.</div></div>
-      <div class="metric-grid">
-        <div class="metric"><label>Applies from (date)</label><input type="date" id="g_from"></div>
-        <div class="metric"><label>Phase name</label><input type="text" id="g_phase" placeholder="e.g. Boss 2B — Lean Gain"></div>
-        <div class="metric"><label>Protein goal (g)</label><input type="number" id="g_protein" step="1"></div>
-        <div class="metric"><label>Calorie ceiling (kcal)</label><input type="number" id="g_cal" step="10"></div>
-        <div class="metric"><label>Sleep goal (hrs)</label><input type="number" id="g_sleep" step="0.5"></div>
-        <div class="metric"><label>Steps goal</label><input type="number" id="g_steps" step="500"></div>
-        <div class="metric"><label>Water goal (L)</label><input type="number" id="g_water" step="0.5"></div>
-      </div>
-      <div style="display:flex;gap:10px;margin-top:12px;align-items:center;flex-wrap:wrap">
-        <button onclick="saveGoals()" style="background:var(--green);color:#fff;border:none;border-radius:9px;padding:10px 20px;font-family:'Oswald';font-weight:600;font-size:.78rem;letter-spacing:.04em;text-transform:uppercase;cursor:pointer">Save Goal Period</button>
-        <span class="subtle" style="font-size:.78rem">Days from this date onward use the new thresholds.</span>
-      </div>
-      <div class="sec-label" style="margin-top:20px">Goal history</div>
-      <div id="goalHistory"></div>
+    <div class="panel">
+      <div class="eyebrow">Vitals logged</div>
+      <div class="metricline" id="cmdMetrics"></div>
+      <div class="miss" id="cmdMissing"></div>
+    </div>
+    <div class="panel">
+      <div class="eyebrow">Next best move</div>
+      <div class="focus" id="cmdFocus">Log the first number and the system wakes up.</div>
+      <div class="sub" id="cmdNextCheckin"></div>
     </div>
   </div>
 
@@ -930,6 +980,62 @@ table.weekgrid input.gnum:focus{background:var(--green-bg)}
   </div>
 
   <div class="note info" style="margin-top:16px"><span class="ni">i</span><div><b>Saved to the cloud.</b> Every change syncs to your private Supabase database — log on your phone, see it on your laptop. The <b>☁ Synced</b> badge confirms it; if it ever says <b>Local only</b>, you're offline and it'll sync when you're back. Numbers auto-tick their habit; manual toggles still work for water, gym, cardio, omega-3, thyroid. Measurements are in the expandable row — only fill when you measure.</div></div>
+
+  <!-- Goal + Context, side by side, below the tracker -->
+  <div class="grid g2 stack" style="margin-top:18px;align-items:start">
+
+    <!-- Current Goal -->
+    <details class="acc" id="goalAcc">
+      <summary>🎯 Current Goal <span id="goalSummaryMini" class="subtle" style="font-weight:400;font-size:.78rem;margin-left:6px"></span><span class="ac">＋</span></summary>
+      <div class="acc-body">
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px">
+          <span id="goalSummary" class="subtle" style="font-size:.82rem"></span>
+          <button onclick="toggleGoals()" id="goalEditBtn" style="margin-left:auto;background:var(--paper2);border:1px solid var(--line2);border-radius:8px;padding:6px 14px;font-family:'Oswald';font-weight:600;font-size:.72rem;letter-spacing:.04em;text-transform:uppercase;cursor:pointer;color:var(--ink2)">Change</button>
+        </div>
+        <div id="goalEditor" style="display:none">
+          <div class="note info" style="margin-bottom:14px"><span class="ni">i</span><div>Set a goal that applies <b>from a chosen date forward</b>. Past days keep the goal active then — this <b>never re-scores history</b>.</div></div>
+          <div class="metric-grid">
+            <div class="metric"><label>Applies from (date)</label><input type="date" id="g_from"></div>
+            <div class="metric"><label>Phase name</label><input type="text" id="g_phase" placeholder="e.g. Boss 2B — Lean Gain"></div>
+            <div class="metric"><label>Protein goal (g)</label><input type="number" id="g_protein" step="1"></div>
+            <div class="metric"><label>Calorie ceiling (kcal)</label><input type="number" id="g_cal" step="10"></div>
+            <div class="metric"><label>Sleep goal (hrs)</label><input type="number" id="g_sleep" step="0.5"></div>
+            <div class="metric"><label>Steps goal</label><input type="number" id="g_steps" step="500"></div>
+            <div class="metric"><label>Water goal (L)</label><input type="number" id="g_water" step="0.5"></div>
+          </div>
+          <div style="display:flex;gap:10px;margin-top:12px;align-items:center;flex-wrap:wrap">
+            <button onclick="saveGoals()" style="background:var(--green);color:#fff;border:none;border-radius:9px;padding:10px 20px;font-family:'Oswald';font-weight:600;font-size:.78rem;letter-spacing:.04em;text-transform:uppercase;cursor:pointer">Save Goal Period</button>
+            <span class="subtle" style="font-size:.78rem">Days from this date onward use the new thresholds.</span>
+          </div>
+          <div class="sec-label" style="margin-top:20px">Goal history</div>
+          <div id="goalHistory"></div>
+        </div>
+      </div>
+    </details>
+
+    <!-- Context Tags -->
+    <details class="acc" id="tagAcc">
+      <summary>📍 Context Tags <span class="subtle" style="font-weight:400;font-size:.78rem;margin-left:6px">Home · Travel · etc</span><span class="ac">＋</span></summary>
+      <div class="acc-body">
+        <p class="subtle" style="font-size:.82rem;margin-bottom:10px">Mark stretches of days. Informational only — never affects your score.</p>
+        <div class="metric-grid">
+          <div class="metric"><label>From date</label><input type="date" id="tag_from"></div>
+          <div class="metric"><label>To date</label><input type="date" id="tag_to"></div>
+          <div class="metric"><label>Tag</label>
+            <select id="tag_sel" onchange="tagSelChange()" style="width:100%;border:1px solid var(--line2);border-radius:9px;padding:10px 12px;font-family:inherit;font-size:.95rem;background:var(--bg);color:var(--ink)"></select>
+          </div>
+          <div class="metric" id="tag_custom_wrap" style="display:none"><label>Custom label</label><input type="text" id="tag_custom" placeholder="e.g. Wedding trip"></div>
+        </div>
+        <div style="display:flex;gap:10px;margin-top:12px;align-items:center;flex-wrap:wrap">
+          <button onclick="applyTagRange()" style="background:var(--green);color:#fff;border:none;border-radius:9px;padding:10px 20px;font-family:'Oswald';font-weight:600;font-size:.78rem;letter-spacing:.04em;text-transform:uppercase;cursor:pointer">Apply Tag</button>
+          <button onclick="clearTagRange()" style="background:var(--paper);color:var(--red);border:1px solid var(--line2);border-radius:9px;padding:10px 18px;font-family:'Oswald';font-weight:600;font-size:.78rem;letter-spacing:.04em;text-transform:uppercase;cursor:pointer">Clear in range</button>
+        </div>
+        <div class="sec-label" style="margin-top:18px">Tagged periods</div>
+        <div id="tagHistory"></div>
+      </div>
+    </details>
+
+  </div>
 </section>
 
 <!-- HISTORY -->
@@ -951,6 +1057,14 @@ table.weekgrid input.gnum:focus{background:var(--green-bg)}
 
   <div class="card" style="margin-top:16px"><div style="font-family:'Oswald';font-weight:600">Score trend by month</div><div class="chart-box sm"><canvas id="cMonthScore"></canvas></div></div>
 
+  <div class="sec-label">Performance by context</div>
+  <p class="subtle" style="margin-top:-6px;margin-bottom:12px">How your numbers held up Home vs Travel vs other tagged stretches. This is where you see what schedule did to your discipline.</p>
+  <div class="tscroll"><table id="ctxTable">
+    <thead><tr><th>Context</th><th>Days</th><th>Avg score</th><th>Avg weight</th><th>Avg protein</th><th>Protein hit</th><th>Gym days</th><th>Avg sleep</th></tr></thead>
+    <tbody id="ctxBody"></tbody>
+  </table></div>
+  <div id="ctxEmpty" class="subtle" style="padding:14px 0;display:none">No tagged days yet. Tag some dates on the Log page to unlock this.</div>
+
   <div class="sec-label">All logged days</div>
   <div style="display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap">
     <button onclick="exportCSV()" style="background:var(--ink);color:#fff;border:none;border-radius:9px;padding:10px 18px;font-family:'Oswald';font-weight:600;font-size:.82rem;letter-spacing:.04em;text-transform:uppercase;cursor:pointer">⬇ Export CSV</button>
@@ -966,16 +1080,85 @@ table.weekgrid input.gnum:focus{background:var(--green-bg)}
   <div id="histEmpty" class="subtle" style="text-align:center;padding:40px 0;display:none">No days logged yet.</div>
 </section>
 
+<!-- CHECK-IN -->
+<section class="page" id="t-checkin">
+  <div class="kicker" style="display:flex;align-items:center;gap:12px">Tracker · Progress Photos <span id="checkinSync" class="pill p-amber" style="margin-left:auto">⟳ Connecting…</span></div>
+  <h1 class="title">Check-In</h1>
+  <p class="lede">Snap front, back, side &amp; legs whenever you remember. Full quality, stored privately. Compare any two dates to see the change.</p>
+
+  <!-- view switch -->
+  <div style="display:flex;gap:7px;margin-top:18px;flex-wrap:wrap">
+    <button class="ci-tab on" data-civ="new" onclick="ciView('new')">＋ New Check-In</button>
+    <button class="ci-tab" data-civ="journey" onclick="ciView('journey')">🎞 Journey</button>
+    <button class="ci-tab" data-civ="compare" onclick="ciView('compare')">⇄ Compare</button>
+  </div>
+
+  <!-- NEW -->
+  <div id="civ-new" class="civ">
+    <div class="card" style="margin-top:16px">
+      <div class="metric-grid">
+        <div class="metric"><label>Check-in date</label><input type="date" id="ci_date" onchange="ciDateChange()"></div>
+        <div class="metric"><label>Weight (kg)</label><input type="number" step="0.1" id="ci_weight"></div>
+      </div>
+      <div class="metric-grid" style="margin-top:12px">
+        <div class="metric"><label>Waist ″</label><input type="number" step="0.1" id="ci_waist"></div>
+        <div class="metric"><label>Tummy ″</label><input type="number" step="0.1" id="ci_tummy"></div>
+        <div class="metric"><label>Chest ″</label><input type="number" step="0.1" id="ci_chest"></div>
+        <div class="metric"><label>Bicep ″</label><input type="number" step="0.1" id="ci_bicep"></div>
+      </div>
+      <div id="ci_pulled" class="subtle" style="font-size:.78rem;margin-top:8px"></div>
+
+      <div class="sec-label">Photos — tap to upload</div>
+      <div class="ci-slots" id="ciSlots"></div>
+
+      <textarea id="ci_note" rows="2" placeholder="Optional note — how you felt, conditions, etc." style="width:100%;border:1px solid var(--line2);border-radius:9px;padding:11px;font-family:inherit;font-size:.9rem;background:var(--bg);color:var(--ink);resize:vertical;margin-top:14px"></textarea>
+
+      <div style="display:flex;align-items:center;gap:12px;margin-top:16px;flex-wrap:wrap">
+        <button onclick="saveCheckin()" id="ciSaveBtn" style="background:var(--green);color:#fff;border:none;border-radius:10px;padding:12px 26px;font-family:'Oswald';font-weight:600;font-size:.88rem;letter-spacing:.05em;text-transform:uppercase;cursor:pointer">Save Check-In</button>
+        <span id="ciSaveMsg" style="font-size:.85rem;color:var(--green);font-weight:600;opacity:0;transition:opacity .3s">✓ Saved</span>
+      </div>
+    </div>
+    <div class="note info" style="margin-top:16px"><span class="ni">i</span><div>Photos upload at full iPhone quality to your private Supabase storage. Weight &amp; measurements auto-fill from that day's log if you've recorded them — otherwise just type them here.</div></div>
+  </div>
+
+  <!-- JOURNEY -->
+  <div id="civ-journey" class="civ" style="display:none">
+    <div style="margin-top:18px">
+      <!-- angle toggle -->
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px" id="journeyAngleTabs"></div>
+      <!-- horizontal filmstrip -->
+      <div id="journeyStrip" style="overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:8px"></div>
+      <div id="journeyEmpty" class="subtle" style="text-align:center;padding:50px 0;display:none">No check-ins yet. Add your first one above.</div>
+      <!-- download -->
+      <div style="margin-top:20px;display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+        <button onclick="downloadAllPhotos()" id="dlAllBtn" style="background:var(--ink);color:#fff;border:none;border-radius:9px;padding:11px 20px;font-family:'Oswald';font-weight:600;font-size:.82rem;letter-spacing:.04em;text-transform:uppercase;cursor:pointer">⬇ Download All Photos</button>
+        <span id="dlProgress" style="font-size:.82rem;color:var(--green);font-weight:600;display:none"></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- COMPARE -->
+  <div id="civ-compare" class="civ" style="display:none">
+    <div class="card" style="margin-top:16px">
+      <div class="metric-grid">
+        <div class="metric"><label>Date A (earlier)</label><select id="cmpA" onchange="renderCompare()" class="ci-sel"></select></div>
+        <div class="metric"><label>Date B (later)</label><select id="cmpB" onchange="renderCompare()" class="ci-sel"></select></div>
+      </div>
+    </div>
+    <div id="cmpResult" style="margin-top:16px"></div>
+  </div>
+</section>
+
 </div>
 
 <script>
 const PAGES={
   'fit-home':'fitness','fit-progress':'fitness','fit-compliance':'fitness','fit-plan':'fitness','fit-training':'fitness','fit-nutrition':'fitness','fit-sleep':'fitness',
   'h-home':'health','h-thyroid':'health','h-lipids':'health','h-vitamins':'health','h-bloodwork':'health','h-meds':'health','h-actions':'health',
-  't-log':'tracker','t-history':'tracker'
+  't-log':'tracker','t-history':'tracker','t-checkin':'tracker'
 };
 const HOME={fitness:'fit-home',health:'h-home',tracker:'t-log'};
-let curSec='fitness';
+let curSec='tracker';
 const charts={};
 
 function setSec(sec){
@@ -999,6 +1182,7 @@ function go(id){
   buildCharts(id);
   if(id==='t-log')renderWeek();
   if(id==='t-history')renderHistory();
+  if(id==='t-checkin')renderCheckin();
 }
 document.querySelectorAll('.chip,.dlink,.navcard').forEach(el=>el.addEventListener('click',()=>go(el.dataset.p)));
 
@@ -1024,15 +1208,17 @@ document.getElementById('search').addEventListener('input',function(){
 
 /* ── charts ── */
 const cssv=k=>getComputedStyle(document.documentElement).getPropertyValue(k).trim();
-Chart.defaults.font.family="'DM Sans',sans-serif";Chart.defaults.font.size=11;
+if(window.Chart){Chart.defaults.font.family="'DM Sans',sans-serif";Chart.defaults.font.size=11;}
 const gridc='rgba(0,0,0,0.05)';
 function axes(extra={}){return{x:{grid:{color:gridc},ticks:{color:cssv('--muted')}},y:Object.assign({grid:{color:gridc},ticks:{color:cssv('--muted')}},extra)};}
 function line(id,labels,series,opt={}){
+  if(!window.Chart)return;
   const el=document.getElementById(id);if(!el)return;if(charts[id])charts[id].destroy();
   charts[id]=new Chart(el,{type:'line',data:{labels,datasets:series.map(s=>({label:s.l,data:s.d,borderColor:s.c,backgroundColor:s.c+'1e',borderWidth:2.6,tension:.34,fill:s.fill!==false,pointRadius:3.5,pointBackgroundColor:s.c,spanGaps:true}))},
     options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:series.length>1,position:'bottom',labels:{usePointStyle:true,pointStyle:'circle',padding:14,color:cssv('--ink2')}},tooltip:{backgroundColor:cssv('--ink'),padding:9,cornerRadius:7}},scales:axes(opt.y||{})}});
 }
 function bars(id,labels,series,opt={}){
+  if(!window.Chart)return;
   const el=document.getElementById(id);if(!el)return;if(charts[id])charts[id].destroy();
   charts[id]=new Chart(el,{type:'bar',data:{labels,datasets:series.map(s=>({label:s.l,data:s.d,backgroundColor:s.c,borderRadius:5,maxBarThickness:opt.thick||40}))},
     options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:series.length>1,position:'bottom',labels:{usePointStyle:true,pointStyle:'circle',padding:14,color:cssv('--ink2')}},tooltip:{backgroundColor:cssv('--ink'),padding:9,cornerRadius:7,callbacks:opt.pct?{label:c=>c.dataset.label+': '+c.parsed.y+'%'}:{}}},scales:axes(opt.y||{})}});
@@ -1076,6 +1262,17 @@ const START_DATE='2026-01-08';   // War Mode day 1
 // A day is always judged by the period active ON that day — changing a goal never alters the past.
 const DEFAULT_PERIODS=[{from:'2026-01-08',phase:'Boss 1 & 2A — The Cut',protein:180,cal:2000,sleep:8,steps:10000,water:4}];
 let PERIODS=JSON.parse(JSON.stringify(DEFAULT_PERIODS));
+
+// Context tags — purely informational, never affect score. Stored per-day as d.tag (key).
+const TAGS=[
+  {k:'home',  label:'🏠 Home',  color:'#3d7a4c'},
+  {k:'travel',label:'✈️ Travel',color:'#2d597f'},
+  {k:'event', label:'🎉 Event/Social',color:'#a3331d'},
+  {k:'sick',  label:'🤒 Sick',  color:'#b07914'},
+  {k:'vacation',label:'🌴 Vacation',color:'#1f7a6f'},
+  {k:'other', label:'📍 Other', color:'#5c564b'}
+];
+function tagDef(k){return TAGS.find(t=>t.k===k);}
 
 // resolve which goal applied on a given date
 function goalOn(dt){
@@ -1235,18 +1432,68 @@ function scoreFor(d){
   return total?{hit,total,pct:Math.round(hit/total*100)}:{hit:0,total:0,pct:0};
 }
 function scoreColor(p){return p>=78?'p-green':p>=50?'p-amber':'p-red';}
+function htmlSafe(v){return String(v==null?'':v).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));}
+function displayNum(v,unit=''){return typeof v==='number'&&!Number.isNaN(v)?(Number.isInteger(v)?v:v.toFixed(1))+unit:'--';}
+function renderTodayCommand(){
+  const root=document.getElementById('todayCommand'); if(!root)return;
+  const dt=todayStr(); const d=DB[dt]||{}; const g=goalOn(dt); const s=scoreFor(d);
+  const score=document.getElementById('cmdScore'); if(score)score.textContent=(DB[dt]?s.pct:'--')+'%';
+  const date=document.getElementById('cmdDate'); if(date)date.textContent=fmtDate(dt)+' · '+(DB[dt]?'logged':'not started');
+  const phase=document.getElementById('cmdPhase'); if(phase)phase.textContent=g.phase||'Current phase';
+  const metrics=[
+    ['Weight',displayNum(d.weight,'kg')],
+    ['Protein',displayNum(d.proteinAmt,'g')],
+    ['Calories',displayNum(d.calories)],
+    ['Sleep',displayNum(d.sleepHrs,'h')],
+    ['Steps',displayNum(d.steps)]
+  ];
+  const m=document.getElementById('cmdMetrics');
+  if(m)m.innerHTML=metrics.map(([k,v])=>`<div class="mini"><b>${k}</b><span>${v}</span></div>`).join('');
+  const missing=HABITS.filter(h=>{
+    if(d.rest&&['gym','cardio','steps10k'].includes(h.k))return false;
+    return !d[h.k];
+  }).map(h=>h.lbl(g).replace(/^[^\w]+/,'').trim());
+  const miss=document.getElementById('cmdMissing');
+  if(miss)miss.innerHTML=missing.length?missing.slice(0,5).map(x=>`<span>${htmlSafe(x)}</span>`).join(''):`<span class="done">All counted habits done</span>`;
+  let focus='Start with weight, protein, calories, sleep, or steps.';
+  if(DB[dt]){
+    if(!d.protein)focus='Protein is the highest-leverage miss. Lock the meal plan before the day gets away.';
+    else if(!d.under2k)focus='Calories decide the cut today. Keep the ceiling visible.';
+    else if(!d.sleep8)focus='Recovery is the weak link today. Protect the night.';
+    else if(!d.steps10k&&!d.rest)focus='Movement is the remaining easy win. Finish the steps.';
+    else if(!d.thyroid)focus='Medication is not optional data. Mark thyroid if it is done.';
+    else focus='Hold the line. Today is clean enough to become boring.';
+  }
+  const f=document.getElementById('cmdFocus'); if(f)f.textContent=focus;
+  const ci=document.getElementById('cmdNextCheckin');
+  if(ci){
+    const n=daysSinceLastCheckin();
+    ci.textContent=n===Infinity?'No check-in yet. Add the first photo set.':(n>=7?`Check-in due: last one was ${n} days ago.`:`Photo check-in: ${7-n} day${7-n===1?'':'s'} until due.`);
+  }
+}
 
 /* ---- WEEK GRID ---- */
 function renderWeek(){
   if(!weekStart)weekStart=mondayOf(todayStr());
   paintGoalSummary();
+  setupTagPanel();
+  renderGoalHistory();
+  renderTagHistory();
   renderStrip();
   renderGrid();
+  renderTodayCommand();
+}
+function setupTagPanel(){
+  const sel=document.getElementById('tag_sel'); if(sel&&!sel.dataset.built){sel.innerHTML=TAGS.map(t=>`<option value="${t.k}">${t.label}</option>`).join('');sel.dataset.built='1';}
+  const tf=document.getElementById('tag_from'),tt=document.getElementById('tag_to');
+  if(tf&&!tf.value)tf.value=weekStart||todayStr();
+  if(tt&&!tt.value)tt.value=weekStart?addDays(weekStart,6):todayStr();
 }
 function paintGoalSummary(){
-  const el=document.getElementById('goalSummary'); if(!el)return;
   const g=curGoal();
-  el.innerHTML=`<b style="color:var(--ink)">${g.phase}</b> · ${g.protein}g protein · &lt;${g.cal} kcal · ${g.sleep}h sleep · ${(g.steps/1000)}k steps`;
+  const txt=`${g.protein}g · &lt;${g.cal}kcal · ${g.sleep}h · ${(g.steps/1000)}k`;
+  const el=document.getElementById('goalSummary'); if(el)el.innerHTML=`<b style="color:var(--ink)">${g.phase}</b> · ${g.protein}g protein · &lt;${g.cal} kcal · ${g.sleep}h sleep · ${(g.steps/1000)}k steps`;
+  const mini=document.getElementById('goalSummaryMini'); if(mini)mini.innerHTML='· '+g.phase;
 }
 function renderGoalHistory(){
   const el=document.getElementById('goalHistory'); if(!el)return;
@@ -1296,7 +1543,7 @@ function saveGoals(){
   // re-evaluate auto-ticks ONLY for days on/after this date (past periods untouched)
   Object.keys(DB).forEach(dt=>{ if(dt>=from) applyAuto(DB[dt],dt); });
   persist();
-  paintGoalSummary();renderGoalHistory();renderGrid();renderStrip();flashSaved();
+  paintGoalSummary();renderGoalHistory();renderGrid();renderStrip();renderTodayCommand();flashSaved();
 }
 function deletePeriod(i){
   if(PERIODS.length<=1)return;
@@ -1305,7 +1552,83 @@ function deletePeriod(i){
   // re-evaluate everything since a boundary moved
   Object.keys(DB).forEach(dt=>applyAuto(DB[dt],dt));
   persist();
-  paintGoalSummary();renderGoalHistory();renderGrid();renderStrip();
+  paintGoalSummary();renderGoalHistory();renderGrid();renderStrip();renderTodayCommand();
+}
+
+/* ── Context tags (date-range, informational) ── */
+function toggleTagPanel(){ /* panel now lives inside an always-open accordion; no-op */ }
+function tagSelChange(){
+  document.getElementById('tag_custom_wrap').style.display=
+    document.getElementById('tag_sel').value==='other'?'':'none';
+}
+function rangeDates(a,b){ if(a>b){const t=a;a=b;b=t;} const out=[];let d=a;while(d<=b){out.push(d);d=addDays(d,1);}return out; }
+function applyTagRange(){
+  const from=document.getElementById('tag_from').value, to=document.getElementById('tag_to').value;
+  if(!from||!to){alert('Pick both dates.');return;}
+  const k=document.getElementById('tag_sel').value;
+  const custom=document.getElementById('tag_custom').value.trim();
+  rangeDates(from,to).forEach(dt=>{
+    const d=ensure(dt); d.tag=k; if(k==='other'&&custom)d.tagName=custom; else delete d.tagName;
+    persist(dt);
+  });
+  renderTagHistory();renderGrid();renderStrip();flashSaved();
+}
+function clearTagRange(){
+  const from=document.getElementById('tag_from').value, to=document.getElementById('tag_to').value;
+  if(!from||!to){alert('Pick both dates.');return;}
+  rangeDates(from,to).forEach(dt=>{
+    if(DB[dt]){delete DB[dt].tag;delete DB[dt].tagName;if(Object.keys(DB[dt]).length===0)delete DB[dt];persist(dt);}
+  });
+  renderTagHistory();renderGrid();renderStrip();flashSaved();
+}
+function tagLabelFor(d){ if(!d||!d.tag)return''; const def=tagDef(d.tag); const base=def?def.label:'📍'; return (d.tag==='other'&&d.tagName)?('📍 '+d.tagName):base; }
+// group consecutive same-tag days into spans for the history list
+function renderTagHistory(){
+  const el=document.getElementById('tagHistory'); if(!el)return;
+  const dts=Object.keys(DB).filter(dt=>DB[dt].tag).sort();
+  if(!dts.length){el.innerHTML='<p class="subtle">No tagged days yet.</p>';return;}
+  const spans=[];let cur=null;
+  dts.forEach(dt=>{
+    const key=DB[dt].tag+(DB[dt].tagName||'');
+    if(cur&&cur.key===key&&addDays(cur.to,1)===dt){cur.to=dt;}
+    else{cur={key,tag:DB[dt].tag,name:DB[dt].tagName,from:dt,to:dt};spans.push(cur);}
+  });
+  el.innerHTML=spans.reverse().map((s,i)=>{
+    const def=tagDef(s.tag); const c=def?def.color:'#5c564b';
+    const lab=(s.tag==='other'&&s.name)?('📍 '+s.name):(def?def.label:'📍');
+    const range=s.from===s.to?fmtDate(s.from):`${fmtDate(s.from)} → ${fmtDate(s.to)}`;
+    const days=rangeDates(s.from,s.to).length;
+    return `<div style="display:flex;align-items:center;gap:8px;padding:9px 0;border-bottom:1px solid var(--line);flex-wrap:wrap">
+      <span class="pill" style="background:${c}1f;color:${c};flex-shrink:0">${lab}</span>
+      <span style="flex:1;min-width:120px;font-size:.85rem">${range}</span>
+      <span class="subtle" style="font-size:.78rem">${days}d</span>
+      <button onclick="editTagSpan('${s.from}','${s.to}','${s.tag}','${(s.name||'').replace(/'/g,"\\'")}')" style="background:none;border:none;color:var(--blue);cursor:pointer;font-size:.78rem;font-weight:600">Edit</button>
+      <button onclick="deleteTagSpan('${s.from}','${s.to}')" style="background:none;border:none;color:var(--red);cursor:pointer;font-size:.78rem;font-weight:600">Delete</button>
+    </div>`;
+  }).join('');
+}
+function editTagSpan(from,to,tag,name){
+  // load this span into the editor fields for re-applying / changing
+  document.getElementById('tag_from').value=from;
+  document.getElementById('tag_to').value=to;
+  const sel=document.getElementById('tag_sel'); if(sel)sel.value=tag;
+  tagSelChange();
+  if(tag==='other')document.getElementById('tag_custom').value=name||'';
+  // make sure the accordion is open and scroll the editor into view
+  const acc=document.getElementById('tagAcc'); if(acc)acc.open=true;
+  document.getElementById('tag_from').scrollIntoView({behavior:'smooth',block:'center'});
+}
+function deleteTagSpan(from,to){
+  if(!confirm('Remove the tag from '+fmtDate(from)+(from===to?'':' → '+fmtDate(to))+'?'))return;
+  rangeDates(from,to).forEach(dt=>{
+    if(DB[dt]&&DB[dt].tag){
+      delete DB[dt].tag;delete DB[dt].tagName;
+      const empty=Object.keys(DB[dt]).length===0;
+      if(empty)delete DB[dt];
+      try{persist(dt);}catch(e){console.warn('persist failed',dt,e);}
+    }
+  });
+  renderTagHistory();renderGrid();renderStrip();flashSaved();
 }
 function renderStrip(){
   const dates=weekDates();const t=todayStr();
@@ -1316,7 +1639,9 @@ function renderStrip(){
       const future=dt>t;const has=!!DB[dt];
       const pip=has?`<span class="pipe" style="background:var(--green)"></span>`:'';
       const flag=periodStarts.has(dt)?`<span class="goalflag" title="Goal changed here">📍</span>`:'';
-      return `<div class="dstrip-day ${dt===t?'today':''} ${future?'future':''}" onclick="jumpDay('${dt}')">${pip}${flag}<div class="dn">${dowName(dt)}</div><div class="dd">${dayNum(dt)}</div><div class="dm">${monName(dt)}</div></div>`;
+      const tg=DB[dt]&&DB[dt].tag?tagDef(DB[dt].tag):null;
+      const tagbar=tg?`<span class="tagbar" style="background:${tg.color}" title="${tagLabelFor(DB[dt])}"></span>`:'';
+      return `<div class="dstrip-day ${dt===t?'today':''} ${future?'future':''}" onclick="jumpDay('${dt}')">${pip}${flag}<div class="dn">${dowName(dt)}</div><div class="dd">${dayNum(dt)}</div><div class="dm">${monName(dt)}</div>${tagbar}</div>`;
     }).join('')+`</div><button class="arw" onclick="shiftWeek(1)">›</button>`;
 }
 function shiftWeek(n){weekStart=addDays(weekStart,n*7);renderWeek();}
@@ -1333,6 +1658,13 @@ function renderGrid(){
   rows+=`<tr><td class="rowlabel">🌙 Rest day</td>`+dates.map(dt=>{
     const on=DB[dt]&&DB[dt].rest;const sun=new Date(dt+'T00:00:00').getDay()===0;
     return `<td class="daycell ${dt===t?'today-col':''}"><span class="gcheck rest ${on?'on':''}" title="${sun?'Sunday — usually rest':''}" onclick="toggleRest('${dt}')">🌙</span></td>`;
+  }).join('')+`</tr>`;
+  // CONTEXT TAG row (display only — set via the Tag dates panel)
+  rows+=`<tr><td class="rowlabel">📍 Context</td>`+dates.map(dt=>{
+    const tg=DB[dt]&&DB[dt].tag?tagDef(DB[dt].tag):null;
+    const lab=tg?(DB[dt].tag==='other'&&DB[dt].tagName?'📍':tg.label.split(' ')[0]):'';
+    const title=DB[dt]?tagLabelFor(DB[dt]):'';
+    return `<td class="daycell ${dt===t?'today-col':''}">${tg?`<span title="${title}" style="font-size:1rem">${lab}</span>`:'<span class="subtle" style="opacity:.4">·</span>'}</td>`;
   }).join('')+`</tr>`;
   // metrics group
   rows+=`<tr class="rowgroup-h"><td colspan="8">Numbers — type any field, save independently</td></tr>`;
@@ -1373,7 +1705,7 @@ function toggleRest(dt){
   const d=ensure(dt);
   if(d.rest)delete d.rest;else d.rest=1;
   if(Object.keys(d).length===0)delete DB[dt];
-  persist(dt);renderGrid();renderStrip();flashSaved();
+  persist(dt);renderGrid();renderStrip();renderTodayCommand();flashSaved();
 }
 let measOpen=false;
 function toggleMeasures(){measOpen=!measOpen;document.querySelectorAll('.measrow').forEach(r=>r.style.display=measOpen?'':'none');document.getElementById('measArrow').textContent=measOpen?'▾':'▸';}
@@ -1385,15 +1717,15 @@ function setNum(dt,k,val){
   applyAuto(d,dt);
   if(Object.keys(d).length===0)delete DB[dt];
   persist(dt);
-  renderGrid();renderStrip();flashSaved();
+  renderGrid();renderStrip();renderTodayCommand();flashSaved();
 }
 function toggleCell(dt,k){
   const d=ensure(dt);
   if(d[k])delete d[k];else d[k]=1;
   if(Object.keys(d).length===0)delete DB[dt];
-  persist(dt);renderGrid();renderStrip();flashSaved();
+  persist(dt);renderGrid();renderStrip();renderTodayCommand();flashSaved();
 }
-function saveWeek(){persist();flashSaved();}
+function saveWeek(){persist();renderTodayCommand();flashSaved();}
 function flashSaved(){const m=document.getElementById('saveMsg');if(!m)return;m.style.opacity='1';clearTimeout(window._sv);window._sv=setTimeout(()=>m.style.opacity='0',1400);}
 
 /* ---- HISTORY & MONTHLY STATS ---- */
@@ -1463,15 +1795,42 @@ function renderHistory(){
   const num=(d,k)=>`<td class="tnum">${d[k]!=null?d[k]:'—'}</td>`;
   document.getElementById('histBody').innerHTML=focusDates.map(dt=>{
     const d=DB[dt];const s=scoreFor(d);
-    return `<tr style="cursor:pointer" onclick="jumpToDay('${dt}')"><td class="mk-cell" style="white-space:nowrap">${dayNum(dt)} ${monName(dt)}${d.rest?' 🌙':''}</td>${cell(d,'thyroid')}${cell(d,'water')}${cell(d,'protein')}${cell(d,'sleep8')}${cell(d,'gym')}${cell(d,'cardio')}${cell(d,'steps10k')}${cell(d,'omega3')}${cell(d,'under2k')}${num(d,'weight')}${num(d,'proteinAmt')}${num(d,'calories')}${num(d,'sleepHrs')}${num(d,'steps')}${num(d,'puffiness')}<td><span class="score-chip ${scoreColor(s.pct)}">${s.pct}%</span></td></tr>`;
+    const tg=d.tag?tagDef(d.tag):null; const tmark=tg?` <span title="${tagLabelFor(d)}">${tg.label.split(' ')[0]}</span>`:'';
+    return `<tr style="cursor:pointer" onclick="jumpToDay('${dt}')"><td class="mk-cell" style="white-space:nowrap">${dayNum(dt)} ${monName(dt)}${d.rest?' 🌙':''}${tmark}</td>${cell(d,'thyroid')}${cell(d,'water')}${cell(d,'protein')}${cell(d,'sleep8')}${cell(d,'gym')}${cell(d,'cardio')}${cell(d,'steps10k')}${cell(d,'omega3')}${cell(d,'under2k')}${num(d,'weight')}${num(d,'proteinAmt')}${num(d,'calories')}${num(d,'sleepHrs')}${num(d,'steps')}${num(d,'puffiness')}<td><span class="score-chip ${scoreColor(s.pct)}">${s.pct}%</span></td></tr>`;
+  }).join('');
+
+  // ── Performance by context (all-time, ignores month filter) ──
+  const byTag={};
+  Object.keys(DB).forEach(dt=>{const d=DB[dt];if(!d.tag)return;(byTag[d.tag]=byTag[d.tag]||[]).push(d);});
+  const tagKeys=Object.keys(byTag);
+  document.getElementById('ctxEmpty').style.display=tagKeys.length?'none':'block';
+  // include an "Untagged" baseline for comparison
+  const untagged=Object.keys(DB).filter(dt=>!DB[dt].tag).map(dt=>DB[dt]);
+  const rowsArr=tagKeys.map(k=>({k,arr:byTag[k],def:tagDef(k)}));
+  if(untagged.length)rowsArr.push({k:'__untagged__',arr:untagged,def:{label:'— Untagged',color:'#948c7d'}});
+  document.getElementById('ctxBody').innerHTML=rowsArr.map(({k,arr,def})=>{
+    const sc=Math.round(arr.map(scoreFor).reduce((a,b)=>a+b.pct,0)/arr.length);
+    const w=avg(arr,'weight'),p=avg(arr,'proteinAmt'),sl=avg(arr,'sleepHrs');
+    const pHit=arr.filter(x=>typeof x.proteinAmt==='number'&&x.proteinAmt>=goalProteinFor(x)).length;
+    const gym=arr.filter(x=>x.gym).length;
+    const c=def?def.color:'#948c7d';
+    return `<tr><td><span class="pill" style="background:${c}1f;color:${c}">${def?def.label:k}</span></td><td class="tnum">${arr.length}</td><td><span class="score-chip ${scoreColor(sc)}">${sc}%</span></td><td class="tnum">${w?w.toFixed(1):'—'}</td><td class="tnum">${p?Math.round(p):'—'}</td><td class="tnum">${pHit}</td><td class="tnum">${gym}</td><td class="tnum">${sl?sl.toFixed(1):'—'}</td></tr>`;
   }).join('');
 }
+// protein goal for a given day's record (uses its date's period if we can find it; falls back to current)
+function goalProteinFor(d){return curGoal().protein;}
 function jumpToDay(dt){go('t-log');setTimeout(()=>jumpDay(dt),60);}
 function clearAll(){
   const old=Object.keys(DB);
   DB={};localPersist();
-  if(cloudOK&&supa&&old.length){setSyncBadge('sync');supa.from('tracker_days').delete().neq('date','').then(({error})=>setSyncBadge(error?'off':'ok'));}
-  renderHistory();
+  if(cloudOK&&supa&&old.length){
+    setSyncBadge('sync');
+    const dates=old.filter(dt=>/^\d{4}-\d{2}-\d{2}$/.test(dt));
+    const chunks=[];for(let i=0;i<dates.length;i+=100)chunks.push(dates.slice(i,i+100));
+    Promise.all(chunks.map(chunk=>supa.from('tracker_days').delete().in('date',chunk)))
+      .then(res=>setSyncBadge(res.some(r=>r.error)?'off':'ok')).catch(()=>setSyncBadge('off'));
+  }
+  renderHistory();renderTodayCommand();
 }
 
 function exportCSV(){
@@ -1503,6 +1862,7 @@ function exportCSV(){
     lines.push([label,...dates.map(dt=>{const v=(DB[dt]||{})[k];return v==null?'':v;})].map(esc).join(','));
   });
   // comments
+  lines.push(['Context Tag',...dates.map(dt=>{const d=DB[dt]||{};return d.tag?(d.tag==='other'&&d.tagName?d.tagName:d.tag):'';})].map(esc).join(','));
   lines.push(['Comments',...dates.map(dt=>(DB[dt]||{}).comments||'')].map(esc).join(','));
   const blob=new Blob([lines.join('\n')],{type:'text/csv'});const a=document.createElement('a');
   a.href=URL.createObjectURL(blob);a.download='WAR_MODE_tracker_export.csv';a.click();
@@ -1511,12 +1871,376 @@ function exportCSV(){
 paintDayCount();
 loadDB().then(async ()=>{
   await loadGoals();
+  await loadCheckins();
   paintDayCount();
+  updateCheckinBadge();
   const active=document.querySelector('.page.active');
   if(active&&active.id==='t-log')renderWeek();
   if(active&&active.id==='t-history')renderHistory();
+  if(active&&active.id==='t-checkin')renderCheckin();
 });
 
+/* ══════════ CHECK-IN ENGINE ══════════ */
+const CI_ANGLES=[{k:'front',label:'Front'},{k:'back',label:'Back'},{k:'side',label:'Side'},{k:'legs',label:'Legs'}];
+const CI_BUCKET='progress-photos';
+// CHECKINS stores paths (not URLs): {date:{weight,waist,...,note,photos:{front:'path',back:'path',...}}}
+let CHECKINS={};
+let ciStaged={};       // pending File objects for the open editor, by angle
+let ciSignedCache={};  // {path: {url, expires}} — signed URL cache, 7-day TTL
+
+function ciSync(state,msg){const el=document.getElementById('checkinSync');if(!el)return;const m={ok:['p-green','☁ Synced'],off:['p-amber','⚠ Local only'],sync:['p-blue','⟳ Working…']};const[c,t]=m[state]||m.off;el.className='pill '+c;el.textContent=msg||t;}
+
+async function loadCheckins(){
+  try{const raw=localStorage.getItem('warmode_checkins_v1');if(raw)CHECKINS=JSON.parse(raw);}catch(e){}
+  try{
+    if(supa){
+      const {data,error}=await supa.from('tracker_days').select('data').eq('date','__checkins__').maybeSingle();
+      if(!error&&data&&data.data)CHECKINS=data.data;
+      ciSync('ok');
+    } else ciSync('off');
+  }catch(e){ciSync('off');}
+  try{localStorage.setItem('warmode_checkins_v1',JSON.stringify(CHECKINS));}catch(e){}
+}
+function persistCheckins(){
+  try{localStorage.setItem('warmode_checkins_v1',JSON.stringify(CHECKINS));}catch(e){}
+  if(cloudOK&&supa){ciSync('sync');supa.from('tracker_days').upsert({date:'__checkins__',data:CHECKINS}).then(({error})=>ciSync(error?'off':'ok'));}
+}
+
+/* ── Signed URL helper (7-day TTL, in-memory cache) ── */
+async function signedUrl(path){
+  if(!path||!supa)return null;
+  const now=Date.now();
+  if(ciSignedCache[path]&&ciSignedCache[path].expires>now+60000)return ciSignedCache[path].url;
+  const TTL=7*24*3600; // 7 days in seconds
+  const {data,error}=await supa.storage.from(CI_BUCKET).createSignedUrl(path,TTL);
+  if(error||!data)return null;
+  ciSignedCache[path]={url:data.signedUrl,expires:now+(TTL-300)*1000};
+  return data.signedUrl;
+}
+/* resolve a stored value: if it looks like a path (no http) get signed URL, else return as-is (local blob or legacy public URL) */
+async function resolvePhotoUrl(val){
+  if(!val)return null;
+  if(val.startsWith('blob:')||val.startsWith('http'))return val; // local staged or legacy public URL
+  return await signedUrl(val);
+}
+
+function daysSinceLastCheckin(){
+  const ds=Object.keys(CHECKINS).sort();if(!ds.length)return Infinity;
+  const last=ds[ds.length-1];
+  return Math.floor((new Date(todayStr()+'T00:00:00')-new Date(last+'T00:00:00'))/86400000);
+}
+function updateCheckinBadge(){
+  const b=document.getElementById('checkinBadge');if(!b)return;
+  b.style.display=daysSinceLastCheckin()>=7?'inline-block':'none';
+}
+
+let ciActiveView='new';
+function ciView(v){
+  ciActiveView=v;
+  document.querySelectorAll('.ci-tab').forEach(t=>t.classList.toggle('on',t.dataset.civ===v));
+  document.querySelectorAll('.civ').forEach(c=>c.style.display='none');
+  document.getElementById('civ-'+v).style.display='';
+  if(v==='journey')renderJourney();
+  if(v==='compare')renderCompareSelectors();
+}
+
+function renderCheckin(){
+  ciSync(cloudOK?'ok':'off');
+  const d=document.getElementById('ci_date'); if(!d.value)d.value=todayStr();
+  buildCiSlots();
+  ciDateChange();
+  ciView(ciActiveView);
+  updateCheckinBadge();
+}
+function buildCiSlots(){
+  const wrap=document.getElementById('ciSlots');
+  wrap.innerHTML=CI_ANGLES.map(a=>`
+    <label class="ci-slot" id="slot_${a.k}">
+      <input type="file" accept="image/*" capture="environment" style="display:none" onchange="stagePhoto('${a.k}',this)">
+      <span class="ci-ic">＋</span>
+      <span class="ci-cap">${a.label}</span>
+      <button type="button" class="ci-up" onclick="clearStaged(event,'${a.k}')">×</button>
+    </label>`).join('');
+}
+function ciDateChange(){
+  const dt=document.getElementById('ci_date').value;
+  ciStaged={};
+  const ex=CHECKINS[dt];
+  const day=DB[dt]||{};
+  const g=(k)=>(ex&&ex[k]!=null)?ex[k]:(day[k]!=null?day[k]:'');
+  document.getElementById('ci_weight').value=g('weight');
+  document.getElementById('ci_waist').value=g('waist');
+  document.getElementById('ci_tummy').value=g('tummy');
+  document.getElementById('ci_chest').value=g('chest');
+  document.getElementById('ci_bicep').value=g('bicep');
+  document.getElementById('ci_note').value=ex&&ex.note?ex.note:'';
+  const pulled=[];
+  if(day.weight!=null&&!(ex&&ex.weight!=null))pulled.push('weight');
+  if(day.waist!=null)pulled.push('waist');
+  document.getElementById('ci_pulled').textContent=pulled.length?('Auto-filled from your '+fmtDate(dt)+' log: '+pulled.join(', ')+'.'):'';
+  // show existing photos — resolve signed URLs async
+  CI_ANGLES.forEach(async a=>{
+    const slot=document.getElementById('slot_'+a.k);if(!slot)return;
+    const val=ex&&ex.photos&&ex.photos[a.k];
+    const url=await resolvePhotoUrl(val);
+    paintSlot(a.k,url||null);
+  });
+}
+function paintSlot(k,url){
+  const slot=document.getElementById('slot_'+k);if(!slot)return;
+  const oldImg=slot.querySelector('img');if(oldImg)oldImg.remove();
+  if(url){slot.classList.add('filled');const img=document.createElement('img');img.src=url;slot.insertBefore(img,slot.firstChild);}
+  else slot.classList.remove('filled');
+}
+function stagePhoto(k,input){
+  const f=input.files&&input.files[0];if(!f)return;
+  ciStaged[k]=f;
+  paintSlot(k,URL.createObjectURL(f));
+}
+function clearStaged(e,k){
+  e.preventDefault();e.stopPropagation();
+  delete ciStaged[k];
+  const dt=document.getElementById('ci_date').value;
+  const ex=CHECKINS[dt];
+  if(ex&&ex.photos&&ex.photos[k]){
+    if(confirm('Remove this saved photo?')){
+      // delete from storage too
+      if(supa&&cloudOK&&!ex.photos[k].startsWith('http')){
+        supa.storage.from(CI_BUCKET).remove([ex.photos[k]]);
+      }
+      delete ex.photos[k];persistCheckins();
+    }
+  }
+  // re-resolve and repaint
+  (async()=>{
+    const val=CHECKINS[dt]&&CHECKINS[dt].photos&&CHECKINS[dt].photos[k];
+    paintSlot(k,val?(await resolvePhotoUrl(val)):null);
+  })();
+}
+async function saveCheckin(){
+  const dt=document.getElementById('ci_date').value;if(!dt){alert('Pick a date.');return;}
+  const btn=document.getElementById('ciSaveBtn');btn.disabled=true;btn.textContent='Saving…';
+  const rec=CHECKINS[dt]||{photos:{}};
+  rec.photos=rec.photos||{};
+  rec.weight=parseFloat(document.getElementById('ci_weight').value)||null;
+  rec.waist=parseFloat(document.getElementById('ci_waist').value)||null;
+  rec.tummy=parseFloat(document.getElementById('ci_tummy').value)||null;
+  rec.chest=parseFloat(document.getElementById('ci_chest').value)||null;
+  rec.bicep=parseFloat(document.getElementById('ci_bicep').value)||null;
+  rec.note=document.getElementById('ci_note').value.trim();
+  try{
+    for(const k of Object.keys(ciStaged)){
+      const file=ciStaged[k];
+      // store as path: date/angle_timestamp.jpg  e.g. 2026-06-02/front_1717300000000.jpg
+      const path=dt+'/'+k+'_'+Date.now()+'.jpg';
+      if(supa&&cloudOK){
+        const {error}=await supa.storage.from(CI_BUCKET).upload(path,file,{upsert:true,contentType:file.type||'image/jpeg'});
+        if(error)throw error;
+        rec.photos[k]=path; // store path, not public URL
+      } else {
+        rec.photos[k]=URL.createObjectURL(file); // offline: local blob (won't persist across devices)
+      }
+    }
+    CHECKINS[dt]=rec;ciStaged={};
+    persistCheckins();updateCheckinBadge();
+    const m=document.getElementById('ciSaveMsg');m.style.opacity='1';setTimeout(()=>m.style.opacity='0',1800);
+  }catch(e){
+    alert('Photo upload failed: '+e.message+'\n\nMake sure the progress-photos bucket exists and the anon INSERT policy is set.');
+    ciSync('off');
+  }
+  btn.disabled=false;btn.textContent='Save Check-In';
+}
+function deleteCheckin(dt){
+  if(!confirm('Delete the entire '+fmtDate(dt)+' check-in (all photos & measurements)?'))return;
+  // remove files from storage
+  if(supa&&cloudOK&&CHECKINS[dt]&&CHECKINS[dt].photos){
+    const paths=Object.values(CHECKINS[dt].photos).filter(v=>v&&!v.startsWith('http')&&!v.startsWith('blob:'));
+    if(paths.length)supa.storage.from(CI_BUCKET).remove(paths);
+  }
+  delete CHECKINS[dt];persistCheckins();
+  if(ciActiveView==='journey')renderJourney();
+  updateCheckinBadge();
+}
+
+/* ══ JOURNEY VIEW — angle toggle + horizontal filmstrip ══ */
+let journeyAngle='front';
+function renderJourney(){
+  const dts=Object.keys(CHECKINS).sort();
+  const empty=document.getElementById('journeyEmpty');
+  const strip=document.getElementById('journeyStrip');
+  if(!dts.length){if(empty)empty.style.display='block';if(strip)strip.innerHTML='';return;}
+  if(empty)empty.style.display='none';
+
+  // build angle tabs
+  const tabWrap=document.getElementById('journeyAngleTabs');
+  if(tabWrap&&!tabWrap.dataset.built){
+    tabWrap.innerHTML=CI_ANGLES.map(a=>`<button class="ci-tab${a.k===journeyAngle?' on':''}" data-angle="${a.k}" onclick="setJourneyAngle('${a.k}')">${a.label}</button>`).join('');
+    tabWrap.dataset.built='1';
+  }
+  // render strip for current angle
+  renderJourneyStrip(dts);
+}
+function setJourneyAngle(k){
+  journeyAngle=k;
+  document.querySelectorAll('#journeyAngleTabs .ci-tab').forEach(b=>b.classList.toggle('on',b.dataset.angle===k));
+  renderJourneyStrip(Object.keys(CHECKINS).sort());
+}
+function renderJourneyStrip(dts){
+  const strip=document.getElementById('journeyStrip');if(!strip)return;
+  // Each check-in = a card column: photo + date + weight
+  const cards=dts.map(dt=>{
+    const c=CHECKINS[dt];
+    const val=c.photos&&c.photos[journeyAngle];
+    const stats=[];
+    if(c.weight)stats.push(c.weight+'kg');
+    if(c.waist)stats.push('W'+c.waist+'″');
+    const statLine=stats.join(' · ');
+    const cardId='jcard_'+dt+'_'+journeyAngle;
+    return `<div style="flex-shrink:0;width:140px;margin-right:10px">
+      <div class="ci-thumb" id="${cardId}" style="width:140px;cursor:${val?'pointer':'default'}" onclick="${val?`jlightbox('${dt}','${journeyAngle}')`:''}">
+        <span class="lbl">${fmtDate(dt)}</span>
+      </div>
+      ${statLine?`<div style="font-size:.72rem;color:var(--muted);margin-top:4px;text-align:center">${statLine}</div>`:''}
+      <div style="display:flex;gap:4px;margin-top:6px;justify-content:center">
+        <button onclick="deleteCheckin('${dt}')" style="background:none;border:none;color:var(--red);cursor:pointer;font-size:.72rem;font-weight:600;padding:2px 6px">Delete</button>
+      </div>
+    </div>`;
+  }).join('');
+
+  strip.innerHTML=`<div style="display:flex;padding:4px 0">${cards}</div>`;
+
+  // async: resolve and inject images
+  dts.forEach(async dt=>{
+    const c=CHECKINS[dt];
+    const val=c.photos&&c.photos[journeyAngle];
+    if(!val)return;
+    const url=await resolvePhotoUrl(val);
+    if(!url)return;
+    const el=document.getElementById('jcard_'+dt+'_'+journeyAngle);
+    if(!el)return;
+    const existing=el.querySelector('img');if(existing)existing.remove();
+    const img=document.createElement('img');img.src=url;el.insertBefore(img,el.firstChild);
+    el.style.cursor='pointer';
+  });
+}
+async function jlightbox(dt,angle){
+  const val=CHECKINS[dt]&&CHECKINS[dt].photos&&CHECKINS[dt].photos[angle];
+  if(!val)return;
+  const url=await resolvePhotoUrl(val);
+  if(url)lightbox(url);
+}
+
+/* ══ COMPARE VIEW — side-by-side with measurement overlay ══ */
+function renderCompareSelectors(){
+  const dts=Object.keys(CHECKINS).sort();
+  const opts=dts.map(dt=>`<option value="${dt}">${fmtDate(dt)}</option>`).join('');
+  const a=document.getElementById('cmpA'),b=document.getElementById('cmpB');
+  a.innerHTML=opts;b.innerHTML=opts;
+  if(dts.length>=2){a.value=dts[0];b.value=dts[dts.length-1];}
+  renderCompare();
+}
+function renderCompare(){
+  const a=document.getElementById('cmpA').value,b=document.getElementById('cmpB').value;
+  const res=document.getElementById('cmpResult');
+  if(!a||!b||!CHECKINS[a]||!CHECKINS[b]){res.innerHTML='<p class="subtle">Add at least two check-ins to compare.</p>';return;}
+  const A=CHECKINS[a],B=CHECKINS[b];
+  const days=Math.abs(Math.floor((new Date(b+'T00:00:00')-new Date(a+'T00:00:00'))/86400000));
+
+  const deltaVal=(k)=>{if(A[k]==null||B[k]==null)return null;return B[k]-A[k];};
+  const deltaHtml=(k,unit,lowerGood=true)=>{
+    const d=deltaVal(k);if(d==null)return '<span class="subtle">—</span>';
+    const good=lowerGood?d<0:d>0;
+    const col=d===0?'var(--muted)':good?'var(--green)':'var(--red)';
+    return `<span style="color:${col};font-weight:700">${d>0?'+':''}${d.toFixed(1)}${unit}</span>`;
+  };
+
+  // Summary row
+  const summaryHtml=`<div class="card" style="margin-bottom:16px">
+    <div style="font-family:'Oswald';font-weight:600;font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:12px">${fmtDate(a)} → ${fmtDate(b)} · ${days} days</div>
+    <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:10px;text-align:center">
+      ${[['Weight','weight','kg',true],['Waist','waist','″',true],['Tummy','tummy','″',true],['Chest','chest','″',false],['Bicep','bicep','″',false]].map(([lbl,k,u,lg])=>`
+        <div>
+          <div style="font-size:.68rem;color:var(--muted);font-family:'Oswald';letter-spacing:.04em;text-transform:uppercase;margin-bottom:4px">${lbl}</div>
+          <div style="font-size:1.1rem">${deltaHtml(k,u,lg)}</div>
+          <div style="font-size:.7rem;color:var(--muted);margin-top:2px">${A[k]!=null?A[k]+(u):'—'} → ${B[k]!=null?B[k]+(u):'—'}</div>
+        </div>`).join('')}
+    </div>
+  </div>`;
+
+  // Per-angle comparison with measurement overlay
+  const angleHtml=CI_ANGLES.map(an=>{
+    // measurement relevant to this angle
+    const mMap={front:'tummy',side:'waist',back:'waist',legs:null};
+    const mk=mMap[an.k];
+    const md=mk?deltaVal(mk):null;
+    const mLabel=mk?mk.charAt(0).toUpperCase()+mk.slice(1):null;
+    const mCol=md==null?'var(--muted)':md<0?'var(--green)':'var(--red)';
+    const mBadge=mLabel&&md!=null?`<div style="text-align:center;margin-bottom:8px;font-size:.8rem"><span style="font-family:'Oswald';font-weight:600;color:var(--muted)">${mLabel}: </span><span style="color:${mCol};font-weight:700">${A[mk]}″ → ${B[mk]}″ (${md>0?'+':''}${md.toFixed(1)}″)</span></div>`:'';
+    return `<div style="margin-top:18px" id="cmpAngle_${an.k}">
+      <div style="font-family:'Oswald';font-weight:600;font-size:.8rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink2);margin-bottom:6px">${an.label}</div>
+      ${mBadge}
+      <div class="cmp-grid" style="position:relative">
+        <div class="ci-thumb" id="cmpA_${an.k}" style="cursor:default">
+          <span class="lbl">${fmtDate(a)}</span>
+        </div>
+        <div class="ci-thumb" id="cmpB_${an.k}" style="cursor:default">
+          <span class="lbl">${fmtDate(b)}</span>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+
+  res.innerHTML=summaryHtml+`<div class="card">${angleHtml}</div>`;
+
+  // async inject photos
+  CI_ANGLES.forEach(async an=>{
+    const resolveAndInject=async(rec,dt,elId)=>{
+      const val=rec.photos&&rec.photos[an.k];
+      if(!val)return;
+      const url=await resolvePhotoUrl(val);
+      if(!url)return;
+      const el=document.getElementById(elId);if(!el)return;
+      const old=el.querySelector('img');if(old)old.remove();
+      const img=document.createElement('img');img.src=url;el.insertBefore(img,el.firstChild);
+      el.style.cursor='pointer';el.onclick=()=>lightbox(url);
+    };
+    await resolveAndInject(A,a,'cmpA_'+an.k);
+    await resolveAndInject(B,b,'cmpB_'+an.k);
+  });
+}
+
+/* ══ DOWNLOAD — fresh signed URLs at download time ══ */
+async function downloadAllPhotos(){
+  const dts=Object.keys(CHECKINS).sort();
+  let total=0;
+  dts.forEach(dt=>{const c=CHECKINS[dt];if(c.photos)CI_ANGLES.forEach(a=>{if(c.photos[a.k])total++;});});
+  if(!total){alert('No photos to download yet.');return;}
+  const btn=document.getElementById('dlAllBtn');
+  const prog=document.getElementById('dlProgress');
+  btn.disabled=true;if(prog){prog.style.display='inline';prog.textContent='Preparing '+total+' photos…';}
+  let n=0;
+  for(const dt of dts){
+    const c=CHECKINS[dt];if(!c.photos)continue;
+    for(const a of CI_ANGLES){
+      const val=c.photos[a.k];if(!val)continue;
+      try{
+        const url=await resolvePhotoUrl(val); // fresh signed URL
+        if(!url)continue;
+        const r=await fetch(url);const bl=await r.blob();
+        const x=document.createElement('a');x.href=URL.createObjectURL(bl);x.download=dt+'_'+a.k+'.jpg';x.click();
+        n++;if(prog)prog.textContent=`Downloaded ${n} / ${total}…`;
+        await new Promise(r=>setTimeout(r,350));
+      }catch(e){console.warn('Download failed for',dt,a.k,e);}
+    }
+  }
+  btn.disabled=false;
+  if(prog){prog.textContent=n+' photos downloaded.';setTimeout(()=>{prog.style.display='none';},3000);}
+}
+
+function lightbox(url){const lb=document.getElementById('lightbox');lb.querySelector('img').src=url;lb.classList.add('show');}
+
+
 </script>
+<div class="lightbox" id="lightbox" onclick="this.classList.remove('show')"><img src=""></div>
 </body>
 </html>
