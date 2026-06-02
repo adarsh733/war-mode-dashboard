@@ -267,11 +267,34 @@ table.weekgrid input.gnum:focus{background:var(--green-bg)}
 #journeyStrip::-webkit-scrollbar-thumb{background:var(--line2);border-radius:2px}
 .ci-thumb{aspect-ratio:3/4;border-radius:9px;overflow:hidden;background:var(--paper2);position:relative;cursor:pointer}
 .ci-thumb img{width:100%;height:100%;object-fit:cover}
+.ci-thumb.jcard-tall{aspect-ratio:auto;height:300px}
+.ci-thumb.jcard-tall img{object-fit:contain;background:#0a0a0c}
 .ci-thumb .lbl{position:absolute;bottom:0;left:0;right:0;background:rgba(20,18,16,.65);color:#fff;font-size:.6rem;text-align:center;padding:2px;text-transform:uppercase;letter-spacing:.04em}
 .cmp-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-.lightbox{position:fixed;inset:0;background:rgba(10,8,6,.92);z-index:200;display:none;align-items:center;justify-content:center;padding:20px}
+.lightbox{position:fixed;inset:0;background:rgba(10,8,6,.96);z-index:200;display:none;flex-direction:column;align-items:center;justify-content:center;padding:0}
 .lightbox.show{display:flex}
 .lightbox img{max-width:100%;max-height:92vh;border-radius:8px}
+/* rich viewer */
+#lbViewer{position:fixed;inset:0;background:rgba(8,7,6,.97);z-index:240;display:none;flex-direction:column}
+#lbViewer.show{display:flex}
+.lbv-top{position:absolute;top:0;left:0;right:0;height:56px;display:flex;align-items:center;justify-content:space-between;padding:0 14px;z-index:5;background:linear-gradient(rgba(0,0,0,.55),transparent)}
+.lbv-btn{width:40px;height:40px;border-radius:50%;border:none;background:rgba(0,0,0,.5);color:#fff;font-size:1.2rem;cursor:pointer;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(6px)}
+.lbv-btn:hover{background:rgba(0,0,0,.75)}
+.lbv-stage{flex:1;display:flex;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.lbv-stage::-webkit-scrollbar{display:none}
+.lbv-slide{flex:0 0 100%;width:100%;height:100%;scroll-snap-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:56px 8px 70px;box-sizing:border-box;position:relative}
+.lbv-slide img{max-width:100%;max-height:100%;object-fit:contain;border-radius:8px}
+.lbv-cap{position:absolute;bottom:54px;left:0;right:0;text-align:center;color:#fff;font-family:'Oswald';font-weight:600;letter-spacing:.05em;font-size:.85rem;text-shadow:0 1px 4px #000}
+/* compare slide: two stacked/side-by-side */
+.lbv-cmp{flex:0 0 100%;width:100%;height:100%;scroll-snap-align:center;display:flex;flex-direction:column;padding:56px 8px 70px;box-sizing:border-box;gap:8px}
+.lbv-cmp .pair{flex:1;display:grid;grid-template-columns:1fr 1fr;gap:8px;min-height:0}
+.lbv-cmp .half{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:0;position:relative}
+.lbv-cmp .half img{max-width:100%;max-height:100%;object-fit:contain;border-radius:6px}
+.lbv-cmp .hlbl{color:#fff;font-family:'Oswald';font-weight:600;font-size:.72rem;letter-spacing:.05em;margin-top:6px;opacity:.85}
+.lbv-cmp .angle{text-align:center;color:#ffb03c;font-family:'Oswald';font-weight:600;letter-spacing:.12em;text-transform:uppercase;font-size:.9rem}
+.lbv-dots{position:absolute;bottom:18px;left:0;right:0;display:flex;gap:7px;justify-content:center;z-index:5}
+.lbv-dots i{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.35)}
+.lbv-dots i.on{background:#ffb03c}
 .rowgroup-h td{background:var(--paper2);font-family:'Oswald';font-weight:600;font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);text-align:left;padding:6px 11px;position:sticky;left:0}
 .measure-toggle{cursor:pointer;user-select:none}
 
@@ -1310,7 +1333,7 @@ function buildCharts(id){
     bars('cComp',mLabels,[
       {l:'Gym',d:monthlyCompliance('gym',true),c:cssv('--green')},
       {l:'Protein '+g.protein+'g',d:monthlyCompliance('protein',false),c:cssv('--accent')},
-      {l:'Steps '+(g.steps/1000)+'k',d:monthlyCompliance('steps10k',true),c:cssv('--blue')},
+      {l:'Steps '+(g.steps/1000)+'k',d:monthlyCompliance('steps10k',false),c:cssv('--blue')},
       {l:'Sleep '+g.sleep+'h',d:monthlyCompliance('sleep8',false),c:cssv('--amber')}
     ],{pct:true,thick:22,y:{min:0,max:100,ticks:{callback:v=>v+'%',color:cssv('--muted')}}});
   }
@@ -1502,7 +1525,7 @@ function applyAuto(d,dt){
   HABITS.forEach(h=>{if(h.auto){const v=d[h.auto.metric];if(v!=null&&v!==''){if(h.auto.test(parseFloat(v),g))d[h.k]=1;else delete d[h.k];}}});
 }
 function scoreFor(d){
-  const skip=d.rest?['gym','cardio','steps10k']:[];let hit=0,total=0;
+  const skip=d.rest?['gym','cardio']:[];let hit=0,total=0;
   HABITS.forEach(h=>{if(skip.includes(h.k))return;total++;if(d[h.k])hit++;});
   return total?{hit,total,pct:Math.round(hit/total*100)}:{hit:0,total:0,pct:0};
 }
@@ -1525,7 +1548,7 @@ function renderTodayCommand(){
   const m=document.getElementById('cmdMetrics');
   if(m)m.innerHTML=metrics.map(([k,v])=>`<div class="mini"><b>${k}</b><span>${v}</span></div>`).join('');
   const missing=HABITS.filter(h=>{
-    if(d.rest&&['gym','cardio','steps10k'].includes(h.k))return false;
+    if(d.rest&&['gym','cardio'].includes(h.k))return false;
     return !d[h.k];
   }).map(h=>h.lbl(g).replace(/^[^\w]+/,'').trim());
   const miss=document.getElementById('cmdMissing');
@@ -1535,7 +1558,7 @@ function renderTodayCommand(){
     if(!d.protein)focus='Protein is the highest-leverage miss. Lock the meal plan before the day gets away.';
     else if(!d.under2k)focus='Calories decide the cut today. Keep the ceiling visible.';
     else if(!d.sleep8)focus='Recovery is the weak link today. Protect the night.';
-    else if(!d.steps10k&&!d.rest)focus='Movement is the remaining easy win. Finish the steps.';
+    else if(!d.steps10k)focus='Movement is the remaining easy win. Finish the steps.';
     else if(!d.thyroid)focus='Medication is not optional data. Mark thyroid if it is done.';
     else focus='Hold the line. Today is clean enough to become boring.';
   }
@@ -1755,7 +1778,7 @@ function renderGrid(){
   HABITS.forEach(h=>{
     rows+=`<tr><td class="rowlabel">${h.lbl(weekGoal)}</td>`+dates.map(dt=>{
       const d=DB[dt]||{};const on=d[h.k];const auto=h.auto?'auto':'';
-      const excused=d.rest&&['gym','cardio','steps10k'].includes(h.k);
+      const excused=d.rest&&['gym','cardio'].includes(h.k);
       if(excused)return `<td class="daycell ${dt===t?'today-col':''}"><span class="gcheck excused" title="Rest day — not counted">–</span></td>`;
       return `<td class="daycell ${dt===t?'today-col':''}"><span class="gcheck ${on?'on':''} ${auto}" onclick="toggleCell('${dt}','${h.k}')">✓</span></td>`;
     }).join('')+`</tr>`;
@@ -1866,7 +1889,7 @@ function renderHistory(){
   }
 
   // all days table (filtered)
-  const cell=(d,k)=>{const exc=d.rest&&['gym','cardio','steps10k'].includes(k);return `<td style="text-align:center"><span class="dot ${exc?'t':(d[k]?'y':'n')}"></span></td>`;};
+  const cell=(d,k)=>{const exc=d.rest&&['gym','cardio'].includes(k);return `<td style="text-align:center"><span class="dot ${exc?'t':(d[k]?'y':'n')}"></span></td>`;};
   const num=(d,k)=>`<td class="tnum">${d[k]!=null?d[k]:'—'}</td>`;
   document.getElementById('histBody').innerHTML=focusDates.map(dt=>{
     const d=DB[dt];const s=scoreFor(d);
@@ -1919,7 +1942,7 @@ function exportCSV(){
   HABITS.forEach(h=>{
     const row=[h.lbl(curGoal())];
     dates.forEach(dt=>{const d=DB[dt]||{};
-      if(d.rest&&(h.k==='gym'||h.k==='cardio'||h.k==='steps10k')){row.push('REST');}
+      if(d.rest&&(h.k==='gym'||h.k==='cardio')){row.push('REST');}
       else row.push(d[h.k]?'TRUE':'FALSE');
     });
     lines.push(row.map(esc).join(','));
@@ -2197,8 +2220,8 @@ function renderJourneyStrip(dts){
     if(c.waist)stats.push('W'+c.waist+'″');
     const statLine=stats.join(' · ');
     const cardId='jcard_'+dt+'_'+journeyAngle;
-    return `<div style="flex-shrink:0;width:140px;margin-right:10px">
-      <div class="ci-thumb" id="${cardId}" style="width:140px;cursor:${val?'pointer':'default'}" onclick="${val?`jlightbox('${dt}','${journeyAngle}')`:''}">
+    return `<div style="flex-shrink:0;width:170px;margin-right:10px">
+      <div class="ci-thumb jcard-tall" id="${cardId}" style="width:170px;cursor:${val?'pointer':'default'}" onclick="${val?`jlightbox('${dt}','${journeyAngle}')`:''}">
         <span class="lbl">${fmtDate(dt)}</span>
       </div>
       ${statLine?`<div style="font-size:.72rem;color:var(--muted);margin-top:4px;text-align:center">${statLine}</div>`:''}
@@ -2223,12 +2246,6 @@ function renderJourneyStrip(dts){
     const img=document.createElement('img');img.src=url;el.insertBefore(img,el.firstChild);
     el.style.cursor='pointer';
   });
-}
-async function jlightbox(dt,angle){
-  const val=CHECKINS[dt]&&CHECKINS[dt].photos&&CHECKINS[dt].photos[angle];
-  if(!val)return;
-  const url=await resolvePhotoUrl(val);
-  if(url)lightbox(url);
 }
 
 /* ══ COMPARE VIEW — side-by-side with measurement overlay ══ */
@@ -2303,7 +2320,7 @@ function renderCompare(){
       const el=document.getElementById(elId);if(!el)return;
       const old=el.querySelector('img');if(old)old.remove();
       const img=document.createElement('img');img.src=url;el.insertBefore(img,el.firstChild);
-      el.style.cursor='pointer';el.onclick=()=>lightbox(url);
+      el.style.cursor='pointer';el.onclick=()=>cmpLightbox(a,b,an.k);
     };
     await resolveAndInject(A,a,'cmpA_'+an.k);
     await resolveAndInject(B,b,'cmpB_'+an.k);
@@ -2338,10 +2355,128 @@ async function downloadAllPhotos(){
   if(prog){prog.textContent=n+' photos downloaded.';setTimeout(()=>{prog.style.display='none';},3000);}
 }
 
+/* ══ RICH PHOTO VIEWER ══ */
+/* Two modes:
+   journey: swipe horizontally through SAME angle across all dates
+   compare: swipe horizontally through angles (front/side/back), each slide = two dates side-by-side */
+let lbvMode=null, lbvSlides=[], lbvIndex=0;
+
+function lbvClose(){document.getElementById('lbViewer').classList.remove('show');document.body.style.overflow='';lbvSlides=[];}
+function lbvBuildDots(n,active){
+  const d=document.getElementById('lbvDots');
+  d.innerHTML=Array.from({length:n},(_,i)=>`<i class="${i===active?'on':''}"></i>`).join('');
+}
+function lbvOnScroll(){
+  const stage=document.getElementById('lbvStage');
+  const idx=Math.round(stage.scrollLeft/stage.clientWidth);
+  if(idx!==lbvIndex){lbvIndex=idx;lbvBuildDots(lbvSlides.length,idx);}
+}
+
+/* JOURNEY: open same-angle filmstrip across all dated check-ins */
+async function jlightbox(startDt,angle){
+  const dts=Object.keys(CHECKINS).sort().filter(dt=>CHECKINS[dt].photos&&CHECKINS[dt].photos[angle]);
+  if(!dts.length)return;
+  lbvMode='journey';
+  lbvSlides=dts.map(dt=>({dt,angle,path:CHECKINS[dt].photos[angle]}));
+  const startIdx=Math.max(0,dts.indexOf(startDt));
+  const stage=document.getElementById('lbvStage');
+  stage.onscroll=lbvOnScroll;
+  stage.innerHTML=lbvSlides.map((s,i)=>`
+    <div class="lbv-slide" data-i="${i}">
+      <div class="lbv-loading" style="color:#666">Loading…</div>
+      <div class="lbv-cap">${fmtDate(s.dt)}${CHECKINS[s.dt].weight?' · '+CHECKINS[s.dt].weight+'kg':''} · ${angle}</div>
+    </div>`).join('');
+  document.getElementById('lbViewer').classList.add('show');
+  document.body.style.overflow='hidden';
+  lbvIndex=startIdx; lbvBuildDots(lbvSlides.length,startIdx);
+  // jump to start slide (after layout)
+  requestAnimationFrame(()=>{stage.scrollLeft=startIdx*stage.clientWidth;});
+  // resolve images
+  lbvSlides.forEach(async(s,i)=>{
+    const url=await resolvePhotoUrl(s.path);
+    const slide=stage.querySelector(`.lbv-slide[data-i="${i}"]`);if(!slide||!url)return;
+    s.url=url;
+    const l=slide.querySelector('.lbv-loading');if(l)l.remove();
+    const img=document.createElement('img');img.src=url;slide.insertBefore(img,slide.firstChild);
+  });
+}
+
+/* COMPARE: open angle-swiper, each slide shows dateA vs dateB side-by-side */
+async function cmpLightbox(dateA,dateB,startAngle){
+  lbvMode='compare';
+  const angles=CI_ANGLES.filter(a=>(CHECKINS[dateA]&&CHECKINS[dateA].photos&&CHECKINS[dateA].photos[a.k])||(CHECKINS[dateB]&&CHECKINS[dateB].photos&&CHECKINS[dateB].photos[a.k]));
+  if(!angles.length)return;
+  lbvSlides=angles.map(a=>({angle:a.k,label:a.label,dateA,dateB,
+    pathA:CHECKINS[dateA]&&CHECKINS[dateA].photos&&CHECKINS[dateA].photos[a.k],
+    pathB:CHECKINS[dateB]&&CHECKINS[dateB].photos&&CHECKINS[dateB].photos[a.k]}));
+  let startIdx=angles.findIndex(a=>a.k===startAngle);if(startIdx<0)startIdx=0;
+  const stage=document.getElementById('lbvStage');
+  stage.onscroll=lbvOnScroll;
+  stage.innerHTML=lbvSlides.map((s,i)=>`
+    <div class="lbv-cmp" data-i="${i}">
+      <div class="angle">${s.label}</div>
+      <div class="pair">
+        <div class="half" data-half="A"><div style="color:#666">Loading…</div><div class="hlbl">${fmtDate(s.dateA)}${CHECKINS[s.dateA]&&CHECKINS[s.dateA].weight?' · '+CHECKINS[s.dateA].weight+'kg':''}</div></div>
+        <div class="half" data-half="B"><div style="color:#666">Loading…</div><div class="hlbl">${fmtDate(s.dateB)}${CHECKINS[s.dateB]&&CHECKINS[s.dateB].weight?' · '+CHECKINS[s.dateB].weight+'kg':''}</div></div>
+      </div>
+    </div>`).join('');
+  document.getElementById('lbViewer').classList.add('show');
+  document.body.style.overflow='hidden';
+  lbvIndex=startIdx; lbvBuildDots(lbvSlides.length,startIdx);
+  requestAnimationFrame(()=>{stage.scrollLeft=startIdx*stage.clientWidth;});
+  lbvSlides.forEach(async(s,i)=>{
+    const slide=stage.querySelector(`.lbv-cmp[data-i="${i}"]`);if(!slide)return;
+    for(const[half,path,key] of [['A',s.pathA,'urlA'],['B',s.pathB,'urlB']]){
+      const cell=slide.querySelector(`.half[data-half="${half}"]`);
+      const ph=cell.querySelector('div:not(.hlbl)');
+      if(!path){if(ph)ph.textContent='—';continue;}
+      const url=await resolvePhotoUrl(path);if(!url){if(ph)ph.textContent='—';continue;}
+      s[key]=url;
+      if(ph)ph.remove();
+      const img=document.createElement('img');img.src=url;cell.insertBefore(img,cell.firstChild);
+    }
+  });
+}
+
+/* download the photo(s) currently in view, at full resolution via fresh signed URL */
+async function lbvDownloadCurrent(){
+  const s=lbvSlides[lbvIndex];if(!s)return;
+  const grab=async(path,name)=>{
+    if(!path)return;
+    const url=await resolvePhotoUrl(path);if(!url)return;
+    try{const r=await fetch(url);const bl=await r.blob();const a=document.createElement('a');a.href=URL.createObjectURL(bl);a.download=name;a.click();}catch(e){console.warn(e);}
+  };
+  if(lbvMode==='journey'){
+    await grab(s.path, s.dt+'_'+s.angle+'.jpg');
+  }else{
+    await grab(s.pathA, s.dateA+'_'+s.angle+'.jpg');
+    await new Promise(r=>setTimeout(r,300));
+    await grab(s.pathB, s.dateB+'_'+s.angle+'.jpg');
+  }
+}
+
+// keyboard: Esc closes, arrows navigate
+document.addEventListener('keydown',e=>{
+  if(!document.getElementById('lbViewer').classList.contains('show'))return;
+  const stage=document.getElementById('lbvStage');
+  if(e.key==='Escape')lbvClose();
+  else if(e.key==='ArrowRight')stage.scrollBy({left:stage.clientWidth,behavior:'smooth'});
+  else if(e.key==='ArrowLeft')stage.scrollBy({left:-stage.clientWidth,behavior:'smooth'});
+});
+
+/* legacy simple lightbox — still used by anywhere that calls lightbox(url) directly */
 function lightbox(url){const lb=document.getElementById('lightbox');lb.querySelector('img').src=url;lb.classList.add('show');}
 
 
 </script>
 <div class="lightbox" id="lightbox" onclick="this.classList.remove('show')"><img src=""></div>
+<div id="lbViewer">
+  <div class="lbv-top">
+    <button class="lbv-btn" id="lbvDownload" title="Download" onclick="lbvDownloadCurrent()">⬇</button>
+    <button class="lbv-btn" title="Close" onclick="lbvClose()">✕</button>
+  </div>
+  <div class="lbv-stage" id="lbvStage"></div>
+  <div class="lbv-dots" id="lbvDots"></div>
+</div>
 </body>
 </html>
