@@ -260,13 +260,41 @@ table.weekgrid input.gnum:focus{background:var(--green-bg)}
 .ci-card{border:1px solid var(--line);border-radius:14px;padding:16px;background:var(--paper);box-shadow:var(--shadow-sm);margin-bottom:14px}
 .ci-card .ci-row{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:10px}
 @media(max-width:600px){.ci-card .ci-row{grid-template-columns:1fr 1fr}}
+/* journey strip scrollable row */
+#journeyStrip{scrollbar-width:thin;scrollbar-color:var(--line2) transparent}
+#journeyStrip::-webkit-scrollbar{height:4px}
+#journeyStrip::-webkit-scrollbar-track{background:transparent}
+#journeyStrip::-webkit-scrollbar-thumb{background:var(--line2);border-radius:2px}
 .ci-thumb{aspect-ratio:3/4;border-radius:9px;overflow:hidden;background:var(--paper2);position:relative;cursor:pointer}
 .ci-thumb img{width:100%;height:100%;object-fit:cover}
+.ci-thumb.jcard-tall{aspect-ratio:auto;height:300px}
+.ci-thumb.jcard-tall img{object-fit:contain;background:#0a0a0c}
 .ci-thumb .lbl{position:absolute;bottom:0;left:0;right:0;background:rgba(20,18,16,.65);color:#fff;font-size:.6rem;text-align:center;padding:2px;text-transform:uppercase;letter-spacing:.04em}
 .cmp-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-.lightbox{position:fixed;inset:0;background:rgba(10,8,6,.92);z-index:200;display:none;align-items:center;justify-content:center;padding:20px}
+.lightbox{position:fixed;inset:0;background:rgba(10,8,6,.96);z-index:200;display:none;flex-direction:column;align-items:center;justify-content:center;padding:0}
 .lightbox.show{display:flex}
 .lightbox img{max-width:100%;max-height:92vh;border-radius:8px}
+/* rich viewer */
+#lbViewer{position:fixed;inset:0;background:rgba(8,7,6,.97);z-index:240;display:none;flex-direction:column}
+#lbViewer.show{display:flex}
+.lbv-top{position:absolute;top:0;left:0;right:0;height:56px;display:flex;align-items:center;justify-content:space-between;padding:0 14px;z-index:5;background:linear-gradient(rgba(0,0,0,.55),transparent)}
+.lbv-btn{width:40px;height:40px;border-radius:50%;border:none;background:rgba(0,0,0,.5);color:#fff;font-size:1.2rem;cursor:pointer;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(6px)}
+.lbv-btn:hover{background:rgba(0,0,0,.75)}
+.lbv-stage{flex:1;display:flex;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.lbv-stage::-webkit-scrollbar{display:none}
+.lbv-slide{flex:0 0 100%;width:100%;height:100%;scroll-snap-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:56px 8px 70px;box-sizing:border-box;position:relative}
+.lbv-slide img{max-width:100%;max-height:100%;object-fit:contain;border-radius:8px}
+.lbv-cap{position:absolute;bottom:54px;left:0;right:0;text-align:center;color:#fff;font-family:'Oswald';font-weight:600;letter-spacing:.05em;font-size:.85rem;text-shadow:0 1px 4px #000}
+/* compare slide: two stacked/side-by-side */
+.lbv-cmp{flex:0 0 100%;width:100%;height:100%;scroll-snap-align:center;display:flex;flex-direction:column;padding:56px 8px 70px;box-sizing:border-box;gap:8px}
+.lbv-cmp .pair{flex:1;display:grid;grid-template-columns:1fr 1fr;gap:8px;min-height:0}
+.lbv-cmp .half{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:0;position:relative}
+.lbv-cmp .half img{max-width:100%;max-height:100%;object-fit:contain;border-radius:6px}
+.lbv-cmp .hlbl{color:#fff;font-family:'Oswald';font-weight:600;font-size:.72rem;letter-spacing:.05em;margin-top:6px;opacity:.85}
+.lbv-cmp .angle{text-align:center;color:#ffb03c;font-family:'Oswald';font-weight:600;letter-spacing:.12em;text-transform:uppercase;font-size:.9rem}
+.lbv-dots{position:absolute;bottom:18px;left:0;right:0;display:flex;gap:7px;justify-content:center;z-index:5}
+.lbv-dots i{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.35)}
+.lbv-dots i.on{background:#ffb03c}
 .rowgroup-h td{background:var(--paper2);font-family:'Oswald';font-weight:600;font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);text-align:left;padding:6px 11px;position:sticky;left:0}
 .measure-toggle{cursor:pointer;user-select:none}
 
@@ -437,12 +465,12 @@ table.weekgrid input.gnum:focus{background:var(--green-bg)}
   <h1 class="title">Progress &amp; Trends</h1>
   <p class="lede">What the scale hides, the tape measure reveals. All measurements Jan → May.</p>
 
-  <div class="sec-label">Measurements now vs start</div>
+  <div class="sec-label">Measurements now vs start <span class="subtle" style="font-weight:400;text-transform:none;letter-spacing:0">(live · vs Jan 8)</span></div>
   <div class="grid g4 stack">
-    <div class="stat"><div class="bar" style="background:var(--green)"></div><div class="k">Waist</div><div class="v">36.0<small>″</small></div><div class="d up">▼ −1.0 from 37.0</div></div>
-    <div class="stat"><div class="bar" style="background:var(--green)"></div><div class="k">Tummy</div><div class="v">35.5<small>″</small></div><div class="d up">▼ −2.5 from 38.0</div></div>
-    <div class="stat"><div class="bar" style="background:var(--blue)"></div><div class="k">Chest</div><div class="v">42.5<small>″</small></div><div class="d up">▲ from 42.0</div></div>
-    <div class="stat"><div class="bar" style="background:var(--amber)"></div><div class="k">Bicep</div><div class="v">14.3<small>″</small></div><div class="d flat">≈ holding</div></div>
+    <div class="stat" id="statWaist"><div class="bar" style="background:var(--green)"></div><div class="k">Waist</div><div class="v">36.0<small>″</small></div><div class="d up">▼ −1.0 from 37.0</div></div>
+    <div class="stat" id="statTummy"><div class="bar" style="background:var(--green)"></div><div class="k">Tummy</div><div class="v">35.5<small>″</small></div><div class="d up">▼ −2.5 from 38.0</div></div>
+    <div class="stat" id="statChest"><div class="bar" style="background:var(--blue)"></div><div class="k">Chest</div><div class="v">42.5<small>″</small></div><div class="d up">▲ from 42.0</div></div>
+    <div class="stat" id="statBicep"><div class="bar" style="background:var(--amber)"></div><div class="k">Bicep</div><div class="v">14.3<small>″</small></div><div class="d flat">≈ holding</div></div>
   </div>
 
   <div class="grid g2 stack" style="margin-top:16px">
@@ -1084,7 +1112,7 @@ table.weekgrid input.gnum:focus{background:var(--green-bg)}
   <!-- view switch -->
   <div style="display:flex;gap:7px;margin-top:18px;flex-wrap:wrap">
     <button class="ci-tab on" data-civ="new" onclick="ciView('new')">＋ New Check-In</button>
-    <button class="ci-tab" data-civ="timeline" onclick="ciView('timeline')">🗂 Timeline</button>
+    <button class="ci-tab" data-civ="journey" onclick="ciView('journey')">🎞 Journey</button>
     <button class="ci-tab" data-civ="compare" onclick="ciView('compare')">⇄ Compare</button>
   </div>
 
@@ -1116,11 +1144,20 @@ table.weekgrid input.gnum:focus{background:var(--green-bg)}
     <div class="note info" style="margin-top:16px"><span class="ni">i</span><div>Photos upload at full iPhone quality to your private Supabase storage. Weight &amp; measurements auto-fill from that day's log if you've recorded them — otherwise just type them here.</div></div>
   </div>
 
-  <!-- TIMELINE -->
-  <div id="civ-timeline" class="civ" style="display:none">
-    <div id="ciTimeline" style="margin-top:16px"></div>
-    <div id="ciTimelineEmpty" class="subtle" style="text-align:center;padding:50px 0;display:none">No check-ins yet. Add your first one.</div>
-    <div style="margin-top:16px"><button onclick="downloadAllPhotos()" style="background:var(--ink);color:#fff;border:none;border-radius:9px;padding:11px 20px;font-family:'Oswald';font-weight:600;font-size:.82rem;letter-spacing:.04em;text-transform:uppercase;cursor:pointer">⬇ Download all photos</button></div>
+  <!-- JOURNEY -->
+  <div id="civ-journey" class="civ" style="display:none">
+    <div style="margin-top:18px">
+      <!-- angle toggle -->
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px" id="journeyAngleTabs"></div>
+      <!-- horizontal filmstrip -->
+      <div id="journeyStrip" style="overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:8px"></div>
+      <div id="journeyEmpty" class="subtle" style="text-align:center;padding:50px 0;display:none">No check-ins yet. Add your first one above.</div>
+      <!-- download -->
+      <div style="margin-top:20px;display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+        <button onclick="downloadAllPhotos()" id="dlAllBtn" style="background:var(--ink);color:#fff;border:none;border-radius:9px;padding:11px 20px;font-family:'Oswald';font-weight:600;font-size:.82rem;letter-spacing:.04em;text-transform:uppercase;cursor:pointer">⬇ Download All Photos</button>
+        <span id="dlProgress" style="font-size:.82rem;color:var(--green);font-weight:600;display:none"></span>
+      </div>
+    </div>
   </div>
 
   <!-- COMPARE -->
@@ -1209,20 +1246,95 @@ function bars(id,labels,series,opt={}){
   charts[id]=new Chart(el,{type:'bar',data:{labels,datasets:series.map(s=>({label:s.l,data:s.d,backgroundColor:s.c,borderRadius:5,maxBarThickness:opt.thick||40}))},
     options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:series.length>1,position:'bottom',labels:{usePointStyle:true,pointStyle:'circle',padding:14,color:cssv('--ink2')}},tooltip:{backgroundColor:cssv('--ink'),padding:9,cornerRadius:7,callbacks:opt.pct?{label:c=>c.dataset.label+': '+c.parsed.y+'%'}:{}}},scales:axes(opt.y||{})}});
 }
+/* ── live monthly aggregation from DB ── */
+function monthsInDB(){
+  // ordered list of YYYY-MM present in DB (excludes special keys)
+  const set=new Set();
+  Object.keys(DB).forEach(dt=>{if(/^\d{4}-\d{2}-\d{2}$/.test(dt))set.add(dt.slice(0,7));});
+  return [...set].sort();
+}
+function monthLabel(mk){const[y,m]=mk.split('-');return ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][parseInt(m)-1]+" '"+y.slice(2);}
+// average of a numeric metric per month (null months => null so the line spans gaps)
+function monthlyAvg(metric){
+  const mks=monthsInDB();
+  return mks.map(mk=>{
+    let sum=0,n=0;
+    Object.keys(DB).forEach(dt=>{
+      if(dt.slice(0,7)!==mk)return;
+      const v=DB[dt][metric];
+      if(v!=null&&v!==''&&!Number.isNaN(parseFloat(v))){sum+=parseFloat(v);n++;}
+    });
+    return n?+(sum/n).toFixed(1):null;
+  });
+}
+// last (most recent) logged value of a metric per month — for measurements logged sparsely
+function monthlyLast(metric){
+  const mks=monthsInDB();
+  return mks.map(mk=>{
+    const days=Object.keys(DB).filter(dt=>dt.slice(0,7)===mk&&DB[dt][metric]!=null&&DB[dt][metric]!=='').sort();
+    return days.length?+parseFloat(DB[days[days.length-1]][metric]).toFixed(1):null;
+  });
+}
+// monthly % compliance for a habit (excludes rest-day-skipped habits from the denominator)
+function monthlyCompliance(habitKey,skipOnRest){
+  const mks=monthsInDB();
+  return mks.map(mk=>{
+    let hit=0,tot=0;
+    Object.keys(DB).forEach(dt=>{
+      if(dt.slice(0,7)!==mk)return;const d=DB[dt];
+      if(skipOnRest&&d.rest)return;
+      tot++;if(d[habitKey])hit++;
+    });
+    return tot?Math.round(hit/tot*100):0;
+  });
+}
+// latest logged value of a metric across all DB, and value on/after a start date
+function latestVal(metric){
+  const days=Object.keys(DB).filter(dt=>/^\d{4}-\d{2}-\d{2}$/.test(dt)&&DB[dt][metric]!=null&&DB[dt][metric]!=='').sort();
+  return days.length?parseFloat(DB[days[days.length-1]][metric]):null;
+}
+function valFromDate(metric,fromDate){
+  const days=Object.keys(DB).filter(dt=>/^\d{4}-\d{2}-\d{2}$/.test(dt)&&dt>=fromDate&&DB[dt][metric]!=null&&DB[dt][metric]!=='').sort();
+  return days.length?parseFloat(DB[days[0]][metric]):null;
+}
+// paint the "now vs start" measurement stat cards live
+function paintProgressStats(){
+  const defs=[['waist','statWaist','green',true],['tummy','statTummy','green',true],['chest','statChest','blue',false],['bicep','statBicep','amber',false]];
+  defs.forEach(([k,id,col,lowerGood])=>{
+    const card=document.getElementById(id);if(!card)return;
+    const now=latestVal(k), start=valFromDate(k,START_DATE);
+    const vEl=card.querySelector('.v'), dEl=card.querySelector('.d');
+    if(now==null){if(vEl)vEl.innerHTML='—';if(dEl){dEl.textContent='no data';dEl.className='d flat';}return;}
+    if(vEl)vEl.innerHTML=now+'<small>″</small>';
+    if(start==null||dEl==null){if(dEl){dEl.textContent='—';dEl.className='d flat';}return;}
+    const diff=+(now-start).toFixed(1);
+    if(diff===0){dEl.textContent='≈ holding from '+start;dEl.className='d flat';}
+    else{
+      const good=lowerGood?diff<0:diff>0;
+      const arrow=diff<0?'▼':'▲';
+      dEl.textContent=`${arrow} ${diff>0?'+':''}${diff} from ${start}`;
+      dEl.className='d '+(good?'up':'down');
+    }
+  });
+}
 function buildCharts(id){
   if(id==='fit-progress'){
-    line('cWaist',['Jan','Apr','May'],[{l:'Waist',d:[37,36.75,36.0],c:cssv('--green')},{l:'Tummy',d:[38,36.5,35.5],c:cssv('--accent')}]);
-    line('cChest',['Jan','Apr','May'],[{l:'Chest',d:[42,42.5,42.5],c:cssv('--blue')},{l:'Bicep',d:[14.5,14.2,14.3],c:cssv('--amber')}],{y:{min:13,max:43}});
-    line('cWeight',['Jan','Feb','Mar','Apr','May'],[{l:'Weight',d:[85.1,84.7,85.0,85.4,84.7],c:cssv('--blue')}],{y:{min:83,max:87}});
-    bars('cProt',['Jan','Feb','Mar','Apr','May'],[{l:'Protein',d:[180,128,183,162,162],c:cssv('--accent')}]);
-    line('cPuff',['Jan','Feb','Mar','Apr','May'],[{l:'Puffiness',d:[6.9,5.6,5.2,5.4,5.1],c:cssv('--amber')}],{y:{min:4,max:8,reverse:true}});
+    paintProgressStats();
+    const mLabels=monthsInDB().map(monthLabel);
+    line('cWaist',mLabels,[{l:'Waist',d:monthlyLast('waist'),c:cssv('--green')},{l:'Tummy',d:monthlyLast('tummy'),c:cssv('--accent')}]);
+    line('cChest',mLabels,[{l:'Chest',d:monthlyLast('chest'),c:cssv('--blue')},{l:'Bicep',d:monthlyLast('bicep'),c:cssv('--amber')}],{y:{min:13,max:43}});
+    line('cWeight',mLabels,[{l:'Weight',d:monthlyAvg('weight'),c:cssv('--blue')}],{y:{min:80,max:88}});
+    bars('cProt',mLabels,[{l:'Protein',d:monthlyAvg('proteinAmt'),c:cssv('--accent')}]);
+    line('cPuff',mLabels,[{l:'Puffiness',d:monthlyAvg('puffiness'),c:cssv('--amber')}],{y:{min:3,max:10,reverse:true}});
   }
   if(id==='fit-compliance'){
-    bars('cComp',['Jan','Feb','Mar','Apr','May'],[
-      {l:'Gym',d:[86,32,74,70,81],c:cssv('--green')},
-      {l:'Protein ≥160g',d:[83,43,89,55,59],c:cssv('--accent')},
-      {l:'Steps 10k',d:[83,46,61,63,65],c:cssv('--blue')},
-      {l:'Sleep 8h',d:[46,39,42,37,27],c:cssv('--amber')}
+    const mLabels=monthsInDB().map(monthLabel);
+    const g=curGoal();
+    bars('cComp',mLabels,[
+      {l:'Gym',d:monthlyCompliance('gym',true),c:cssv('--green')},
+      {l:'Protein '+g.protein+'g',d:monthlyCompliance('protein',false),c:cssv('--accent')},
+      {l:'Steps '+(g.steps/1000)+'k',d:monthlyCompliance('steps10k',false),c:cssv('--blue')},
+      {l:'Sleep '+g.sleep+'h',d:monthlyCompliance('sleep8',false),c:cssv('--amber')}
     ],{pct:true,thick:22,y:{min:0,max:100,ticks:{callback:v=>v+'%',color:cssv('--muted')}}});
   }
   if(id==='h-thyroid'){
@@ -1413,7 +1525,7 @@ function applyAuto(d,dt){
   HABITS.forEach(h=>{if(h.auto){const v=d[h.auto.metric];if(v!=null&&v!==''){if(h.auto.test(parseFloat(v),g))d[h.k]=1;else delete d[h.k];}}});
 }
 function scoreFor(d){
-  const skip=d.rest?['gym','cardio','steps10k']:[];let hit=0,total=0;
+  const skip=d.rest?['gym','cardio']:[];let hit=0,total=0;
   HABITS.forEach(h=>{if(skip.includes(h.k))return;total++;if(d[h.k])hit++;});
   return total?{hit,total,pct:Math.round(hit/total*100)}:{hit:0,total:0,pct:0};
 }
@@ -1436,7 +1548,7 @@ function renderTodayCommand(){
   const m=document.getElementById('cmdMetrics');
   if(m)m.innerHTML=metrics.map(([k,v])=>`<div class="mini"><b>${k}</b><span>${v}</span></div>`).join('');
   const missing=HABITS.filter(h=>{
-    if(d.rest&&['gym','cardio','steps10k'].includes(h.k))return false;
+    if(d.rest&&['gym','cardio'].includes(h.k))return false;
     return !d[h.k];
   }).map(h=>h.lbl(g).replace(/^[^\w]+/,'').trim());
   const miss=document.getElementById('cmdMissing');
@@ -1446,7 +1558,7 @@ function renderTodayCommand(){
     if(!d.protein)focus='Protein is the highest-leverage miss. Lock the meal plan before the day gets away.';
     else if(!d.under2k)focus='Calories decide the cut today. Keep the ceiling visible.';
     else if(!d.sleep8)focus='Recovery is the weak link today. Protect the night.';
-    else if(!d.steps10k&&!d.rest)focus='Movement is the remaining easy win. Finish the steps.';
+    else if(!d.steps10k)focus='Movement is the remaining easy win. Finish the steps.';
     else if(!d.thyroid)focus='Medication is not optional data. Mark thyroid if it is done.';
     else focus='Hold the line. Today is clean enough to become boring.';
   }
@@ -1666,7 +1778,7 @@ function renderGrid(){
   HABITS.forEach(h=>{
     rows+=`<tr><td class="rowlabel">${h.lbl(weekGoal)}</td>`+dates.map(dt=>{
       const d=DB[dt]||{};const on=d[h.k];const auto=h.auto?'auto':'';
-      const excused=d.rest&&['gym','cardio','steps10k'].includes(h.k);
+      const excused=d.rest&&['gym','cardio'].includes(h.k);
       if(excused)return `<td class="daycell ${dt===t?'today-col':''}"><span class="gcheck excused" title="Rest day — not counted">–</span></td>`;
       return `<td class="daycell ${dt===t?'today-col':''}"><span class="gcheck ${on?'on':''} ${auto}" onclick="toggleCell('${dt}','${h.k}')">✓</span></td>`;
     }).join('')+`</tr>`;
@@ -1777,7 +1889,7 @@ function renderHistory(){
   }
 
   // all days table (filtered)
-  const cell=(d,k)=>{const exc=d.rest&&['gym','cardio','steps10k'].includes(k);return `<td style="text-align:center"><span class="dot ${exc?'t':(d[k]?'y':'n')}"></span></td>`;};
+  const cell=(d,k)=>{const exc=d.rest&&['gym','cardio'].includes(k);return `<td style="text-align:center"><span class="dot ${exc?'t':(d[k]?'y':'n')}"></span></td>`;};
   const num=(d,k)=>`<td class="tnum">${d[k]!=null?d[k]:'—'}</td>`;
   document.getElementById('histBody').innerHTML=focusDates.map(dt=>{
     const d=DB[dt];const s=scoreFor(d);
@@ -1830,7 +1942,7 @@ function exportCSV(){
   HABITS.forEach(h=>{
     const row=[h.lbl(curGoal())];
     dates.forEach(dt=>{const d=DB[dt]||{};
-      if(d.rest&&(h.k==='gym'||h.k==='cardio'||h.k==='steps10k')){row.push('REST');}
+      if(d.rest&&(h.k==='gym'||h.k==='cardio')){row.push('REST');}
       else row.push(d[h.k]?'TRUE':'FALSE');
     });
     lines.push(row.map(esc).join(','));
@@ -1869,8 +1981,10 @@ loadDB().then(async ()=>{
 /* ══════════ CHECK-IN ENGINE ══════════ */
 const CI_ANGLES=[{k:'front',label:'Front'},{k:'back',label:'Back'},{k:'side',label:'Side'},{k:'legs',label:'Legs'}];
 const CI_BUCKET='progress-photos';
-let CHECKINS={}; // {date:{weight,waist,tummy,chest,bicep,note, photos:{front:url,...}}}
-let ciStaged={};  // pending File objects for the open editor, by angle
+// CHECKINS stores paths (not URLs): {date:{weight,waist,...,note,photos:{front:'path',back:'path',...}}}
+let CHECKINS={};
+let ciStaged={};       // pending File objects for the open editor, by angle
+let ciSignedCache={};  // {path: {url, expires}} — signed URL cache, 7-day TTL
 
 function ciSync(state,msg){const el=document.getElementById('checkinSync');if(!el)return;const m={ok:['p-green','☁ Synced'],off:['p-amber','⚠ Local only'],sync:['p-blue','⟳ Working…']};const[c,t]=m[state]||m.off;el.className='pill '+c;el.textContent=msg||t;}
 
@@ -1889,6 +2003,25 @@ function persistCheckins(){
   try{localStorage.setItem('warmode_checkins_v1',JSON.stringify(CHECKINS));}catch(e){}
   if(cloudOK&&supa){ciSync('sync');supa.from('tracker_days').upsert({date:'__checkins__',data:CHECKINS}).then(({error})=>ciSync(error?'off':'ok'));}
 }
+
+/* ── Signed URL helper (7-day TTL, in-memory cache) ── */
+async function signedUrl(path){
+  if(!path||!supa)return null;
+  const now=Date.now();
+  if(ciSignedCache[path]&&ciSignedCache[path].expires>now+60000)return ciSignedCache[path].url;
+  const TTL=7*24*3600; // 7 days in seconds
+  const {data,error}=await supa.storage.from(CI_BUCKET).createSignedUrl(path,TTL);
+  if(error||!data)return null;
+  ciSignedCache[path]={url:data.signedUrl,expires:now+(TTL-300)*1000};
+  return data.signedUrl;
+}
+/* resolve a stored value: if it looks like a path (no http) get signed URL, else return as-is (local blob or legacy public URL) */
+async function resolvePhotoUrl(val){
+  if(!val)return null;
+  if(val.startsWith('blob:')||val.startsWith('http'))return val; // local staged or legacy public URL
+  return await signedUrl(val);
+}
+
 function daysSinceLastCheckin(){
   const ds=Object.keys(CHECKINS).sort();if(!ds.length)return Infinity;
   const last=ds[ds.length-1];
@@ -1900,7 +2033,14 @@ function updateCheckinBadge(){
 }
 
 let ciActiveView='new';
-function ciView(v){ciActiveView=v;document.querySelectorAll('.ci-tab').forEach(t=>t.classList.toggle('on',t.dataset.civ===v));document.querySelectorAll('.civ').forEach(c=>c.style.display='none');document.getElementById('civ-'+v).style.display='';if(v==='timeline')renderCiTimeline();if(v==='compare')renderCompareSelectors();}
+function ciView(v){
+  ciActiveView=v;
+  document.querySelectorAll('.ci-tab').forEach(t=>t.classList.toggle('on',t.dataset.civ===v));
+  document.querySelectorAll('.civ').forEach(c=>c.style.display='none');
+  document.getElementById('civ-'+v).style.display='';
+  if(v==='journey')renderJourney();
+  if(v==='compare')renderCompareSelectors();
+}
 
 function renderCheckin(){
   ciSync(cloudOK?'ok':'off');
@@ -1914,7 +2054,7 @@ function buildCiSlots(){
   const wrap=document.getElementById('ciSlots');
   wrap.innerHTML=CI_ANGLES.map(a=>`
     <label class="ci-slot" id="slot_${a.k}">
-      <input type="file" accept="image/*" style="display:none" onchange="stagePhoto('${a.k}',this)">
+      <input type="file" accept="image/*" capture="environment" style="display:none" onchange="stagePhoto('${a.k}',this)">
       <span class="ci-ic">＋</span>
       <span class="ci-cap">${a.label}</span>
       <button type="button" class="ci-up" onclick="clearStaged(event,'${a.k}')">×</button>
@@ -1925,8 +2065,7 @@ function ciDateChange(){
   ciStaged={};
   const ex=CHECKINS[dt];
   const day=DB[dt]||{};
-  // weight + measurements: from existing check-in, else from that day's log, else blank
-  const g=(k)=> (ex&&ex[k]!=null)?ex[k] : (day[k]!=null?day[k]:'');
+  const g=(k)=>(ex&&ex[k]!=null)?ex[k]:(day[k]!=null?day[k]:'');
   document.getElementById('ci_weight').value=g('weight');
   document.getElementById('ci_waist').value=g('waist');
   document.getElementById('ci_tummy').value=g('tummy');
@@ -1936,31 +2075,45 @@ function ciDateChange(){
   const pulled=[];
   if(day.weight!=null&&!(ex&&ex.weight!=null))pulled.push('weight');
   if(day.waist!=null)pulled.push('waist');
-  document.getElementById('ci_pulled').textContent = pulled.length?('Auto-filled from your '+fmtDate(dt)+' log: '+pulled.join(', ')+'.'):'';
-  // show existing photos
-  CI_ANGLES.forEach(a=>{
+  document.getElementById('ci_pulled').textContent=pulled.length?('Auto-filled from your '+fmtDate(dt)+' log: '+pulled.join(', ')+'.'):'';
+  // show existing photos — resolve signed URLs async
+  CI_ANGLES.forEach(async a=>{
     const slot=document.getElementById('slot_'+a.k);if(!slot)return;
-    const url=ex&&ex.photos&&ex.photos[a.k];
+    const val=ex&&ex.photos&&ex.photos[a.k];
+    const url=await resolvePhotoUrl(val);
     paintSlot(a.k,url||null);
   });
 }
 function paintSlot(k,url){
   const slot=document.getElementById('slot_'+k);if(!slot)return;
-  slot.querySelector('img')&&slot.querySelector('img').remove();
+  const oldImg=slot.querySelector('img');if(oldImg)oldImg.remove();
   if(url){slot.classList.add('filled');const img=document.createElement('img');img.src=url;slot.insertBefore(img,slot.firstChild);}
   else slot.classList.remove('filled');
 }
 function stagePhoto(k,input){
   const f=input.files&&input.files[0];if(!f)return;
   ciStaged[k]=f;
-  paintSlot(k, URL.createObjectURL(f));
+  paintSlot(k,URL.createObjectURL(f));
 }
 function clearStaged(e,k){
   e.preventDefault();e.stopPropagation();
   delete ciStaged[k];
-  const dt=document.getElementById('ci_date').value;const ex=CHECKINS[dt];
-  if(ex&&ex.photos&&ex.photos[k]){ if(confirm('Remove this saved photo?')){delete ex.photos[k];persistCheckins();} }
-  paintSlot(k, (CHECKINS[dt]&&CHECKINS[dt].photos&&CHECKINS[dt].photos[k])||null);
+  const dt=document.getElementById('ci_date').value;
+  const ex=CHECKINS[dt];
+  if(ex&&ex.photos&&ex.photos[k]){
+    if(confirm('Remove this saved photo?')){
+      // delete from storage too
+      if(supa&&cloudOK&&!ex.photos[k].startsWith('http')){
+        supa.storage.from(CI_BUCKET).remove([ex.photos[k]]);
+      }
+      delete ex.photos[k];persistCheckins();
+    }
+  }
+  // re-resolve and repaint
+  (async()=>{
+    const val=CHECKINS[dt]&&CHECKINS[dt].photos&&CHECKINS[dt].photos[k];
+    paintSlot(k,val?(await resolvePhotoUrl(val)):null);
+  })();
 }
 async function saveCheckin(){
   const dt=document.getElementById('ci_date').value;if(!dt){alert('Pick a date.');return;}
@@ -1973,46 +2126,129 @@ async function saveCheckin(){
   rec.chest=parseFloat(document.getElementById('ci_chest').value)||null;
   rec.bicep=parseFloat(document.getElementById('ci_bicep').value)||null;
   rec.note=document.getElementById('ci_note').value.trim();
-  // upload staged photos
   try{
     for(const k of Object.keys(ciStaged)){
       const file=ciStaged[k];
-      const path=dt+'_'+k+'_'+Date.now()+'.jpg';
+      // store as path: date/angle_timestamp.jpg  e.g. 2026-06-02/front_1717300000000.jpg
+      const path=dt+'/'+k+'_'+Date.now()+'.jpg';
       if(supa&&cloudOK){
         const {error}=await supa.storage.from(CI_BUCKET).upload(path,file,{upsert:true,contentType:file.type||'image/jpeg'});
         if(error)throw error;
-        const {data}=supa.storage.from(CI_BUCKET).getPublicUrl(path);
-        rec.photos[k]=data.publicUrl;
+        rec.photos[k]=path; // store path, not public URL
       } else {
-        // offline fallback: keep a local object URL (won't persist across devices)
-        rec.photos[k]=URL.createObjectURL(file);
+        rec.photos[k]=URL.createObjectURL(file); // offline: local blob (won't persist across devices)
       }
     }
     CHECKINS[dt]=rec;ciStaged={};
     persistCheckins();updateCheckinBadge();
+    // ── mirror measurements into the daily tracker (DB) so progress charts update ──
+    mirrorCheckinToDB(dt,rec);
     const m=document.getElementById('ciSaveMsg');m.style.opacity='1';setTimeout(()=>m.style.opacity='0',1800);
   }catch(e){
-    alert('Photo upload failed: '+e.message+'\n(Check the progress-photos bucket exists and is public.)');
+    alert('Photo upload failed: '+e.message+'\n\nMake sure the progress-photos bucket exists and the anon INSERT policy is set.');
     ciSync('off');
   }
   btn.disabled=false;btn.textContent='Save Check-In';
 }
-
-function renderCiTimeline(){
-  const wrap=document.getElementById('ciTimeline');
-  const dts=Object.keys(CHECKINS).sort().reverse();
-  document.getElementById('ciTimelineEmpty').style.display=dts.length?'none':'block';
-  wrap.innerHTML=dts.map(dt=>{
-    const c=CHECKINS[dt];
-    const cells=CI_ANGLES.map(a=>{const u=c.photos&&c.photos[a.k];return `<div class="ci-thumb" ${u?`onclick="lightbox('${u}')"`:''}>${u?`<img src="${u}">`:'<span class="subtle" style="display:flex;align-items:center;justify-content:center;height:100%;font-size:.7rem">—</span>'}<span class="lbl">${a.label}</span></div>`;}).join('');
-    const stats=[c.weight?c.weight+'kg':null,c.waist?'W '+c.waist:null,c.tummy?'T '+c.tummy:null].filter(Boolean).join(' · ');
-    return `<div class="ci-card"><div style="display:flex;align-items:center;gap:10px"><b style="font-family:'Oswald';letter-spacing:.03em">${fmtDate(dt)}</b><span class="subtle" style="font-size:.8rem">${stats}</span><button onclick="deleteCheckin('${dt}')" style="margin-left:auto;background:none;border:none;color:var(--red);cursor:pointer;font-size:.78rem;font-weight:600">Delete</button></div>${c.note?`<div class="subtle" style="font-size:.8rem;margin-top:4px">${c.note}</div>`:''}<div class="ci-row">${cells}</div></div>`;
-  }).join('');
+/* Copy check-in weight + measurements into that day's DB row so the
+   fit-progress charts and stat cards (which read from DB) stay in sync.
+   Only writes fields the user actually filled; never wipes existing DB data,
+   and never overwrites a value the daily log already has unless the check-in
+   provides a (newer) explicit value. Weight is mirrored too. */
+function mirrorCheckinToDB(dt,rec){
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(dt))return;
+  const day=DB[dt]||{};
+  let changed=false;
+  ['weight','waist','tummy','chest','bicep'].forEach(k=>{
+    if(rec[k]!=null&&rec[k]!==''){ if(day[k]!==rec[k]){day[k]=rec[k];changed=true;} }
+  });
+  if(!changed)return;
+  DB[dt]=day;
+  applyAuto(day,dt);            // re-evaluate auto habits (e.g. weight doesn't gate any, but keeps DB consistent)
+  persist(dt);                  // local + cloud single-day upsert
+  // if a tracker view is currently showing, refresh it
+  const active=document.querySelector('.page.active');
+  if(active){
+    if(active.id==='t-log')renderWeek();
+    if(active.id==='t-history')renderHistory();
+    if(active.id==='fit-progress')buildCharts('fit-progress');
+  }
 }
 function deleteCheckin(dt){
   if(!confirm('Delete the entire '+fmtDate(dt)+' check-in (all photos & measurements)?'))return;
-  delete CHECKINS[dt];persistCheckins();renderCiTimeline();updateCheckinBadge();
+  // remove files from storage
+  if(supa&&cloudOK&&CHECKINS[dt]&&CHECKINS[dt].photos){
+    const paths=Object.values(CHECKINS[dt].photos).filter(v=>v&&!v.startsWith('http')&&!v.startsWith('blob:'));
+    if(paths.length)supa.storage.from(CI_BUCKET).remove(paths);
+  }
+  delete CHECKINS[dt];persistCheckins();
+  if(ciActiveView==='journey')renderJourney();
+  updateCheckinBadge();
 }
+
+/* ══ JOURNEY VIEW — angle toggle + horizontal filmstrip ══ */
+let journeyAngle='front';
+function renderJourney(){
+  const dts=Object.keys(CHECKINS).sort();
+  const empty=document.getElementById('journeyEmpty');
+  const strip=document.getElementById('journeyStrip');
+  if(!dts.length){if(empty)empty.style.display='block';if(strip)strip.innerHTML='';return;}
+  if(empty)empty.style.display='none';
+
+  // build angle tabs
+  const tabWrap=document.getElementById('journeyAngleTabs');
+  if(tabWrap&&!tabWrap.dataset.built){
+    tabWrap.innerHTML=CI_ANGLES.map(a=>`<button class="ci-tab${a.k===journeyAngle?' on':''}" data-angle="${a.k}" onclick="setJourneyAngle('${a.k}')">${a.label}</button>`).join('');
+    tabWrap.dataset.built='1';
+  }
+  // render strip for current angle
+  renderJourneyStrip(dts);
+}
+function setJourneyAngle(k){
+  journeyAngle=k;
+  document.querySelectorAll('#journeyAngleTabs .ci-tab').forEach(b=>b.classList.toggle('on',b.dataset.angle===k));
+  renderJourneyStrip(Object.keys(CHECKINS).sort());
+}
+function renderJourneyStrip(dts){
+  const strip=document.getElementById('journeyStrip');if(!strip)return;
+  // Each check-in = a card column: photo + date + weight
+  const cards=dts.map(dt=>{
+    const c=CHECKINS[dt];
+    const val=c.photos&&c.photos[journeyAngle];
+    const stats=[];
+    if(c.weight)stats.push(c.weight+'kg');
+    if(c.waist)stats.push('W'+c.waist+'″');
+    const statLine=stats.join(' · ');
+    const cardId='jcard_'+dt+'_'+journeyAngle;
+    return `<div style="flex-shrink:0;width:170px;margin-right:10px">
+      <div class="ci-thumb jcard-tall" id="${cardId}" style="width:170px;cursor:${val?'pointer':'default'}" onclick="${val?`jlightbox('${dt}','${journeyAngle}')`:''}">
+        <span class="lbl">${fmtDate(dt)}</span>
+      </div>
+      ${statLine?`<div style="font-size:.72rem;color:var(--muted);margin-top:4px;text-align:center">${statLine}</div>`:''}
+      <div style="display:flex;gap:4px;margin-top:6px;justify-content:center">
+        <button onclick="deleteCheckin('${dt}')" style="background:none;border:none;color:var(--red);cursor:pointer;font-size:.72rem;font-weight:600;padding:2px 6px">Delete</button>
+      </div>
+    </div>`;
+  }).join('');
+
+  strip.innerHTML=`<div style="display:flex;padding:4px 0">${cards}</div>`;
+
+  // async: resolve and inject images
+  dts.forEach(async dt=>{
+    const c=CHECKINS[dt];
+    const val=c.photos&&c.photos[journeyAngle];
+    if(!val)return;
+    const url=await resolvePhotoUrl(val);
+    if(!url)return;
+    const el=document.getElementById('jcard_'+dt+'_'+journeyAngle);
+    if(!el)return;
+    const existing=el.querySelector('img');if(existing)existing.remove();
+    const img=document.createElement('img');img.src=url;el.insertBefore(img,el.firstChild);
+    el.style.cursor='pointer';
+  });
+}
+
+/* ══ COMPARE VIEW — side-by-side with measurement overlay ══ */
 function renderCompareSelectors(){
   const dts=Object.keys(CHECKINS).sort();
   const opts=dts.map(dt=>`<option value="${dt}">${fmtDate(dt)}</option>`).join('');
@@ -2027,39 +2263,220 @@ function renderCompare(){
   if(!a||!b||!CHECKINS[a]||!CHECKINS[b]){res.innerHTML='<p class="subtle">Add at least two check-ins to compare.</p>';return;}
   const A=CHECKINS[a],B=CHECKINS[b];
   const days=Math.abs(Math.floor((new Date(b+'T00:00:00')-new Date(a+'T00:00:00'))/86400000));
-  const delta=(k,unit)=>{if(A[k]==null||B[k]==null)return '';const d=(B[k]-A[k]);const s=d>0?'+':'';const col=(k==='weight'||k==='waist'||k==='tummy')?(d<0?'var(--green)':'var(--red)'):(d>0?'var(--green)':'var(--red)');return `<span style="color:${col};font-weight:600">${s}${d.toFixed(1)}${unit}</span>`;};
-  const angles=CI_ANGLES.map(an=>{
-    const ua=A.photos&&A.photos[an.k],ub=B.photos&&B.photos[an.k];
-    return `<div style="margin-top:14px"><div class="subtle" style="font-size:.74rem;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px">${an.label}</div><div class="cmp-grid">
-      <div class="ci-thumb" ${ua?`onclick="lightbox('${ua}')"`:''}>${ua?`<img src="${ua}">`:'<span class="subtle" style="display:flex;align-items:center;justify-content:center;height:100%">—</span>'}<span class="lbl">${fmtDate(a)}</span></div>
-      <div class="ci-thumb" ${ub?`onclick="lightbox('${ub}')"`:''}>${ub?`<img src="${ub}">`:'<span class="subtle" style="display:flex;align-items:center;justify-content:center;height:100%">—</span>'}<span class="lbl">${fmtDate(b)}</span></div>
-    </div></div>`;
-  }).join('');
-  res.innerHTML=`<div class="card">
-    <div style="display:flex;gap:18px;flex-wrap:wrap;font-size:.9rem">
-      <div><span class="subtle">Span</span><br><b>${days} days</b></div>
-      <div><span class="subtle">Weight</span><br>${delta('weight','kg')||'—'}</div>
-      <div><span class="subtle">Waist</span><br>${delta('waist','″')||'—'}</div>
-      <div><span class="subtle">Tummy</span><br>${delta('tummy','″')||'—'}</div>
-      <div><span class="subtle">Chest</span><br>${delta('chest','″')||'—'}</div>
-      <div><span class="subtle">Bicep</span><br>${delta('bicep','″')||'—'}</div>
+
+  const deltaVal=(k)=>{if(A[k]==null||B[k]==null)return null;return B[k]-A[k];};
+  const deltaHtml=(k,unit,lowerGood=true)=>{
+    const d=deltaVal(k);if(d==null)return '<span class="subtle">—</span>';
+    const good=lowerGood?d<0:d>0;
+    const col=d===0?'var(--muted)':good?'var(--green)':'var(--red)';
+    return `<span style="color:${col};font-weight:700">${d>0?'+':''}${d.toFixed(1)}${unit}</span>`;
+  };
+
+  // Summary row
+  const summaryHtml=`<div class="card" style="margin-bottom:16px">
+    <div style="font-family:'Oswald';font-weight:600;font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:12px">${fmtDate(a)} → ${fmtDate(b)} · ${days} days</div>
+    <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:10px;text-align:center">
+      ${[['Weight','weight','kg',true],['Waist','waist','″',true],['Tummy','tummy','″',true],['Chest','chest','″',false],['Bicep','bicep','″',false]].map(([lbl,k,u,lg])=>`
+        <div>
+          <div style="font-size:.68rem;color:var(--muted);font-family:'Oswald';letter-spacing:.04em;text-transform:uppercase;margin-bottom:4px">${lbl}</div>
+          <div style="font-size:1.1rem">${deltaHtml(k,u,lg)}</div>
+          <div style="font-size:.7rem;color:var(--muted);margin-top:2px">${A[k]!=null?A[k]+(u):'—'} → ${B[k]!=null?B[k]+(u):'—'}</div>
+        </div>`).join('')}
     </div>
-    ${angles}
   </div>`;
+
+  // Per-angle comparison with measurement overlay
+  const angleHtml=CI_ANGLES.map(an=>{
+    // measurement relevant to this angle
+    const mMap={front:'tummy',side:'waist',back:'waist',legs:null};
+    const mk=mMap[an.k];
+    const md=mk?deltaVal(mk):null;
+    const mLabel=mk?mk.charAt(0).toUpperCase()+mk.slice(1):null;
+    const mCol=md==null?'var(--muted)':md<0?'var(--green)':'var(--red)';
+    const mBadge=mLabel&&md!=null?`<div style="text-align:center;margin-bottom:8px;font-size:.8rem"><span style="font-family:'Oswald';font-weight:600;color:var(--muted)">${mLabel}: </span><span style="color:${mCol};font-weight:700">${A[mk]}″ → ${B[mk]}″ (${md>0?'+':''}${md.toFixed(1)}″)</span></div>`:'';
+    return `<div style="margin-top:18px" id="cmpAngle_${an.k}">
+      <div style="font-family:'Oswald';font-weight:600;font-size:.8rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink2);margin-bottom:6px">${an.label}</div>
+      ${mBadge}
+      <div class="cmp-grid" style="position:relative">
+        <div class="ci-thumb" id="cmpA_${an.k}" style="cursor:default">
+          <span class="lbl">${fmtDate(a)}</span>
+        </div>
+        <div class="ci-thumb" id="cmpB_${an.k}" style="cursor:default">
+          <span class="lbl">${fmtDate(b)}</span>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+
+  res.innerHTML=summaryHtml+`<div class="card">${angleHtml}</div>`;
+
+  // async inject photos
+  CI_ANGLES.forEach(async an=>{
+    const resolveAndInject=async(rec,dt,elId)=>{
+      const val=rec.photos&&rec.photos[an.k];
+      if(!val)return;
+      const url=await resolvePhotoUrl(val);
+      if(!url)return;
+      const el=document.getElementById(elId);if(!el)return;
+      const old=el.querySelector('img');if(old)old.remove();
+      const img=document.createElement('img');img.src=url;el.insertBefore(img,el.firstChild);
+      el.style.cursor='pointer';el.onclick=()=>cmpLightbox(a,b,an.k);
+    };
+    await resolveAndInject(A,a,'cmpA_'+an.k);
+    await resolveAndInject(B,b,'cmpB_'+an.k);
+  });
 }
+
+/* ══ DOWNLOAD — fresh signed URLs at download time ══ */
 async function downloadAllPhotos(){
-  const dts=Object.keys(CHECKINS).sort();let n=0;
-  for(const dt of dts){const c=CHECKINS[dt];if(!c.photos)continue;
-    for(const a of CI_ANGLES){const u=c.photos[a.k];if(!u)continue;
-      try{const r=await fetch(u);const bl=await r.blob();const x=document.createElement('a');x.href=URL.createObjectURL(bl);x.download=dt+'_'+a.k+'.jpg';x.click();n++;await new Promise(r=>setTimeout(r,300));}catch(e){}
+  const dts=Object.keys(CHECKINS).sort();
+  let total=0;
+  dts.forEach(dt=>{const c=CHECKINS[dt];if(c.photos)CI_ANGLES.forEach(a=>{if(c.photos[a.k])total++;});});
+  if(!total){alert('No photos to download yet.');return;}
+  const btn=document.getElementById('dlAllBtn');
+  const prog=document.getElementById('dlProgress');
+  btn.disabled=true;if(prog){prog.style.display='inline';prog.textContent='Preparing '+total+' photos…';}
+  let n=0;
+  for(const dt of dts){
+    const c=CHECKINS[dt];if(!c.photos)continue;
+    for(const a of CI_ANGLES){
+      const val=c.photos[a.k];if(!val)continue;
+      try{
+        const url=await resolvePhotoUrl(val); // fresh signed URL
+        if(!url)continue;
+        const r=await fetch(url);const bl=await r.blob();
+        const x=document.createElement('a');x.href=URL.createObjectURL(bl);x.download=dt+'_'+a.k+'.jpg';x.click();
+        n++;if(prog)prog.textContent=`Downloaded ${n} / ${total}…`;
+        await new Promise(r=>setTimeout(r,350));
+      }catch(e){console.warn('Download failed for',dt,a.k,e);}
     }
   }
-  if(!n)alert('No photos to download yet.');
+  btn.disabled=false;
+  if(prog){prog.textContent=n+' photos downloaded.';setTimeout(()=>{prog.style.display='none';},3000);}
 }
+
+/* ══ RICH PHOTO VIEWER ══ */
+/* Two modes:
+   journey: swipe horizontally through SAME angle across all dates
+   compare: swipe horizontally through angles (front/side/back), each slide = two dates side-by-side */
+let lbvMode=null, lbvSlides=[], lbvIndex=0;
+
+function lbvClose(){document.getElementById('lbViewer').classList.remove('show');document.body.style.overflow='';lbvSlides=[];}
+function lbvBuildDots(n,active){
+  const d=document.getElementById('lbvDots');
+  d.innerHTML=Array.from({length:n},(_,i)=>`<i class="${i===active?'on':''}"></i>`).join('');
+}
+function lbvOnScroll(){
+  const stage=document.getElementById('lbvStage');
+  const idx=Math.round(stage.scrollLeft/stage.clientWidth);
+  if(idx!==lbvIndex){lbvIndex=idx;lbvBuildDots(lbvSlides.length,idx);}
+}
+
+/* JOURNEY: open same-angle filmstrip across all dated check-ins */
+async function jlightbox(startDt,angle){
+  const dts=Object.keys(CHECKINS).sort().filter(dt=>CHECKINS[dt].photos&&CHECKINS[dt].photos[angle]);
+  if(!dts.length)return;
+  lbvMode='journey';
+  lbvSlides=dts.map(dt=>({dt,angle,path:CHECKINS[dt].photos[angle]}));
+  const startIdx=Math.max(0,dts.indexOf(startDt));
+  const stage=document.getElementById('lbvStage');
+  stage.onscroll=lbvOnScroll;
+  stage.innerHTML=lbvSlides.map((s,i)=>`
+    <div class="lbv-slide" data-i="${i}">
+      <div class="lbv-loading" style="color:#666">Loading…</div>
+      <div class="lbv-cap">${fmtDate(s.dt)}${CHECKINS[s.dt].weight?' · '+CHECKINS[s.dt].weight+'kg':''} · ${angle}</div>
+    </div>`).join('');
+  document.getElementById('lbViewer').classList.add('show');
+  document.body.style.overflow='hidden';
+  lbvIndex=startIdx; lbvBuildDots(lbvSlides.length,startIdx);
+  // jump to start slide (after layout)
+  requestAnimationFrame(()=>{stage.scrollLeft=startIdx*stage.clientWidth;});
+  // resolve images
+  lbvSlides.forEach(async(s,i)=>{
+    const url=await resolvePhotoUrl(s.path);
+    const slide=stage.querySelector(`.lbv-slide[data-i="${i}"]`);if(!slide||!url)return;
+    s.url=url;
+    const l=slide.querySelector('.lbv-loading');if(l)l.remove();
+    const img=document.createElement('img');img.src=url;slide.insertBefore(img,slide.firstChild);
+  });
+}
+
+/* COMPARE: open angle-swiper, each slide shows dateA vs dateB side-by-side */
+async function cmpLightbox(dateA,dateB,startAngle){
+  lbvMode='compare';
+  const angles=CI_ANGLES.filter(a=>(CHECKINS[dateA]&&CHECKINS[dateA].photos&&CHECKINS[dateA].photos[a.k])||(CHECKINS[dateB]&&CHECKINS[dateB].photos&&CHECKINS[dateB].photos[a.k]));
+  if(!angles.length)return;
+  lbvSlides=angles.map(a=>({angle:a.k,label:a.label,dateA,dateB,
+    pathA:CHECKINS[dateA]&&CHECKINS[dateA].photos&&CHECKINS[dateA].photos[a.k],
+    pathB:CHECKINS[dateB]&&CHECKINS[dateB].photos&&CHECKINS[dateB].photos[a.k]}));
+  let startIdx=angles.findIndex(a=>a.k===startAngle);if(startIdx<0)startIdx=0;
+  const stage=document.getElementById('lbvStage');
+  stage.onscroll=lbvOnScroll;
+  stage.innerHTML=lbvSlides.map((s,i)=>`
+    <div class="lbv-cmp" data-i="${i}">
+      <div class="angle">${s.label}</div>
+      <div class="pair">
+        <div class="half" data-half="A"><div style="color:#666">Loading…</div><div class="hlbl">${fmtDate(s.dateA)}${CHECKINS[s.dateA]&&CHECKINS[s.dateA].weight?' · '+CHECKINS[s.dateA].weight+'kg':''}</div></div>
+        <div class="half" data-half="B"><div style="color:#666">Loading…</div><div class="hlbl">${fmtDate(s.dateB)}${CHECKINS[s.dateB]&&CHECKINS[s.dateB].weight?' · '+CHECKINS[s.dateB].weight+'kg':''}</div></div>
+      </div>
+    </div>`).join('');
+  document.getElementById('lbViewer').classList.add('show');
+  document.body.style.overflow='hidden';
+  lbvIndex=startIdx; lbvBuildDots(lbvSlides.length,startIdx);
+  requestAnimationFrame(()=>{stage.scrollLeft=startIdx*stage.clientWidth;});
+  lbvSlides.forEach(async(s,i)=>{
+    const slide=stage.querySelector(`.lbv-cmp[data-i="${i}"]`);if(!slide)return;
+    for(const[half,path,key] of [['A',s.pathA,'urlA'],['B',s.pathB,'urlB']]){
+      const cell=slide.querySelector(`.half[data-half="${half}"]`);
+      const ph=cell.querySelector('div:not(.hlbl)');
+      if(!path){if(ph)ph.textContent='—';continue;}
+      const url=await resolvePhotoUrl(path);if(!url){if(ph)ph.textContent='—';continue;}
+      s[key]=url;
+      if(ph)ph.remove();
+      const img=document.createElement('img');img.src=url;cell.insertBefore(img,cell.firstChild);
+    }
+  });
+}
+
+/* download the photo(s) currently in view, at full resolution via fresh signed URL */
+async function lbvDownloadCurrent(){
+  const s=lbvSlides[lbvIndex];if(!s)return;
+  const grab=async(path,name)=>{
+    if(!path)return;
+    const url=await resolvePhotoUrl(path);if(!url)return;
+    try{const r=await fetch(url);const bl=await r.blob();const a=document.createElement('a');a.href=URL.createObjectURL(bl);a.download=name;a.click();}catch(e){console.warn(e);}
+  };
+  if(lbvMode==='journey'){
+    await grab(s.path, s.dt+'_'+s.angle+'.jpg');
+  }else{
+    await grab(s.pathA, s.dateA+'_'+s.angle+'.jpg');
+    await new Promise(r=>setTimeout(r,300));
+    await grab(s.pathB, s.dateB+'_'+s.angle+'.jpg');
+  }
+}
+
+// keyboard: Esc closes, arrows navigate
+document.addEventListener('keydown',e=>{
+  if(!document.getElementById('lbViewer').classList.contains('show'))return;
+  const stage=document.getElementById('lbvStage');
+  if(e.key==='Escape')lbvClose();
+  else if(e.key==='ArrowRight')stage.scrollBy({left:stage.clientWidth,behavior:'smooth'});
+  else if(e.key==='ArrowLeft')stage.scrollBy({left:-stage.clientWidth,behavior:'smooth'});
+});
+
+/* legacy simple lightbox — still used by anywhere that calls lightbox(url) directly */
 function lightbox(url){const lb=document.getElementById('lightbox');lb.querySelector('img').src=url;lb.classList.add('show');}
 
 
 </script>
 <div class="lightbox" id="lightbox" onclick="this.classList.remove('show')"><img src=""></div>
+<div id="lbViewer">
+  <div class="lbv-top">
+    <button class="lbv-btn" id="lbvDownload" title="Download" onclick="lbvDownloadCurrent()">⬇</button>
+    <button class="lbv-btn" title="Close" onclick="lbvClose()">✕</button>
+  </div>
+  <div class="lbv-stage" id="lbvStage"></div>
+  <div class="lbv-dots" id="lbvDots"></div>
+</div>
 </body>
 </html>
