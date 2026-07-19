@@ -1,0 +1,15 @@
+# Private medical & personal data — never commit
+Clinical Records/
+Physique Progress/
+Trackers & Briefs/*.xlsx
+
+# OS / editor cruft
+.DS_Store
+Thumbs.db
+desktop.ini
+*.swp
+.vscode/
+.idea/
+
+# Node (only if a build step is ever added)
+node_modules/
