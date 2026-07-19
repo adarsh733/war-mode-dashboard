@@ -369,3 +369,50 @@ table.weekgrid input.gnum:focus{background:var(--green-bg)}
 .macrolegend{display:flex;flex-wrap:wrap;gap:12px;margin-top:8px;font-size:.78rem;color:var(--ink2)}
 
 .fslot-label{font-family:'Oswald';font-weight:600;font-size:.7rem;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);margin:14px 0 2px}
+
+/* ── Food: forms ── */
+.flabel{display:block;font-family:'Oswald';font-weight:600;font-size:.68rem;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);margin:14px 0 5px}
+.finput{width:100%;border:1px solid var(--line2);background:var(--paper);color:var(--ink);border-radius:9px;padding:10px 12px;font-family:'DM Sans';font-size:.95rem;outline:none;transition:border var(--t)}
+.finput:focus{border-color:var(--blue)}
+.frow2{display:flex;gap:10px}
+.frow2>div{flex:1}
+.funit{align-self:center;color:var(--muted);font-size:.85rem;padding:0 2px}
+.fmacros{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.fseg{display:flex;background:var(--paper2);border:1px solid var(--line2);border-radius:24px;padding:3px;gap:3px}
+.fseg button{flex:1;font-family:'Oswald';font-weight:600;font-size:.74rem;letter-spacing:.03em;border:none;background:none;cursor:pointer;padding:8px 12px;border-radius:20px;color:var(--ink2);transition:all var(--t)}
+.fseg button.on{background:var(--blue);color:#fff}
+.fserv-row{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid var(--line)}
+.fserv-row .fserv-label{flex:2}
+.fserv-row .fserv-amt{flex:1;max-width:88px}
+.fserv-row .fmain{flex:2;min-width:0}
+.fserv-def{display:flex;align-items:center;gap:3px;font-size:.72rem;color:var(--muted);white-space:nowrap}
+.fcheck{display:flex;align-items:center;gap:8px;font-size:.9rem;color:var(--ink2);cursor:pointer}
+.fpreview{margin-top:16px}
+.fpreview-inner{background:var(--blue-bg);color:var(--blue);border-radius:9px;padding:11px 13px;font-size:.9rem;font-weight:500}
+.btn-primary{font-family:'Oswald';font-weight:700;font-size:.85rem;letter-spacing:.04em;text-transform:uppercase;
+  border:none;background:var(--blue);color:#fff;border-radius:10px;padding:13px 22px;cursor:pointer;transition:filter var(--t)}
+.btn-primary:hover{filter:brightness(1.08)}
+
+/* ── Food: quick add ── */
+.fquick .fquick-actions{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}
+.fquick #quickResults{margin-top:4px}
+
+/* ── Food: bottom sheet ── */
+.fsheet-overlay{position:fixed;inset:0;z-index:200;background:rgba(20,22,20,.42);backdrop-filter:blur(3px);
+  display:flex;align-items:flex-end;justify-content:center;opacity:0;pointer-events:none;transition:opacity var(--t)}
+.fsheet-overlay.show{opacity:1;pointer-events:auto}
+.fsheet{width:100%;max-width:520px;max-height:88vh;overflow-y:auto;background:var(--paper);border-radius:20px 20px 0 0;
+  padding:10px 20px 26px;box-shadow:0 -8px 40px rgba(0,0,0,.18);transform:translateY(24px);transition:transform var(--t)}
+.fsheet-overlay.show .fsheet{transform:translateY(0)}
+.fsheet-grab{width:40px;height:4px;border-radius:3px;background:var(--line2);margin:2px auto 12px}
+.fsheet-title{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.fsheet-title .fname{font-family:'Oswald';font-weight:600;font-size:1.05rem}
+.fslot-chips{display:flex;flex-wrap:wrap;gap:7px;margin:4px 0 6px}
+.fchip{font-family:'DM Sans';font-weight:500;font-size:.82rem;border:1px solid var(--line2);background:var(--paper);color:var(--ink2);border-radius:20px;padding:7px 13px;cursor:pointer;transition:all var(--t)}
+.fchip.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.flogqty{margin-top:10px}
+.flog-preview{margin:16px 0}
+.flog-macros{display:flex;flex-wrap:wrap;gap:14px;align-items:baseline;font-size:.9rem;color:var(--ink2)}
+.flog-kcal{font-family:'Oswald';font-weight:700;font-size:1.5rem;color:var(--ink)}
+.flog-kcal small{font-family:'DM Sans';font-weight:500;font-size:.6rem;color:var(--muted);margin-left:2px}
+.fsheet .btn-primary{width:100%;margin-top:6px}

@@ -91,6 +91,7 @@ function confirmDeleteItem(id){
   if(confirm(`Delete “${it.name}” from your pantry?`)){ deleteItem(id); renderPantry(); }
 }
 function editItem(id){ go('food-add'); setTimeout(()=>{ if(typeof loadItemIntoForm==='function') loadItemIntoForm(id); }, 30); }
+function confirmDeleteMeal(id){ const m=FOOD_MEALS[id]; if(m && confirm(`Delete meal “${m.name}”?`)){ deleteMeal(id); renderMeals(); } }
 
 /* ══════════ TODAY ══════════ */
 let foodDate = (typeof todayStr==='function') ? todayStr() : new Date().toISOString().slice(0,10);
@@ -129,10 +130,18 @@ function renderToday(){
       </div>
       ${macroBar()}
     </div>
-    <div class="sec-label">Logged today</div>
-    ${entriesHtml}
     <div class="sec-label">Quick add</div>
-    <div class="note"><div>Tap-to-log from Pantry &amp; Meals, “repeat yesterday”, and the oil chip are being wired next. The totals above already compute deterministically from any logged entries and will auto-fill your Tracker's calories &amp; protein for ${htmlSafe(foodDate)}.</div></div>`;
+    <div class="fquick">
+      <input class="dsearch" id="quickSearch" placeholder="Search items &amp; meals to log…" autocomplete="off" oninput="renderQuickResults&&renderQuickResults(this.value)">
+      <div class="fquick-actions">
+        <button class="chip" onclick="repeatYesterday&&repeatYesterday()">↻ Repeat yesterday</button>
+        <button class="chip" onclick="go('food-meals')">Meals</button>
+        <button class="chip" onclick="go('food-add')">+ New item</button>
+      </div>
+      <div id="quickResults" class="flist"></div>
+    </div>
+    <div class="sec-label">Logged today</div>
+    ${entriesHtml}`;
 }
 function renderEntryList(entries){
   const slots = { breakfast:[], lunch:[], dinner:[], snack:[], '':[] };
@@ -173,11 +182,12 @@ function renderMeals(){
     const t=fmtMacros(mealTotals(meal,FOOD_ITEMS));
     return `<div class="frow">
       ${avatarFor(meal.name)}
-      <div class="fmain"><div class="fname">${htmlSafe(meal.name)}</div><div class="fsub">${(meal.components||[]).length} items · ${t.protein}g protein</div></div>
-      <div class="fkcal">${t.kcal}<small>kcal</small></div>
+      <div class="fmain" onclick="openMealLogSheet&&openMealLogSheet('${meal.id}')"><div class="fname">${htmlSafe(meal.name)}</div><div class="fsub">${(meal.components||[]).length} items · ${t.protein}g protein · ${t.kcal} kcal</div></div>
+      <button class="btn-sm" onclick="openMealLogSheet&&openMealLogSheet('${meal.id}')">＋ log</button>
+      <button class="btn-sm" onclick="editMealById&&editMealById('${meal.id}')">✎</button>
+      <button class="btn-sm danger" onclick="confirmDeleteMeal('${meal.id}')">🗑</button>
     </div>`;
   }).join('');
 }
 
-/* ══════════ ADD ITEM (form built next) ══════════ */
-function renderAddItem(){ /* form wired in the next build step */ }
+/* ══════════ ADD ITEM — form lives in foodForm.js (loaded after this file) ══════════ */
