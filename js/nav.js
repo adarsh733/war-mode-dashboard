@@ -2,9 +2,10 @@
 const PAGES={
   'fit-home':'fitness','fit-progress':'fitness','fit-compliance':'fitness','fit-plan':'fitness','fit-training':'fitness','fit-nutrition':'fitness','fit-sleep':'fitness',
   'h-home':'health','h-thyroid':'health','h-lipids':'health','h-vitamins':'health','h-bloodwork':'health','h-meds':'health','h-actions':'health',
-  't-log':'tracker','t-history':'tracker','t-checkin':'tracker'
+  't-log':'tracker','t-history':'tracker','t-checkin':'tracker',
+  'food-today':'food','food-pantry':'food','food-meals':'food','food-add':'food'
 };
-const HOME={fitness:'fit-home',health:'h-home',tracker:'t-log'};
+const HOME={fitness:'fit-home',health:'h-home',tracker:'t-log',food:'food-today'};
 let curSec='tracker';
 const charts={};
 
@@ -30,6 +31,10 @@ function go(id){
   if(id==='t-log')renderWeek();
   if(id==='t-history')renderHistory();
   if(id==='t-checkin')renderCheckin();
+  if(id==='food-today'&&typeof renderToday==='function')renderToday();
+  if(id==='food-pantry'&&typeof renderPantry==='function')renderPantry();
+  if(id==='food-meals'&&typeof renderMeals==='function')renderMeals();
+  if(id==='food-add'&&typeof renderAddItem==='function')renderAddItem();
 }
 document.querySelectorAll('.chip,.dlink,.navcard').forEach(el=>el.addEventListener('click',()=>go(el.dataset.p)));
 

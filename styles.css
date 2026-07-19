@@ -316,3 +316,56 @@ table.weekgrid input.gnum:focus{background:var(--green-bg)}
   .subnav{top:96px}.command{padding:14px}.command .metricline{grid-template-columns:1fr 1fr}.command .big{font-size:1.75rem}
   .seg button{padding:7px 13px}.menu-btn{display:block}.tb-inner{padding-left:56px;padding-right:12px}
 }
+
+/* ══════════ FOOD SECTION ══════════ */
+.seg button.on[data-sec="food"]{background:var(--blue)}
+
+.ftoday-top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:6px}
+.fdatestrip{display:flex;align-items:center;justify-content:center;gap:14px;margin:10px 0 16px}
+.fdatestrip .fdate{font-family:'Oswald';font-weight:600;font-size:1rem;letter-spacing:.02em;min-width:120px;text-align:center}
+
+.btn-sm{font-family:'Oswald';font-weight:600;font-size:.72rem;letter-spacing:.03em;text-transform:uppercase;
+  border:1px solid var(--line2);background:var(--paper);color:var(--ink2);border-radius:8px;padding:6px 12px;cursor:pointer;transition:all var(--t)}
+.btn-sm:hover{background:var(--paper2)}
+.btn-sm.danger{color:var(--red);border-color:var(--red-bg)}
+
+.fsearchbar{display:flex;gap:8px;align-items:center;margin:14px 0}
+.fsearchbar .dsearch{flex:1;margin:0}
+
+.flist{display:flex;flex-direction:column;gap:0}
+.frow{display:flex;align-items:center;gap:12px;padding:12px 4px;border-bottom:1px solid var(--line);cursor:pointer;transition:background var(--t)}
+.frow:hover{background:var(--paper)}
+.frow .fmain{flex:1;min-width:0}
+.frow .fname{font-weight:600;color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.frow .fsub{font-size:.8rem;color:var(--muted);margin-top:1px}
+.frow .fkcal{font-family:'Oswald';font-weight:700;font-size:1.15rem;color:var(--ink);white-space:nowrap}
+.frow .fkcal small{font-family:'DM Sans';font-weight:500;font-size:.62rem;color:var(--muted);margin-left:2px}
+.frow.logrow .btn-sm{padding:5px 9px;margin-left:4px}
+.ftrust{font-size:.85rem}
+
+.favatar{display:grid;place-items:center;width:38px;height:38px;flex:none;border-radius:9px;
+  font-family:'Oswald';font-weight:700;font-size:1.05rem}
+
+.fdetail{border-bottom:1px solid var(--line)}
+.fdet-inner{padding:10px 4px 16px}
+.fdet-head{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}
+.fdet-per100{font-size:.85rem;color:var(--ink2);margin-bottom:10px}
+.ftable{width:100%;border-collapse:collapse;font-size:.82rem}
+.ftable th{text-align:left;font-family:'Oswald';font-weight:600;font-size:.66rem;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);padding:4px 8px;border-bottom:1px solid var(--line)}
+.ftable td{padding:5px 8px;border-bottom:1px solid var(--line)}
+.fdet-actions{display:flex;gap:8px;margin-top:12px}
+
+.fempty{padding:22px 8px;text-align:center;color:var(--muted);font-size:.9rem}
+.fempty .chip{margin-left:6px}
+
+.ftoday-totals{margin-top:6px}
+.ftt-row{display:flex;gap:14px}
+.ftt-big{flex:1}
+.ftt-big .k{font-family:'Oswald';font-weight:600;font-size:.66rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.ftt-big .v{font-family:'Oswald';font-weight:700;font-size:1.15rem;margin-top:4px;display:flex;align-items:center;gap:6px}
+.ftt-big .v small{font-family:'DM Sans';font-weight:500;font-size:.72rem;color:var(--muted)}
+.macrobar{display:flex;height:9px;border-radius:6px;overflow:hidden;background:var(--paper2);margin-top:14px}
+.macrobar>div{height:100%}
+.macrolegend{display:flex;flex-wrap:wrap;gap:12px;margin-top:8px;font-size:.78rem;color:var(--ink2)}
+
+.fslot-label{font-family:'Oswald';font-weight:600;font-size:.7rem;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);margin:14px 0 2px}

@@ -32,6 +32,7 @@
       <button data-sec="fitness" onclick="setSec('fitness')">🏋️ Fitness</button>
       <button data-sec="health" onclick="setSec('health')">🩺 Health</button>
       <button class="on" data-sec="tracker" onclick="setSec('tracker')">📓 Tracker</button>
+      <button data-sec="food" onclick="setSec('food')">🍽️ Food</button>
     </div>
   </div>
 </div>
@@ -62,6 +63,12 @@
       <button class="chip" data-p="t-history">History &amp; Stats</button>
       <button class="chip" data-p="t-checkin">Check-In <span id="checkinBadge" class="ci-badge" style="display:none"></span></button>
     </div>
+    <div class="chip-group" data-for="food">
+      <button class="chip on" data-p="food-today">Today</button>
+      <button class="chip" data-p="food-pantry">Pantry</button>
+      <button class="chip" data-p="food-meals">Meals</button>
+      <button class="chip" data-p="food-add">+ Add Item</button>
+    </div>
   </div>
 </div>
 
@@ -90,6 +97,11 @@
   <button class="dlink" data-p="t-log">Log the Week</button>
   <button class="dlink" data-p="t-history">History &amp; Stats</button>
   <button class="dlink" data-p="t-checkin">Check-In</button>
+  <h4>🍽️ Food</h4>
+  <button class="dlink" data-p="food-today">Today</button>
+  <button class="dlink" data-p="food-pantry">Pantry</button>
+  <button class="dlink" data-p="food-meals">Meals</button>
+  <button class="dlink" data-p="food-add">+ Add Item</button>
 </aside>
 
 <div class="wrap">
@@ -854,6 +866,54 @@
   </div>
 </section>
 
+<!-- ══════════ FOOD ══════════ -->
+
+<!-- FOOD · TODAY -->
+<section class="page" id="food-today">
+  <div class="kicker">Food · Daily Log</div>
+  <div class="ftoday-top">
+    <h1 class="title" style="margin:0">Today</h1>
+    <span id="foodSyncBadge" class="pill p-blue">⟳ Syncing…</span>
+  </div>
+  <div class="fdatestrip">
+    <button class="btn-sm" onclick="foodShiftDate(-1)">‹</button>
+    <span id="foodDateLabel" class="fdate">—</span>
+    <button class="btn-sm" onclick="foodShiftDate(1)">›</button>
+  </div>
+  <div id="todayBody"></div>
+</section>
+
+<!-- FOOD · PANTRY -->
+<section class="page" id="food-pantry">
+  <div class="kicker">Food · Pantry</div>
+  <h1 class="title">Your Food Database</h1>
+  <p class="lede">Every item stores macros per 100g/100ml — quantities are always exact. <span class="subtle" id="pantryCount"></span></p>
+  <div class="fsearchbar">
+    <input class="dsearch" id="pantrySearch" placeholder="Search items, brands, tags…" autocomplete="off" oninput="setPantryQuery(this.value)">
+    <button class="chip" onclick="go('food-add')">+ Add</button>
+  </div>
+  <div id="pantryList" class="flist"></div>
+</section>
+
+<!-- FOOD · MEALS -->
+<section class="page" id="food-meals">
+  <div class="kicker">Food · Meals</div>
+  <div class="ftoday-top">
+    <h1 class="title" style="margin:0">Meals</h1>
+    <button class="chip" onclick="createMeal&&createMeal()">+ Create a meal</button>
+  </div>
+  <p class="lede">Reusable bundles of items — build once, log in one tap.</p>
+  <div id="mealsList" class="flist"></div>
+</section>
+
+<!-- FOOD · ADD ITEM -->
+<section class="page" id="food-add">
+  <div class="kicker">Food · Add Item</div>
+  <h1 class="title">Add an Item</h1>
+  <p class="lede">Manual entry (Phase 1). Label-scan &amp; screenshot import come with the AI layer.</p>
+  <div id="addItemBody"><div class="note"><div>The manual add form is being wired next.</div></div></div>
+</section>
+
 </div>
 
 <div class="lightbox" id="lightbox" onclick="this.classList.remove('show')"><img src=""></div>
@@ -873,6 +933,12 @@
 <script src="js/dates.js"></script>
 <script src="js/tracker.js"></script>
 <script src="js/checkin.js"></script>
+<!-- Food section (Phase 1) -->
+<script src="js/food/foodMath.js"></script>
+<script src="js/food/seed.js"></script>
+<script src="js/food/foodData.js"></script>
+<script src="js/food/foodUI.js"></script>
+<script src="js/food/bridge.js"></script>
 <script src="js/app.js"></script>
 </body>
 </html>
