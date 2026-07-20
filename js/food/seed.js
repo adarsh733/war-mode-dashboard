@@ -17,6 +17,7 @@ function _mk(id, name, basis, p, servings, opts){
     defaultServingIndex: opts.def != null ? opts.def : (servings && servings.length ? 0 : -1),
     trust: opts.trust || 'seed',
     isHomeCooked: !!opts.home,
+    aliases: opts.aliases || [],
     tags: opts.tags || [],
     notes: opts.notes || '',
     useCount: 0,
@@ -87,3 +88,41 @@ const FOOD_SEED = [
   _mk('seed_dhokla','Dhokla','g',[160,6,24,4,2],[['2 pieces (80g)',80]],{tags:['snack']}),
   _mk('seed_coffee','Milk Coffee (sugar)','ml',[55,1.6,7,2],[['1 cup (150ml)',150]],{tags:['beverage']})
 ];
+
+/* Alternate names so searching either term finds the item (spec: roti↔chapati, dahi↔curd, …) */
+const _SEED_ALIASES = {
+  seed_roti:['chapati','chapatti','phulka','fulka','rotli'],
+  seed_paratha:['parantha'],
+  seed_naan:['nan'],
+  seed_rice:['chawal','bhaat','steamed rice'],
+  seed_jeerarice:['cumin rice'],
+  seed_poha:['pohe','flattened rice'],
+  seed_curd:['dahi','yogurt','yoghurt'],
+  seed_curdreg:['dahi','yogurt'],
+  seed_buttermilk:['chaas','chhachh','mattha'],
+  seed_milk:['doodh'],
+  seed_paneer:['cottage cheese'],
+  seed_toordal:['arhar dal','tur dal','tuvar dal','pigeon pea'],
+  seed_moongdal:['moong dal','yellow dal','mung dal'],
+  seed_chana:['chole','chhole','chickpea','chickpeas'],
+  seed_rajma:['kidney beans'],
+  seed_sprouts:['ankurit','sprouted moong'],
+  seed_roastedchana:['bhuna chana','roasted gram'],
+  seed_banana:['kela'],
+  seed_apple:['seb'],
+  seed_almonds:['badam'],
+  seed_peanuts:['moongphali','groundnut','groundnuts'],
+  seed_peanutbutter:['pb'],
+  seed_oats:['oatmeal'],
+  seed_ghee:['clarified butter','desi ghee'],
+  seed_oil:['refined oil','sunflower oil'],
+  seed_dhokla:['khaman'],
+  seed_daliceberg:['salad'],
+  seed_palak:['spinach'],
+  seed_bhindi:['okra','lady finger','ladyfinger'],
+  seed_baingan:['brinjal','eggplant','aubergine'],
+  seed_aloogobi:['aloo gobhi','potato cauliflower'],
+  seed_wholetruthwhey:['whey','protein powder','wpi','isolate'],
+  seed_sidsfarm:['sids milk','high protein milk']
+};
+FOOD_SEED.forEach(it => { if(_SEED_ALIASES[it.id]) it.aliases = _SEED_ALIASES[it.id]; });

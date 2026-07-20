@@ -34,14 +34,14 @@ function renderQuickResults(q){
   const box = document.getElementById('quickResults'); if(!box) return;
   q = (q||'').trim().toLowerCase();
   if(q.length < 1){ box.innerHTML=''; return; }
-  const items = Object.values(FOOD_ITEMS).filter(it => (it.name+' '+(it.brand||'')).toLowerCase().includes(q))
-      .sort((a,b)=>(b.useCount||0)-(a.useCount||0)).slice(0,8);
-  const meals = Object.values(FOOD_MEALS).filter(m => m.name.toLowerCase().includes(q)).slice(0,4);
+  const meals = Object.values(FOOD_MEALS).filter(m => !String(m.id).startsWith('__') && m.name.toLowerCase().includes(q)).slice(0,4);
+  const items = Object.values(FOOD_ITEMS).filter(it => itemMatchesQuery(it, q))
+      .sort((a,b)=>(b.useCount||0)-(a.useCount||0)).slice(0,10);
   let html = '';
   meals.forEach(m=>{ const t=fmtMacros(mealTotals(m,FOOD_ITEMS));
-    html += `<div class="frow" onclick="openMealLogSheet('${m.id}')">${avatarFor(m.name)}<div class="fmain"><div class="fname">${htmlSafe(m.name)} <span class="pill p-blue" style="font-size:.6rem">meal</span></div><div class="fsub">${t.protein}g protein</div></div><div class="fkcal">${t.kcal}<small>kcal</small></div></div>`; });
+    html += `<div class="frow" onclick="openMealLogSheet('${m.id}')">${avatarFor(m.name)}<div class="fmain"><div class="fname">${htmlSafe(m.name)} <span class="fbadge meal">🍲 Meal</span></div><div class="fsub">${t.kcal} kcal · ${t.protein}g P</div></div><div class="fkcal">＋</div></div>`; });
   items.forEach(it=>{ const d=defaultServingMacros(it);
-    html += `<div class="frow" onclick="openItemLogSheet('${it.id}')">${avatarFor(it.name)}<div class="fmain"><div class="fname">${htmlSafe(it.name)} <span class="ftrust">${TRUST_DOT[it.trust]||''}</span></div><div class="fsub">${htmlSafe(d.label)} · ${d.m.protein}g protein</div></div><div class="fkcal">${d.m.kcal}<small>kcal</small></div></div>`; });
+    html += `<div class="frow" onclick="openItemLogSheet('${it.id}')">${avatarFor(it.name)}<div class="fmain"><div class="fname">${htmlSafe(it.name)} <span class="ftrust">${TRUST_DOT[it.trust]||''}</span></div><div class="fsub">${htmlSafe(d.label)} · ${d.m.kcal} kcal · ${d.m.protein}g P</div></div><div class="fkcal">＋</div></div>`; });
   box.innerHTML = html || `<div class="fempty">No match. <button class="chip" onclick="go('food-add')">+ Add “${htmlSafe(q)}”</button></div>`;
 }
 
@@ -120,7 +120,7 @@ function commitItemLog(){
     disp:{ qty:d.qty, unit:d.servingIndex>=0?it.servings[d.servingIndex].label:baseUnit(it) } };
   if(d.oilGrams>0) entry.oil={ grams:d.oilGrams, type:'oil' };
   const day=ensureLogDay(foodDate); day.entries.push(entry);
-  saveLogDay(foodDate); bumpUseCount(d.itemId); syncFoodToTracker(foodDate);
+  markDayDirty(); saveLogDay(foodDate); bumpUseCount(d.itemId);
   fsheetClose(); renderToday();
 }
 function commitMealLog(){
@@ -128,7 +128,7 @@ function commitMealLog(){
   const entry={ kind:'meal', mealId:d.mealId, servings:d.servings, meal:d.slot };
   if(d.oilGrams>0) entry.oil={ grams:d.oilGrams, type:'oil' };
   const day=ensureLogDay(foodDate); day.entries.push(entry);
-  saveLogDay(foodDate); syncFoodToTracker(foodDate);
+  markDayDirty(); saveLogDay(foodDate);
   fsheetClose(); renderToday();
 }
 
@@ -138,7 +138,7 @@ function repeatYesterday(){
   if(!yd || !(yd.entries||[]).length){ alert('Nothing was logged on '+fmtDate(y)+'.'); return; }
   const day=ensureLogDay(foodDate);
   yd.entries.forEach(e=> day.entries.push(JSON.parse(JSON.stringify(e))));
-  saveLogDay(foodDate); syncFoodToTracker(foodDate); renderToday();
+  markDayDirty(); saveLogDay(foodDate); renderToday();
 }
 
 /* ══════════ MEALS BUILDER ══════════ */
@@ -163,7 +163,7 @@ function renderMealEditor(){
     <input class="finput" id="meal_name" placeholder="e.g. Oats Whey Smoothie" value="${htmlSafe(d.name)}" oninput="_mealDraft.name=this.value">
     <div class="sec-label">Ingredients</div>
     <div id="meal_components">${rows}</div>
-    <input class="dsearch" id="mealPick" placeholder="Add ingredient — search pantry…" oninput="renderMealPicker(this.value)" style="margin-top:8px">
+    <input class="fsearch-input" id="mealPick" placeholder="🔍 Add ingredient — search pantry…" oninput="renderMealPicker(this.value)" style="margin-top:8px">
     <div id="mealPickResults" class="flist"></div>
     <div class="fdet-actions" style="margin-top:16px">
       <button class="btn-primary" onclick="saveMealDraft()">Save meal</button>

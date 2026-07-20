@@ -889,7 +889,7 @@
   <h1 class="title">Your Food Database</h1>
   <p class="lede">Every item stores macros per 100g/100ml — quantities are always exact. <span class="subtle" id="pantryCount"></span></p>
   <div class="fsearchbar">
-    <input class="dsearch" id="pantrySearch" placeholder="Search items, brands, tags…" autocomplete="off" oninput="setPantryQuery(this.value)">
+    <input class="fsearch-input" id="pantrySearch" placeholder="🔍 Search items, brands, aliases…" autocomplete="off" oninput="setPantryQuery(this.value)">
     <button class="chip" onclick="go('food-add')">+ Add</button>
   </div>
   <div id="pantryList" class="flist"></div>
@@ -937,6 +937,7 @@
 <script src="js/food/foodMath.js"></script>
 <script src="js/food/seed.js"></script>
 <script src="js/food/foodData.js"></script>
+<script src="js/food/foodSuggest.js"></script>
 <script src="js/food/foodUI.js"></script>
 <script src="js/food/foodForm.js"></script>
 <script src="js/food/foodLog.js"></script>

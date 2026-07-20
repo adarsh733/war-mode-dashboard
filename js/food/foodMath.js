@@ -77,13 +77,16 @@ function addInto(a, b){
   return a;
 }
 
-/* Totals for a saved meal: sum its component items + any added oil.
- * itemsById: { itemId: item }. Missing items are skipped (defensive). */
-function mealTotals(meal, itemsById){
+/* Totals for a saved meal (one serving): sum component items + any added oil.
+ * Optional per-day tweaks: overrides {itemId:amount} and removed [itemId]
+ * let a LOGGED meal be adjusted for that day without editing the template. */
+function mealTotals(meal, itemsById, overrides, removed){
   const t = zeroMacros();
   ((meal && meal.components) || []).forEach(c => {
+    if (removed && removed.indexOf(c.itemId) !== -1) return;
+    const amt = (overrides && overrides[c.itemId] != null) ? overrides[c.itemId] : c.amount;
     const it = itemsById[c.itemId];
-    if (it) addInto(t, macrosForAmount(it, c.amount));
+    if (it) addInto(t, macrosForAmount(it, amt));
   });
   if (meal && meal.addedOil && meal.addedOil.grams) addInto(t, oilMacros(meal.addedOil.grams));
   return t;
@@ -98,7 +101,7 @@ function entryMacros(entry, itemsById, mealsById){
     if (it) m = macrosForAmount(it, entry.amount);              // amount stored in base units
   } else if (entry.kind === 'meal'){
     const meal = mealsById[entry.mealId];
-    if (meal){ const mt = mealTotals(meal, itemsById); const n = Number(entry.servings) || 1;
+    if (meal){ const mt = mealTotals(meal, itemsById, entry.overrides, entry.removed); const n = Number(entry.servings) || 1;
       m = { kcal:mt.kcal*n, protein:mt.protein*n, carbs:mt.carbs*n, fat:mt.fat*n, fiber:mt.fiber*n, hasFiber:mt.hasFiber }; }
   } else if (entry.kind === 'adhoc'){
     m = { kcal:+entry.kcal||0, protein:+entry.protein||0, carbs:+entry.carbs||0, fat:+entry.fat||0,

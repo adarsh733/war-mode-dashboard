@@ -44,7 +44,7 @@ canvas{max-width:100%}
 .subnav{position:sticky;top:105px;z-index:70;background:rgba(255,253,250,.96);backdrop-filter:blur(12px);border-bottom:1px solid var(--line);box-shadow:var(--shadow-sm);overflow-x:auto;-webkit-overflow-scrolling:touch}
 .subnav::-webkit-scrollbar{display:none}
 .subnav-inner{max-width:1080px;margin:0 auto;padding:0 18px;display:flex}
-.chip-group[data-for="fitness"],.chip-group[data-for="health"],.chip-group[data-for="tracker"]{display:none;gap:2px}
+.chip-group{display:none;gap:2px}
 .chip-group.show{display:flex}
 .chip{font-family:'Oswald';font-weight:500;font-size:.82rem;letter-spacing:.04em;border:none;background:none;
   color:var(--muted);padding:14px 16px 12px;cursor:pointer;white-space:nowrap;position:relative;transition:color var(--t)}
@@ -416,3 +416,112 @@ table.weekgrid input.gnum:focus{background:var(--green-bg)}
 .flog-kcal{font-family:'Oswald';font-weight:700;font-size:1.5rem;color:var(--ink)}
 .flog-kcal small{font-family:'DM Sans';font-weight:500;font-size:.6rem;color:var(--muted);margin-left:2px}
 .fsheet .btn-primary{width:100%;margin-top:6px}
+
+/* ══════════════════ FOOD v2 — bigger, aesthetic ══════════════════ */
+section[id^="food-"]{font-size:1.02rem}
+section[id^="food-"] .title{font-size:2rem;letter-spacing:-.01em}
+section[id^="food-"] .lede{font-size:1rem}
+
+/* rows — bigger */
+.frow{gap:14px;padding:14px 6px}
+.frow .fname{font-size:1.06rem;font-weight:600;display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.frow .fsub{font-size:.9rem;margin-top:3px}
+.frow .fkcal{font-size:1.4rem}
+.frow .fkcal small{font-size:.6rem}
+.favatar{width:46px;height:46px;border-radius:12px;font-size:1.25rem}
+
+/* section headers that actually read as headers */
+.sec-label{font-size:.8rem !important;letter-spacing:.14em;color:var(--ink2)}
+section[id^="food-"] .sec-label,.fsheet .sec-label{font-family:'Oswald';font-weight:600;font-size:.9rem !important;
+  letter-spacing:.1em;text-transform:uppercase;color:var(--ink);border-left:3px solid var(--blue);padding-left:10px;margin:22px 0 12px}
+
+/* ── big aesthetic search ── */
+.fsearch-input{width:100%;border:1.5px solid var(--line2);background:var(--paper);color:var(--ink);
+  border-radius:14px;padding:15px 18px;font-family:'DM Sans';font-size:1.05rem;outline:none;
+  box-shadow:var(--shadow-sm);transition:border var(--t),box-shadow var(--t)}
+.fsearch-input::placeholder{color:var(--muted)}
+.fsearch-input:focus{border-color:var(--blue);box-shadow:0 0 0 4px var(--blue-bg)}
+.fsearchbar{display:flex;gap:10px;align-items:center;margin:16px 0}
+.fsearchbar .fsearch-input{flex:1}
+.fsearch-results:not(:empty){margin-top:8px;border:1px solid var(--line);border-radius:14px;background:var(--paper);
+  box-shadow:var(--shadow);overflow:hidden;max-height:360px;overflow-y:auto}
+.fsearch-results .frow{padding:12px 14px}
+.fsearch-results .frow:last-child{border-bottom:none}
+
+/* ── hero rings ── */
+.fhero{padding:22px 18px}
+.fhero-rings{display:flex;justify-content:space-around;gap:10px;flex-wrap:wrap}
+.fring-wrap{position:relative;width:132px;height:132px}
+.fring-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;pointer-events:none}
+.fring-val{font-family:'Oswald';font-weight:700;font-size:1.9rem;line-height:1;color:var(--ink)}
+.fring-val small{font-size:1rem;font-weight:600}
+.fring-lbl{font-family:'Oswald';font-weight:500;font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-top:4px}
+.fring-goal{font-size:.68rem;color:var(--muted);margin-top:3px}
+.fhero-macros{display:flex;justify-content:center;gap:26px;margin:18px 0 12px}
+.fmac{text-align:center}
+.fmac-k{display:block;font-family:'Oswald';font-weight:500;font-size:.66rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.fmac-v{display:block;font-family:'Oswald';font-weight:700;font-size:1.15rem;margin-top:2px}
+.macrobar{height:11px;margin-top:6px}
+.macrolegend{gap:16px;font-size:.82rem}
+.macrolegend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:middle}
+
+/* ── quick add block ── */
+.fquick{margin:18px 0 6px}
+.fquick .fquick-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+
+/* ── meal-slot sections ── */
+.fslot{margin:14px 0;padding:4px 0 8px;border-top:2px solid var(--line)}
+.fslot-head{display:flex;align-items:baseline;justify-content:space-between;gap:10px;padding:8px 2px}
+.fslot-title{font-family:'Fraunces';font-weight:600;font-size:1.45rem;color:var(--ink)}
+.fslot-sub{font-family:'Oswald';font-weight:600;font-size:.92rem;color:var(--ink2);white-space:nowrap}
+.fslot-empty{color:var(--muted);font-size:.9rem;padding:8px 6px;font-style:italic}
+.fslot-entries{display:flex;flex-direction:column}
+
+/* suggestion chips */
+.fsugg-row{display:flex;flex-wrap:wrap;gap:8px;padding:4px 2px 10px}
+.fsugg-chip{font-family:'DM Sans';font-size:.9rem;font-weight:500;border:1px solid var(--line2);background:var(--paper);
+  color:var(--ink);border-radius:22px;padding:8px 14px;cursor:pointer;transition:all var(--t);display:inline-flex;align-items:center;gap:6px}
+.fsugg-chip b{color:var(--blue);font-size:1.1rem;line-height:1}
+.fsugg-chip.item:hover{border-color:var(--green);background:var(--green-bg)}
+.fsugg-chip.meal:hover{border-color:var(--blue);background:var(--blue-bg)}
+.fsugg-edit{font-family:'DM Sans';font-size:.85rem;border:1px dashed var(--line2);background:none;color:var(--muted);
+  border-radius:22px;padding:8px 12px;cursor:pointer}
+.fsugg-edit.wide{width:100%;text-align:center;padding:11px}
+.fsugg-edit:hover{color:var(--blue);border-color:var(--blue)}
+
+/* item/meal legend badges */
+.fbadge{font-family:'Oswald';font-weight:600;font-size:.62rem;letter-spacing:.04em;text-transform:uppercase;
+  padding:3px 8px;border-radius:6px;white-space:nowrap;flex:none}
+.fbadge.item{background:var(--green-bg);color:var(--green)}
+.fbadge.meal{background:var(--blue-bg);color:var(--blue)}
+.fbadge.adhoc{background:var(--amber-bg);color:var(--amber)}
+
+/* logged entry rows */
+.logrow{display:flex;align-items:center;gap:10px;padding:13px 6px;border-bottom:1px solid var(--line);background:var(--paper)}
+.logrow:hover{background:var(--paper2)}
+.logrow .fmain{flex:1;min-width:0;cursor:pointer}
+.logrow .fname{font-size:1.02rem;font-weight:600}
+.logrow .fsub{font-size:.86rem;color:var(--muted);margin-top:2px}
+.logrow .fkcal{font-family:'Oswald';font-weight:700;font-size:1.25rem;white-space:nowrap}
+.logrow .fkcal small{font-family:'DM Sans';font-size:.58rem;color:var(--muted);margin-left:2px}
+.logrow .btn-sm{padding:6px 10px}
+.fdrag{cursor:grab;color:var(--line2);font-size:1.1rem;user-select:none;touch-action:none}
+.fdrag:active{cursor:grabbing}
+.logrow.dragover{border-top:2px solid var(--blue)}
+
+/* inline entry editor */
+.enteditor{background:var(--paper2);border-bottom:1px solid var(--line)}
+.ented-inner{padding:14px 12px 18px}
+.ented-inner .fslot-chips{margin-bottom:10px}
+.fserv-row.removed{opacity:.5}
+.fserv-row.removed .fname{text-decoration:line-through}
+
+/* done-for-the-day bar */
+.fdone-bar{margin:22px 0 8px;padding:16px;border-radius:14px;background:var(--paper);border:1px solid var(--line);box-shadow:var(--shadow-sm)}
+.fdone-bar.done{display:flex;align-items:center;justify-content:space-between;gap:12px;background:var(--green-bg);border-color:var(--green);color:var(--green);font-weight:600;font-family:'Oswald'}
+.btn-primary.wide,.fsugg-edit.wide{width:100%}
+.btn-primary.wide{padding:15px;font-size:.95rem}
+
+/* sheet chips a touch bigger */
+.fsheet .fchip{font-size:.88rem;padding:8px 14px}
+.fsheet .fname{font-size:1.1rem}

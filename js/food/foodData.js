@@ -42,8 +42,26 @@ async function loadFood(){
     try{ localStorage.setItem(FOOD_SEED_FLAG, '1'); }catch(e){}
     foodLocalSaveItems();
   }
+  if(typeof loadSuggestionsLocal === 'function') loadSuggestionsLocal();
 
   await foodCloudReconcile();
+}
+
+/* ---- search matching (includes aliases + tags) ---- */
+function normName(s){ return (s||'').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim(); }
+function itemMatchesQuery(it, q){
+  if(!q) return true;
+  const hay = (it.name+' '+(it.brand||'')+' '+(it.aliases||[]).join(' ')+' '+(it.tags||[]).join(' ')).toLowerCase();
+  return hay.includes(q);
+}
+/* AI-dedup hook (Phase 2): find an existing item by name/brand/alias so an image
+ * of an item he already created EDITS it instead of adding a duplicate. */
+function findItemByNameBrand(name, brand){
+  const n = normName(name), b = normName(brand);
+  const items = Object.values(FOOD_ITEMS);
+  return items.find(it => normName(it.name)===n && (!b || normName(it.brand)===b))
+      || items.find(it => normName(it.name)===n)
+      || items.find(it => (it.aliases||[]).some(a => normName(a)===n)) || null;
 }
 
 async function foodCloudReconcile(){
@@ -59,8 +77,12 @@ async function foodCloudReconcile(){
     foodCloudOK = true;
 
     mergeCloud(FOOD_ITEMS, ri.data, r => [r.id, r.data]);
-    mergeCloud(FOOD_MEALS, rm.data, r => [r.id, r.data]);
+    mergeCloud(FOOD_MEALS, rm.data, r => r.id.startsWith('__') ? [null,null] : [r.id, r.data]); // reserved rows skipped
     mergeCloud(FOOD_LOG,   rl.data, r => [r.date, r.data]);
+
+    // suggestions live in a reserved food_meals row so no extra table is needed
+    const sug = (rm.data||[]).find(r => r.id === '__suggestions__');
+    if(sug && sug.data && typeof applyCloudSuggestions === 'function') applyCloudSuggestions(sug.data);
 
     foodLocalSaveItems(); foodLocalSaveMeals(); foodLocalSaveLog();
 
