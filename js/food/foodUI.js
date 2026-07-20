@@ -5,7 +5,7 @@
  */
 
 /* his nutrition targets (spec §1) */
-const FOOD_TARGETS = { kcal:1950, kcalMin:1900, protein:180, proteinRed:140, carbs:165, fat:55 };
+const FOOD_TARGETS = { kcal:1750, buffer:150, protein:180, proteinRed:140 };
 
 const TRUST_BADGE = {
   verified: '<span class="pill p-green" title="Verified — measured or scanned">⭐ Verified</span>',
@@ -101,46 +101,38 @@ function renderToday(){
 
   // draw rings after DOM exists
   const over = totals.kcal > FOOD_TARGETS.kcal;
-  foodRing('ringKcal', totals.kcal, FOOD_TARGETS.kcal, over ? '--red' : '--green');
-  foodRing('ringProt', totals.protein, FOOD_TARGETS.protein, totals.protein>=FOOD_TARGETS.protein ? '--green' : (totals.protein<FOOD_TARGETS.proteinRed ? '--red':'--amber'));
+  foodRing('ringKcal', totals.kcal, FOOD_TARGETS.kcal, over ? '--fred' : '--fgreen');
+  foodRing('ringProt', totals.protein, FOOD_TARGETS.protein, totals.protein>=FOOD_TARGETS.protein ? '--fgreen' : (totals.protein<FOOD_TARGETS.proteinRed ? '--fred':'--famber'));
 }
 
 function heroHtml(t){
-  const kcalPct = Math.round(t.kcal/FOOD_TARGETS.kcal*100);
-  const protPct = Math.round(t.protein/FOOD_TARGETS.protein*100);
-  const P=t.protein*4, C=t.carbs*4, F=t.fat*9, tot=P+C+F||1;
-  const w=v=>Math.max(0,Math.min(100,Math.round(v)));
+  const kcalLeft = FOOD_TARGETS.kcal - t.kcal;
+  const protLeft = Math.max(0, FOOD_TARGETS.protein - t.protein);
   return `
-  <div class="card fhero">
+  <div class="fcard fhero">
     <div class="fhero-rings">
       <div class="fring-wrap">
         <canvas id="ringKcal" width="132" height="132"></canvas>
-        <div class="fring-center"><span class="fring-val">${t.kcal.toLocaleString()}</span><span class="fring-lbl">kcal</span><span class="fring-goal">${kcalPct}% of ${FOOD_TARGETS.kcalMin.toLocaleString()}</span></div>
+        <div class="fring-center"><span class="fring-val">${t.kcal.toLocaleString()}</span><span class="fring-lbl">/ ${FOOD_TARGETS.kcal.toLocaleString()}</span></div>
       </div>
       <div class="fring-wrap">
         <canvas id="ringProt" width="132" height="132"></canvas>
-        <div class="fring-center"><span class="fring-val">${t.protein}<small>g</small></span><span class="fring-lbl">protein</span><span class="fring-goal">${protPct}% of ${FOOD_TARGETS.protein}g</span></div>
+        <div class="fring-center"><span class="fring-val">${t.protein}<small>g</small></span><span class="fring-lbl">/ ${FOOD_TARGETS.protein}g</span></div>
       </div>
     </div>
-    <div class="fhero-macros">
-      <div class="fmac"><span class="fmac-k">Carbs</span><span class="fmac-v">${t.carbs}g</span></div>
-      <div class="fmac"><span class="fmac-k">Fat</span><span class="fmac-v">${t.fat}g</span></div>
-      ${t.fiber!=null?`<div class="fmac"><span class="fmac-k">Fiber</span><span class="fmac-v">${t.fiber}g</span></div>`:''}
+    <div class="fhero-caps">
+      <div class="fhero-cap">${kcalLeft>=0?`<b>${kcalLeft.toLocaleString()}</b> kcal left`:`<b class="over">${(-kcalLeft).toLocaleString()}</b> over`}</div>
+      <div class="fhero-cap">${protLeft>0?`<b>${protLeft}g</b> protein to go`:`<b class="good">goal hit ✓</b>`}</div>
     </div>
-    <div class="macrobar">
-      <div style="width:${w(P/tot*100)}%;background:var(--green)" title="Protein"></div>
-      <div style="width:${w(C/tot*100)}%;background:var(--amber)" title="Carbs"></div>
-      <div style="width:${w(F/tot*100)}%;background:var(--accent)" title="Fat"></div>
-    </div>
-    <div class="macrolegend"><span><i style="background:var(--green)"></i>Protein</span><span><i style="background:var(--amber)"></i>Carbs</span><span><i style="background:var(--accent)"></i>Fat</span></div>
+    <div class="fhero-buf">Tracking ${FOOD_TARGETS.kcal.toLocaleString()} kcal · ${FOOD_TARGETS.buffer} kcal buffer for untracked snacks</div>
   </div>
   <div class="fquick">
-    <input class="fsearch-input" id="quickSearch" placeholder="🔍 Search a food or meal to log…" autocomplete="off" oninput="renderQuickResults&&renderQuickResults(this.value)">
+    <input class="fsearch-input" id="quickSearch" placeholder="🔍 Search a food or meal…" autocomplete="off" oninput="renderQuickResults&&renderQuickResults(this.value)">
     <div id="quickResults" class="flist fsearch-results"></div>
     <div class="fquick-actions">
-      <button class="chip" onclick="repeatYesterday&&repeatYesterday()">↻ Repeat yesterday</button>
-      <button class="chip" onclick="go('food-meals')">🍲 Meals</button>
-      <button class="chip" onclick="go('food-add')">＋ New item</button>
+      <button class="fpill-btn" onclick="repeatYesterday&&repeatYesterday()">↻ Repeat yesterday</button>
+      <button class="fpill-btn" onclick="go('food-meals')">🍲 Meals</button>
+      <button class="fpill-btn" onclick="go('food-add')">＋ New item</button>
     </div>
   </div>`;
 }
@@ -155,7 +147,7 @@ function slotsHtml(entries){
     <section class="fslot" ondragover="foodDragOver(event)" ondrop="foodDropSlot(event,'${k}')">
       <div class="fslot-head">
         <div class="fslot-title">${emoji} ${label}</div>
-        <div class="fslot-sub">${st.kcal} kcal · ${st.protein}g P</div>
+        <div class="fslot-right"><span class="fslot-sub">${st.kcal} kcal · ${st.protein}g P</span><button class="fslot-add" onclick="openSlotAdd('${k}')" title="Add to ${label}">＋</button></div>
       </div>
       ${sugg.length?`<div class="fsugg-row">${sugg.map(s=>`<button class="fsugg-chip ${s.type}" onclick="quickLogSuggestion('${k}','${s.type}','${s.id}')" title="${s.kcal} kcal · ${s.protein}g P">${s.type==='meal'?'🍲':'🥗'} ${htmlSafe(s.name)} <b>＋</b></button>`).join('')}<button class="fsugg-edit" onclick="openSuggestManager('${k}')" title="Edit suggestions">✎</button></div>`
         : `<div class="fsugg-row"><button class="fsugg-edit wide" onclick="openSuggestManager('${k}')">✎ Add your usual ${label.toLowerCase()} foods</button></div>`}
@@ -185,89 +177,12 @@ function entryRowHtml(e,i,slot){
   return `<div class="logrow" draggable="true" data-idx="${i}" ondragstart="foodDragStart(event,${i})" ondragover="foodDragOver(event)" ondrop="foodDropRow(event,${i},'${slot}')">
       <span class="fdrag" title="Drag to reorder">⠿</span>
       ${KIND_BADGE[e.kind]||''}
-      <div class="fmain" onclick="toggleEntryEdit(${i})"><div class="fname">${htmlSafe(entryName(e))}</div><div class="fsub">${sub}</div></div>
+      <div class="fmain" onclick="openEntryDetail(${i})"><div class="fname">${htmlSafe(entryName(e))}</div><div class="fsub">${sub}</div></div>
       <div class="fkcal">${m.kcal}<small>kcal</small></div>
-      <button class="btn-sm" onclick="toggleEntryEdit(${i})" title="Edit">✎</button>
-      <button class="btn-sm danger" onclick="removeEntry(${i})" title="Remove">✕</button>
-    </div>
-    <div class="enteditor" id="enteditor_${i}" style="display:none"></div>`;
+      <button class="btn-sm danger" onclick="event.stopPropagation();removeEntry(${i})" title="Remove">✕</button>
+    </div>`;
 }
 
-/* ---------- inline entry editor ---------- */
-function toggleEntryEdit(i){
-  const el=document.getElementById('enteditor_'+i); if(!el) return;
-  if(el.style.display!=='none'){ el.style.display='none'; el.innerHTML=''; return; }
-  document.querySelectorAll('.enteditor').forEach(d=>{ d.style.display='none'; d.innerHTML=''; });
-  const day=logForDate(foodDate); const e=day.entries[i]; if(!e) return;
-  const slotChipsHtml = TODAY_SLOTS.map(([k,l,em])=>`<button type="button" class="fchip ${((e.meal||'')===k)?'on':''}" onclick="entrySetSlot(${i},'${k}')">${em} ${l}</button>`).join('');
-
-  if(e.kind==='item'){
-    const it=FOOD_ITEMS[e.itemId]; const u=baseUnit(it);
-    // current qty/unit from disp or amount
-    const opts=(it.servings||[]).map((s,si)=>`<option value="${si}">${htmlSafe(s.label)}</option>`).join('')+`<option value="-1">${u} (base)</option>`;
-    el.innerHTML=`<div class="ented-inner">
-      <div class="fslot-chips">${slotChipsHtml}</div>
-      <div class="frow2"><div><label class="flabel">Quantity</label><input class="finput" type="number" inputmode="decimal" id="ented_qty_${i}" value="${e.disp?e.disp.qty:e.amount}" oninput="entryEditPreview(${i})"></div>
-      <div><label class="flabel">Measure</label><select class="finput" id="ented_unit_${i}" onchange="entryEditPreview(${i})">${opts}</select></div></div>
-      ${it.isHomeCooked?`<label class="flabel">🍳 Oil / ghee</label><div class="fslot-chips" id="ented_oil_${i}">${[['0','None',0],['5','1 tsp',5],['14','1 tbsp',14]].map(([v,l,g])=>`<button type="button" class="fchip ${((e.oil&&e.oil.grams)||0)==g?'on':''}" onclick="entrySetOil(${i},${g})">${l}</button>`).join('')}</div>`:''}
-      <div class="flog-preview" id="ented_prev_${i}"></div>
-      <button class="btn-primary" onclick="saveEntryEdit(${i})">Save</button>
-    </div>`;
-    // preselect unit
-    const sel=document.getElementById('ented_unit_'+i);
-    sel.value = (e.disp && e.disp.unit && it.servings.findIndex(s=>s.label===e.disp.unit)>=0) ? it.servings.findIndex(s=>s.label===e.disp.unit) : -1;
-    el.style.display='block'; entryEditPreview(i);
-  } else if(e.kind==='meal'){
-    const meal=FOOD_MEALS[e.mealId];
-    const comps=(meal.components||[]).map(c=>{
-      const it=FOOD_ITEMS[c.itemId]; if(!it) return '';
-      const removed=e.removed&&e.removed.includes(c.itemId);
-      const amt=(e.overrides&&e.overrides[c.itemId]!=null)?e.overrides[c.itemId]:c.amount;
-      const cm=fmtMacros(macrosForAmount(it,removed?0:amt));
-      return `<div class="fserv-row ${removed?'removed':''}">
-        <div class="fmain"><div class="fname">${htmlSafe(it.name)}</div><div class="fsub">${cm.kcal} kcal · ${cm.protein}g P</div></div>
-        <input class="finput fserv-amt" type="number" inputmode="decimal" value="${amt}" ${removed?'disabled':''} oninput="mealEntrySetAmount(${i},'${c.itemId}',this.value)"><span class="funit">${baseUnit(it)}</span>
-        <button type="button" class="btn-sm ${removed?'':'danger'}" onclick="mealEntryToggleRemove(${i},'${c.itemId}')">${removed?'undo':'✕'}</button></div>`;
-    }).join('');
-    el.innerHTML=`<div class="ented-inner">
-      <div class="fslot-chips">${slotChipsHtml}</div>
-      <div class="frow2"><div><label class="flabel">Servings</label><input class="finput" type="number" inputmode="decimal" id="ented_qty_${i}" value="${e.servings||1}" oninput="entryEditPreview(${i})"></div></div>
-      <div class="sec-label" style="margin-top:10px">Ingredients — just for today</div>
-      ${comps}
-      <div class="flog-preview" id="ented_prev_${i}"></div>
-      <button class="btn-primary" onclick="saveEntryEdit(${i})">Save</button>
-    </div>`;
-    el.style.display='block'; entryEditPreview(i);
-  }
-}
-function entrySetSlot(i,k){ const day=logForDate(foodDate); if(day.entries[i]){ day.entries[i].meal=k; } document.querySelectorAll(`#enteditor_${i} .fslot-chips .fchip`).forEach(b=>b.classList.toggle('on', b.textContent.trim().toLowerCase().includes(k))); }
-function entrySetOil(i,g){ const day=logForDate(foodDate); const e=day.entries[i]; e.oil = g>0?{grams:g,type:'oil'}:null; document.querySelectorAll(`#ented_oil_${i} .fchip`).forEach(b=>b.classList.remove('on')); event.target.classList.add('on'); entryEditPreview(i); }
-function mealEntrySetAmount(i,itemId,v){ const day=logForDate(foodDate); const e=day.entries[i]; e.overrides=e.overrides||{}; e.overrides[itemId]=parseFloat(v)||0; entryEditPreview(i); }
-function mealEntryToggleRemove(i,itemId){ const day=logForDate(foodDate); const e=day.entries[i]; e.removed=e.removed||[]; const p=e.removed.indexOf(itemId); if(p>=0)e.removed.splice(p,1); else e.removed.push(itemId); toggleEntryEdit(i); toggleEntryEdit(i); }
-function entryEditPreview(i){
-  const day=logForDate(foodDate); const e=day.entries[i]; if(!e) return;
-  // reflect current inputs into a temp copy for preview
-  const tmp=JSON.parse(JSON.stringify(e));
-  const qEl=document.getElementById('ented_qty_'+i);
-  if(e.kind==='item'){
-    const it=FOOD_ITEMS[e.itemId]; const unitEl=document.getElementById('ented_unit_'+i);
-    const qty=parseFloat(qEl.value)||0; const si=parseInt(unitEl.value);
-    tmp.amount=toBaseAmount(it,qty,si);
-  } else { tmp.servings=parseFloat(qEl.value)||0; }
-  const m=fmtMacros(entryMacros(tmp,FOOD_ITEMS,FOOD_MEALS));
-  const el=document.getElementById('ented_prev_'+i);
-  if(el) el.innerHTML=`<div class="flog-macros"><span class="flog-kcal">${m.kcal}<small>kcal</small></span><span>${m.protein}g P</span><span>${m.carbs}g C</span><span>${m.fat}g F</span></div>`;
-}
-function saveEntryEdit(i){
-  const day=logForDate(foodDate); const e=day.entries[i]; if(!e) return;
-  const qEl=document.getElementById('ented_qty_'+i);
-  if(e.kind==='item'){
-    const it=FOOD_ITEMS[e.itemId]; const si=parseInt(document.getElementById('ented_unit_'+i).value);
-    const qty=parseFloat(qEl.value)||0; e.amount=toBaseAmount(it,qty,si);
-    e.disp={ qty, unit: si>=0?it.servings[si].label:baseUnit(it) };
-  } else { e.servings=parseFloat(qEl.value)||1; }
-  markDayDirty(); saveLogDay(foodDate); renderToday();
-}
 function removeEntry(i){ const day=logForDate(foodDate); if(!day) return; day.entries.splice(i,1); markDayDirty(); saveLogDay(foodDate); renderToday(); }
 function foodShiftDate(n){ foodDate = addDays(foodDate, n); renderToday(); }
 

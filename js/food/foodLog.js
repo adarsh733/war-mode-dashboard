@@ -45,7 +45,28 @@ function renderQuickResults(q){
   box.innerHTML = html || `<div class="fempty">No match. <button class="chip" onclick="go('food-add')">+ Add “${htmlSafe(q)}”</button></div>`;
 }
 
-/* ---------- item log sheet ---------- */
+/* ---------- per-slot add (the ＋ on a meal header) ---------- */
+let _slotAddSlot='breakfast';
+function openSlotAdd(slot){
+  _slotAddSlot=slot;
+  fsheetOpen(`<div class="fsheet-grab"></div>
+    <div class="fsheet-title"><span class="favatar" style="background:var(--fgreen-bg);color:var(--fgreen)">＋</span><div><div class="fname">Add to ${slotLabel(slot)}</div><div class="fsub">search your foods &amp; meals</div></div></div>
+    <input class="fsearch-input" id="slotAddSearch" placeholder="🔍 Search a food or meal…" autocomplete="off" oninput="renderSlotAddResults(this.value)">
+    <div id="slotAddResults" class="flist fsearch-results" style="margin-top:10px"></div>`);
+  setTimeout(()=>{ const el=document.getElementById('slotAddSearch'); if(el) el.focus(); }, 60);
+}
+function renderSlotAddResults(q){
+  const box=document.getElementById('slotAddResults'); if(!box) return;
+  q=(q||'').trim().toLowerCase(); if(q.length<1){ box.innerHTML=''; return; }
+  const meals=Object.values(FOOD_MEALS).filter(m=>!String(m.id).startsWith('__') && m.name.toLowerCase().includes(q)).slice(0,4);
+  const items=Object.values(FOOD_ITEMS).filter(it=>itemMatchesQuery(it,q)).sort((a,b)=>(b.useCount||0)-(a.useCount||0)).slice(0,10);
+  let html='';
+  meals.forEach(m=>{ const t=fmtMacros(mealTotals(m,FOOD_ITEMS)); html+=`<div class="frow" onclick="fsheetClose();openMealDetail('${m.id}',{slot:'${_slotAddSlot}'})">${avatarFor(m.name)}<div class="fmain"><div class="fname">${htmlSafe(m.name)} <span class="fbadge meal">🍲 Meal</span></div><div class="fsub">${t.kcal} kcal · ${t.protein}g P</div></div><div class="fkcal">＋</div></div>`; });
+  items.forEach(it=>{ const d=defaultServingMacros(it); html+=`<div class="frow" onclick="fsheetClose();openItemDetail('${it.id}',{slot:'${_slotAddSlot}'})">${avatarFor(it.name)}<div class="fmain"><div class="fname">${htmlSafe(it.name)} <span class="ftrust">${TRUST_DOT[it.trust]||''}</span></div><div class="fsub">${htmlSafe(d.label)} · ${d.m.kcal} kcal · ${d.m.protein}g P</div></div><div class="fkcal">＋</div></div>`; });
+  box.innerHTML = html || `<div class="fempty">No match. <button class="chip" onclick="fsheetClose();go('food-add')">+ New item</button></div>`;
+}
+
+/* ---------- item log sheet (legacy — superseded by foodDetail.js) ---------- */
 let _logDraft = null;
 function openItemLogSheet(itemId){
   const it = FOOD_ITEMS[itemId]; if(!it) return;

@@ -48,7 +48,35 @@ function resolveSuggestion(s){
   const m=FOOD_MEALS[s.id]; if(!m) return null;
   const t=fmtMacros(mealTotals(m,FOOD_ITEMS)); return { type:'meal', id:s.id, name:m.name, kcal:t.kcal, protein:t.protein };
 }
-function suggestionsFor(slot){ return (FOOD_SUGGESTIONS[slot]||[]).map(resolveSuggestion).filter(Boolean); }
+/* usage hook (kept for call sites); the real history lives in FOOD_LOG so no store needed */
+function logSlotUse(){}
+
+/* recency-weighted frequency of what he actually logs in this slot */
+function learnedScores(slot){
+  const scores={}; const today=(typeof todayStr==='function')?todayStr():foodDate;
+  Object.keys(FOOD_LOG||{}).forEach(date=>{
+    const day=FOOD_LOG[date]; if(!day||!day.entries) return;
+    let daysAgo=0; try{ daysAgo=Math.max(0,Math.round((new Date(today)-new Date(date))/86400000)); }catch(e){}
+    const w=Math.pow(0.93, daysAgo);                 // recent days weigh more
+    day.entries.forEach(e=>{
+      if((e.meal||'')!==slot && !(slot==='snack'&&(e.meal||'')==='')) return;
+      const key=e.kind==='item'?('item:'+e.itemId):e.kind==='meal'?('meal:'+e.mealId):null;
+      if(key) scores[key]=(scores[key]||0)+w;
+    });
+  });
+  return scores;
+}
+/* smart suggestions: taught ones first, then most-eaten-recently for this slot */
+function suggestionsFor(slot){
+  const out=[]; const seen={};
+  (FOOD_SUGGESTIONS[slot]||[]).forEach(s=>{ const r=resolveSuggestion(s); if(r){ out.push(r); seen[r.type+':'+r.id]=1; } });
+  const scores=learnedScores(slot);
+  Object.keys(scores).sort((a,b)=>scores[b]-scores[a]).forEach(key=>{
+    if(out.length>=8 || seen[key]) return;
+    const [type,id]=key.split(':'); const r=resolveSuggestion({type,id}); if(r){ out.push(r); seen[key]=1; }
+  });
+  return out.slice(0,8);
+}
 
 function addSuggestion(slot, type, id){
   if(!FOOD_SUGGESTIONS[slot]) FOOD_SUGGESTIONS[slot]=[];

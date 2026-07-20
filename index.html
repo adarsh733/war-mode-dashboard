@@ -11,7 +11,7 @@
 <link rel="apple-touch-icon" href="appicon-180.png">
 <link rel="icon" type="image/png" sizes="192x192" href="appicon-192.png">
 <link rel="manifest" href="manifest.json">
-<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <link rel="stylesheet" href="styles.css">
@@ -65,9 +65,7 @@
     </div>
     <div class="chip-group" data-for="food">
       <button class="chip on" data-p="food-today">Today</button>
-      <button class="chip" data-p="food-pantry">Pantry</button>
       <button class="chip" data-p="food-meals">Meals</button>
-      <button class="chip" data-p="food-add">+ Add Item</button>
     </div>
   </div>
 </div>
@@ -99,9 +97,7 @@
   <button class="dlink" data-p="t-checkin">Check-In</button>
   <h4>🍽️ Food</h4>
   <button class="dlink" data-p="food-today">Today</button>
-  <button class="dlink" data-p="food-pantry">Pantry</button>
   <button class="dlink" data-p="food-meals">Meals</button>
-  <button class="dlink" data-p="food-add">+ Add Item</button>
 </aside>
 
 <div class="wrap">
@@ -941,6 +937,7 @@
 <script src="js/food/foodUI.js"></script>
 <script src="js/food/foodForm.js"></script>
 <script src="js/food/foodLog.js"></script>
+<script src="js/food/foodDetail.js"></script>
 <script src="js/food/bridge.js"></script>
 <script src="js/app.js"></script>
 </body>

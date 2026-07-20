@@ -21,6 +21,8 @@ function go(id){
     document.querySelectorAll('.seg button').forEach(b=>b.classList.toggle('on',b.dataset.sec===sec));
     document.querySelectorAll('.chip-group').forEach(g=>g.classList.toggle('show',g.dataset.for===sec));
   }
+  document.body.classList.toggle('food-active', sec==='food');
+  if(sec!=='food') document.body.classList.remove('nav-hidden');
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.getElementById(id).classList.add('active');
   document.querySelectorAll('.chip').forEach(c=>c.classList.toggle('on',c.dataset.p===id));
@@ -37,6 +39,16 @@ function go(id){
   if(id==='food-add'&&typeof renderAddItem==='function')renderAddItem();
 }
 document.querySelectorAll('.chip,.dlink,.navcard').forEach(el=>el.addEventListener('click',()=>go(el.dataset.p)));
+
+/* auto-hide the top bar on scroll-down (Food section only) to free vertical space */
+let _lastScrollY=0;
+window.addEventListener('scroll', ()=>{
+  const y=window.scrollY||document.documentElement.scrollTop||0;
+  if(typeof curSec==='undefined' || curSec!=='food'){ document.body.classList.remove('nav-hidden'); _lastScrollY=y; return; }
+  if(y>_lastScrollY && y>70) document.body.classList.add('nav-hidden');       // scrolling down → hide
+  else if(y<_lastScrollY-4) document.body.classList.remove('nav-hidden');     // scrolling up → show
+  _lastScrollY=y;
+}, {passive:true});
 
 function openDrawer(){document.getElementById('drawer').classList.add('open');document.getElementById('overlay').classList.add('show');}
 function closeDrawer(){document.getElementById('drawer').classList.remove('open');document.getElementById('overlay').classList.remove('show');}
