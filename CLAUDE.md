@@ -36,8 +36,13 @@ The Food tracker is the actively-developed area; the other three are stable lega
 
 ## Docs index (source of truth — keep accurate)
 
+**Start here every session:** [docs/current-focus.md](docs/current-focus.md) (where development stands
+right now) and [DEVELOPMENT.md](DEVELOPMENT.md) (how we work).
+
 | File | What it holds |
 |------|---------------|
+| [docs/current-focus.md](docs/current-focus.md) | The "you are here" snapshot — current feature/sprint, done, next, blocked. Read first. |
+| [DEVELOPMENT.md](DEVELOPMENT.md) | Engineering loop & conventions (expands the Working agreement above; CLAUDE.md wins on conflict) |
 | [docs/product-spec.md](docs/product-spec.md) | What the product is, nutrition targets, feature behavior rules, hidden features, phasing |
 | [docs/architecture.md](docs/architecture.md) | File/module map, load model, storage, sync, how to run & verify |
 | [docs/data-model.md](docs/data-model.md) | Exact schemas: item, meal, log entry, suggestions; the math rules |
