@@ -1,0 +1,91 @@
+# Architecture — WAR MODE
+
+> How the code is organized, loaded, stored, and synced. Update when structure changes.
+
+## 1. Deploy & build model
+
+- **No build step.** Plain HTML/CSS/JS served statically. Deploy = push to GitHub → Netlify.
+- CDNs in `<head>`: Chart.js 4.4.1, `@supabase/supabase-js@2`, Google Fonts
+  (Oswald/Fraunces/DM Sans for legacy; **Plus Jakarta Sans** for Food).
+- PWA: `manifest.json` + `appicon-180/192/512.png`; `index.html` links them.
+
+## 2. Script model — classic scripts, one global scope
+
+All `js/*.js` are **classic `<script>` tags**, not ES modules. They share a single global scope
+(exactly like the original single-file dashboard did), so functions call each other and inline
+`onclick="..."` handlers resolve without any `export`/`import`/`window.` wiring. See
+[ADR-0002](decisions.md) for why.
+
+**Load order (in `index.html`, end of body):**
+```
+config → dates → data → charts → nav → tracker → checkin           (legacy engine)
+food/foodMath → food/seed → food/foodData → food/foodSuggest
+  → food/foodUI → food/foodForm → food/foodLog → food/foodDetail → food/bridge
+app.js   (bootstrap — MUST be last)
+```
+Rules that keep this safe:
+- Only **top-level immediate statements** care about order; cross-file calls happen inside
+  functions (runtime), so most order is flexible. The **bootstrap** (`app.js`) runs last.
+- `foodDetail.js` loads **after** `foodLog.js` and intentionally **overrides**
+  `openItemLogSheet`/`openMealLogSheet` to open the new detail card.
+
+## 3. Module map
+
+### Legacy engine (stable — do not refactor casually)
+| File | Responsibility |
+|------|----------------|
+| `js/config.js` | constants, Supabase URL/anon key, DB/supa globals, goal helpers, SEED (tracker) |
+| `js/dates.js`  | date helpers (`todayStr`, `iso`, `addDays`, `fmtDate`, `monthKey`, week window) |
+| `js/data.js`   | tracker data layer: `loadDB`, `persist`, `applyAuto`, sync badge, goals |
+| `js/charts.js` | Chart.js helpers + `buildCharts` + monthly aggregations + `cssv()` |
+| `js/nav.js`    | routing (`PAGES`, `setSec`, `go`), drawer, search, **scroll-hide topbar (food only)** |
+| `js/tracker.js`| daily tracker: week grid, goals, tags, history, CSV export |
+| `js/checkin.js`| progress-photo check-in engine |
+| `js/app.js`    | bootstrap: `loadDB → loadGoals → loadCheckins → loadFood → render` |
+
+### Food modules (`js/food/`)
+| File | Responsibility |
+|------|----------------|
+| `foodMath.js`   | **pure deterministic math**: per-100, `toBaseAmount`, `macrosForAmount`, `mealTotals` (+overrides), `entryMacros`, `dayTotals`, oil, `fmtMacros`. No DOM/state. |
+| `foodData.js`   | in-memory maps `FOOD_ITEMS/MEALS/LOG`; local-first cache; Supabase load/reconcile/CRUD; `itemMatchesQuery`, `findItemByNameBrand` (dedup), `normName` |
+| `seed.js`       | ~50 vegetarian seed items (`FOOD_SEED`) + `_SEED_ALIASES` |
+| `foodSuggest.js`| `FOOD_SUGGESTIONS` (taught) + `learnedScores` (recency) + `suggestionsFor`, quick-log, manager UI |
+| `foodUI.js`     | `FOOD_TARGETS`; Today (`renderToday`, hero rings, `slotsHtml`, `entryRowHtml`), Pantry, Meals, drag reorder, `foodRing` |
+| `foodForm.js`   | Add/Edit item manual form + deterministic per-serving→per-100 conversion |
+| `foodLog.js`    | quick-add search, **per-slot add** (`openSlotAdd`), meal builder, repeat-yesterday, bottom-sheet infra (`fsheetOpen`) |
+| `foodDetail.js` | **detail card** (`openItemDetail`/`openMealDetail`/`openEntryDetail`), **quantity wheel**, units editor, commit/save/remove |
+| `bridge.js`     | `finishDay` (manual push), `syncFoodToTracker`, `markDayDirty` |
+
+## 4. Storage & sync
+
+- **Supabase project** `sfilvcffrcdcsrimcatz` (anon key in `config.js`). localStorage is the
+  offline-first cache; cloud is reconciled after.
+- **Tracker:** table `tracker_days (date pk, data jsonb)`, with reserved rows `__periods__`,
+  `__checkins__`, etc.
+- **Food:** dedicated tables (see [ADR-0004](decisions.md)), SQL in `supabase/food_tables.sql`:
+  - `food_items (id pk, name, use_count, data jsonb, updated_at)`
+  - `food_meals (id pk, name, data jsonb, updated_at)`
+  - `food_log   (date pk, data jsonb, updated_at)`
+- **Suggestions** are stored in a **reserved `food_meals` row `__suggestions__`** (filtered out of
+  meal lists) so no extra table is needed. localStorage mirrors it.
+- **Reconcile:** last-write-wins by `updated_at` vs local `updatedAt`. If the tables don't exist
+  (SQL not run), the app degrades to **local-only** and flags "⚠ Local only" — never blocks.
+- On first run the ~50 seed items are created locally and pushed to the cloud.
+
+## 5. How to run & verify
+
+- `python -m http.server 8130` → `http://localhost:8130/index.html` (config `static` in
+  `.claude/launch.json`).
+- **Verify via DOM/JS inspection**, not screenshots (capture is broken here). Example checks used
+  this session: read `.fslot`, `.fring-center`, `_detail`, `FOOD_LOG`, run `dayTotals` and assert
+  numbers by hand.
+- The preview browser **caches JS aggressively** — after editing a `.js`, bump the server port or
+  hard-reload, else you'll test stale code (this bit us once — see [known-issues.md](known-issues.md)).
+- **Test writes on a throwaway date** (e.g. `foodDate='2099-01-01'`) and clean up, to avoid
+  polluting real days / his Supabase.
+
+## 6. Git
+
+- Repo is the source of truth; committed in stages with descriptive messages ending in the
+  `Co-Authored-By: Claude Opus 4.8` trailer. Private data (`Clinical Records/`, `Physique
+  Progress/`, `*.xlsx`) is gitignored. `Phase 1 Archive/` kept as history.
