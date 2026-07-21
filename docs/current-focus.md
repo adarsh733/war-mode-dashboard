@@ -27,6 +27,11 @@ plate can be saved as a meal ([ADR-0028](decisions.md)). Suggestions moved below
 and collapsed by default.
 
 ## Completed (this arc)
+- ✅ **Swipe navigation** ([ADR-0032](decisions.md)) — swipe left/right anywhere to move between
+  subtabs, as one 16-page chain across every tab (last subtab of a tab → first of the next), stopping
+  at both ends with a nudge. Direction-aware slide, applied to chip taps too. Horizontally
+  scrollable surfaces (week grid, bloodwork tables, Food chip rails) keep their own scroll.
+  **Gesture feel still needs an on-device check.**
 - ✅ **Phase 2 AI layer** ([ADR-0023/0024/0025](decisions.md)) — proxy (PIN + daily cap + task
   whitelist) and all five features. Verified locally: **158/158 seed items pass the validator with
   zero false positives**, 8/8 deliberately corrupted macro sets caught, every proxy guard

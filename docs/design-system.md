@@ -118,6 +118,12 @@ This is used daily in a phone browser, so these are correctness rules, not polis
 - **Chip rows scroll, they don't wrap** — one row, `flex-wrap:nowrap` + `overflow-x:auto`, chips at
   `flex:0 0 auto`, bled to the card edge so a half-visible chip signals more content.
 - Top bar auto-hides on scroll-down in **every** section (`body.nav-hidden`).
+- **Swipe left/right moves between subtabs** along one chain across the whole app
+  ([ADR-0032](decisions.md)). Pages arrive with a direction-aware slide — `.page.active.nav-fwd`
+  (from the right) / `.nav-back` (from the left), ~.28s — applied to **chip taps as well as swipes**
+  so both feel the same. Off-chain pages keep the plain fade. At either end of the chain the content
+  gives a short `.edge-nudge` shake instead of moving. All of it is disabled under
+  `prefers-reduced-motion`.
 
 ## 6. Rules of thumb
 

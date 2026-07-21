@@ -103,6 +103,20 @@ canvas{max-width:100%}
 .page.active{display:block}
 @keyframes fade{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
 
+/* ── swipe navigation motion (ADR-0032) ──
+   Direction-aware slide, applied by paintDirection() in nav.js to both swipes AND chip taps so the
+   two feel identical. Off-chain navigation (search, nav cards) keeps the plain fade above. */
+@keyframes slideFromRight{from{opacity:0;transform:translateX(28px)}to{opacity:1;transform:none}}
+@keyframes slideFromLeft {from{opacity:0;transform:translateX(-28px)}to{opacity:1;transform:none}}
+.page.active.nav-fwd {animation:slideFromRight .28s ease}
+.page.active.nav-back{animation:slideFromLeft  .28s ease}
+/* end of the chain — a dead swipe with no feedback reads as a bug */
+@keyframes edgeNudge{0%,100%{transform:none}30%{transform:translateX(-7px)}65%{transform:translateX(4px)}}
+.wrap.edge-nudge{animation:edgeNudge .2s ease}
+@media(prefers-reduced-motion:reduce){
+  .page,.page.active.nav-fwd,.page.active.nav-back,.wrap.edge-nudge{animation:none}
+}
+
 /* ── TYPE ── */
 .kicker{font-family:var(--ffont);font-weight:700;font-size:.74rem;letter-spacing:.2em;text-transform:uppercase;color:var(--accent-ink);margin-bottom:10px;display:flex;align-items:center;gap:8px}
 .kicker::before{content:"";width:24px;height:2px;background:var(--accent)}

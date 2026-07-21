@@ -100,6 +100,20 @@ Two invariants worth guarding:
 2. **`'more-home'` is deliberately the LAST `PAGES` key.** Search is a first-match-wins walk, and the
    More landing merely lists the words "Fitness"/"Health"; leading with it would hijack those queries.
 
+### Swipe navigation ([ADR-0032](decisions.md))
+A horizontal swipe moves between subtabs along **one 16-page chain** spanning every tab, stopping at
+both ends. `buildSwipeOrder()` derives that chain from the DOM — `.seg` tabs → sections via `SEC_TAB`
+→ each section's `.chip[data-p]` — so it follows the chips automatically. Consequences to remember:
+- **`SEC_TAB` key order orders sections within a tab**, so it also orders the swipe chain.
+- The chain is built **lazily** via `swipeChain()`. Don't convert it to a top-level
+  `let SWIPE_ORDER = buildSwipeOrder()` — `go()` reads it, and a `let` declared below `go()` is in
+  the temporal dead zone until execution reaches it.
+- **Horizontally scrollable ancestors beat the gesture** (week grid, bloodwork tables, chip rails).
+  The `scrollWidth > clientWidth + 12` slack is deliberate — `overflow-y` makes `overflow-x` compute
+  to `auto`, so vertical-only scrollers would otherwise swallow every swipe.
+- Listeners are **passive**; nothing calls `preventDefault()`. Keep it that way or vertical
+  scrolling suffers.
+
 ## 4. Storage & sync
 
 - **Supabase project** `sfilvcffrcdcsrimcatz` (anon key in `config.js`). localStorage is the

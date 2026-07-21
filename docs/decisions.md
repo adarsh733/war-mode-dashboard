@@ -395,3 +395,41 @@
   records ship to a public remote. Moving the data outside the repo makes that failure impossible
   rather than merely discouraged. The `.gitignore` patterns are kept as a backstop.
 - **Status:** Accepted.
+
+### ADR-0032 — Swipe left/right moves between subtabs, as one chain across the whole app
+- **Decision:** A horizontal swipe anywhere in the content moves to the next/previous **subtab**.
+  The subtabs form **one linear 16-page chain** (`t-log → … → t-checkin → food-today → food-meals →
+  more-home → fit-home → … → h-bloodwork`), so the last subtab of a tab continues into the **first
+  subtab of the next tab**. It **stops at both ends** — no wrap-around — with a short shake
+  (`.edge-nudge`) so a dead swipe doesn't read as a broken one. Pages arrive with a direction-aware
+  slide (`.nav-fwd`/`.nav-back`), applied to **chip taps too** so tapping and swiping feel identical.
+- **Reason:** The dashboard is used one-handed on a phone; reaching for the chip rail for every move
+  was the main friction. One continuous chain means you never have to think about tab boundaries.
+- **Key design calls:**
+  - **The chain is derived from the DOM**, not hardcoded — `buildSwipeOrder()` walks the `.seg` tabs,
+    then each section mapping to that tab via `SEC_TAB`, then that section's `.chip[data-p]`s. Add or
+    remove a chip and the chain follows. **`SEC_TAB` key order is therefore significant** (it orders
+    sections *within* the More tab); it carries a comment saying so.
+  - **A horizontally scrollable ancestor always wins.** The week grid, bloodwork tables and the Food
+    chip rails must scroll, not flip the page. Detected generically (computed `overflow-x` +
+    `scrollWidth > clientWidth + 12`) so scrollers added later are covered for free. The **12px
+    slack is load-bearing**: per CSS Overflow 3, setting `overflow-y` makes `overflow-x` compute to
+    `auto`, so a purely *vertical* scroller reports as horizontal — real horizontal scrollers overrun
+    by hundreds of px (the open suggestion rail is 1593 vs 329), a vertical one by a pixel or two.
+  - **Listeners are passive and nothing calls `preventDefault()`**, so vertical scrolling is
+    untouched. That is why the slide animates *on arrival* instead of tracking the finger —
+    finger-tracking needs non-passive listeners and risks scroll jank on the long Tracker pages.
+  - **The guard runs on `touchend`, not `touchstart`.** The ancestor walk reads `getComputedStyle`
+    and `scrollWidth`, forcing a synchronous layout; on touchstart that would put a reflow on the
+    path of every ordinary tap. By touchend the gesture is already known to be a horizontal flick.
+  - **The chain is built lazily** (`swipeChain()`), not via a top-level `let SWIPE_ORDER = …`. `go()`
+    calls `swipeIndexOf()`, and a `let` initialised further down the file sits in the temporal dead
+    zone until execution reaches it — any future top-level bootstrap calling `go()` above that line
+    would throw. Function declarations hoist, so the lazy form is safe from anywhere.
+  - Swiping on a page **not** in the chain (hidden `food-pantry`/`food-add`) is a silent no-op.
+- **Status:** Accepted. Verified at 375×812 by synthesised `TouchEvent`s: chain matches exactly,
+  full forward and backward walks correct, stops at both ends, week grid and an open (1593px)
+  suggestion rail both scroll instead of navigating, pinch/short/slow/vertical gestures ignored,
+  zero console errors. Gesture *feel* still needs on-device confirmation.
+- **Touch only for now** — keyboard arrows and mouse drag were deliberately left out; both are a few
+  lines on top of `swipeTo(±1)` if wanted later.
