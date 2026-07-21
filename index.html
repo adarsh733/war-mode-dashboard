@@ -29,10 +29,9 @@
     </div>
     <div class="creed-line">NEVER BACK DOWN · ADARSH · <span id="dayCountTop">DAY —</span></div>
     <div class="seg">
-      <button data-sec="fitness" onclick="setSec('fitness')">🏋️ Fitness</button>
-      <button data-sec="health" onclick="setSec('health')">🩺 Health</button>
       <button class="on" data-sec="tracker" onclick="setSec('tracker')">📓 Tracker</button>
       <button data-sec="food" onclick="setSec('food')">🍽️ Food</button>
+      <button data-sec="more" onclick="setSec('more')">··· More</button>
     </div>
   </div>
 </div>
@@ -45,8 +44,6 @@
       <button class="chip" data-p="fit-progress">Progress</button>
       <button class="chip" data-p="fit-compliance">Compliance</button>
       <button class="chip" data-p="fit-plan">Phase Plan</button>
-      <button class="chip" data-p="fit-training">Training</button>
-      <button class="chip" data-p="fit-nutrition">Nutrition</button>
       <button class="chip" data-p="fit-sleep">Sleep</button>
     </div>
     <div class="chip-group" data-for="health">
@@ -55,8 +52,6 @@
       <button class="chip" data-p="h-lipids">Lipids &amp; Heart</button>
       <button class="chip" data-p="h-vitamins">Vitamins &amp; Blood</button>
       <button class="chip" data-p="h-bloodwork">All Bloodwork</button>
-      <button class="chip" data-p="h-meds">Meds &amp; Stack</button>
-      <button class="chip" data-p="h-actions">Action Items</button>
     </div>
     <div class="chip-group show" data-for="tracker">
       <button class="chip on" data-p="t-log">Log the Week</button>
@@ -75,22 +70,6 @@
 <aside class="drawer" id="drawer">
   <div class="brand"><div class="mk"><span>W</span></div><div class="nm">WAR MODE<small>NEVER BACK DOWN</small></div></div>
   <input class="dsearch" id="search" placeholder="Search dashboard…" style="margin-top:16px" autocomplete="off">
-  <h4>🏋️ Fitness</h4>
-  <button class="dlink" data-p="fit-home">Home &amp; Goals</button>
-  <button class="dlink" data-p="fit-progress">Progress &amp; Trends</button>
-  <button class="dlink" data-p="fit-compliance">Habit Compliance</button>
-  <button class="dlink" data-p="fit-plan">Phase Plan &amp; Strategy</button>
-  <button class="dlink" data-p="fit-training">Training</button>
-  <button class="dlink" data-p="fit-nutrition">Nutrition</button>
-  <button class="dlink" data-p="fit-sleep">Sleep</button>
-  <h4>🩺 Health</h4>
-  <button class="dlink" data-p="h-home">Health Snapshot</button>
-  <button class="dlink" data-p="h-thyroid">Thyroid</button>
-  <button class="dlink" data-p="h-lipids">Lipids &amp; Heart</button>
-  <button class="dlink" data-p="h-vitamins">Vitamins &amp; Blood</button>
-  <button class="dlink" data-p="h-bloodwork">All Bloodwork</button>
-  <button class="dlink" data-p="h-meds">Meds &amp; Stack</button>
-  <button class="dlink" data-p="h-actions">Action Items</button>
   <h4>📓 Tracker</h4>
   <button class="dlink" data-p="t-log">Log the Week</button>
   <button class="dlink" data-p="t-history">History &amp; Stats</button>
@@ -98,9 +77,33 @@
   <h4>🍽️ Food</h4>
   <button class="dlink" data-p="food-today">Today</button>
   <button class="dlink" data-p="food-meals">Meals</button>
+  <h4>🏋️ Fitness</h4>
+  <button class="dlink" data-p="fit-home">Home &amp; Goals</button>
+  <button class="dlink" data-p="fit-progress">Progress &amp; Trends</button>
+  <button class="dlink" data-p="fit-compliance">Habit Compliance</button>
+  <button class="dlink" data-p="fit-plan">Phase Plan &amp; Strategy</button>
+  <button class="dlink" data-p="fit-sleep">Sleep</button>
+  <h4>🩺 Health</h4>
+  <button class="dlink" data-p="h-home">Health Snapshot</button>
+  <button class="dlink" data-p="h-thyroid">Thyroid</button>
+  <button class="dlink" data-p="h-lipids">Lipids &amp; Heart</button>
+  <button class="dlink" data-p="h-vitamins">Vitamins &amp; Blood</button>
+  <button class="dlink" data-p="h-bloodwork">All Bloodwork</button>
 </aside>
 
 <div class="wrap">
+
+<!-- ══════════ MORE (landing for the reference sections) ══════════ -->
+<section class="page" id="more-home">
+  <div class="kicker">Reference</div>
+  <h1 class="title">More</h1>
+  <p class="lede">The deep-dive sections — here when you need them, out of the way when you don't.</p>
+
+  <div class="navcards morecards">
+    <button class="navcard lg" data-p="fit-home"><span class="ic">🏋️</span><h3>Fitness</h3><span class="arr">→</span></button>
+    <button class="navcard lg" data-p="h-home"><span class="ic">🩺</span><h3>Health</h3><span class="arr">→</span></button>
+  </div>
+</section>
 
 <!-- ══════════ FITNESS ══════════ -->
 
@@ -127,8 +130,6 @@
     <button class="navcard" data-p="fit-plan"><span class="ic">🗺️</span><h3>Phase Plan</h3><p>The cut → lean-gain → polish staircase. The strategy that gets the abs.</p><span class="arr">→</span></button>
     <button class="navcard" data-p="fit-progress"><span class="ic">📈</span><h3>Progress &amp; Trends</h3><p>Weight, waist, tummy, chest, biceps, protein, puffiness over time.</p><span class="arr">→</span></button>
     <button class="navcard" data-p="fit-compliance"><span class="ic">✅</span><h3>Habit Compliance</h3><p>Monthly discipline scoreboard across every tracked habit.</p><span class="arr">→</span></button>
-    <button class="navcard" data-p="fit-training"><span class="ic">🏋️</span><h3>Training</h3><p>PPL split, progressive overload, cut adjustments.</p><span class="arr">→</span></button>
-    <button class="navcard" data-p="fit-nutrition"><span class="ic">🍽️</span><h3>Nutrition</h3><p>Macros, the food stack, thyroid rules, hunger management.</p><span class="arr">→</span></button>
     <button class="navcard" data-p="fit-sleep"><span class="ic">😴</span><h3>Sleep</h3><p>Why quality dropped + the full recovery protocol.</p><span class="arr">→</span></button>
   </div>
 
@@ -251,71 +252,6 @@
   <details class="acc"><summary>Realistic timeline to abs + sharp face <span class="ac">＋</span></summary><div class="acc-body subtle" style="color:var(--ink2)">17–18% → ~12% ≈ 5–6kg fat at 0.4–0.5kg/wk = <b>12–16 weeks of a genuine deficit</b>. Lower abs + jaw need ~11–12%. You're ahead on muscle &amp; consistency, behind on ever running a real deficit. Lean, sharp, defined by <b>year-end</b> is realistic — if the cut starts now.</div></details>
 </section>
 
-<!-- FIT TRAINING -->
-<section class="page" id="fit-training">
-  <div class="kicker">Fitness · Training</div>
-  <h1 class="title">Training</h1>
-  <p class="lede">It's working — don't change it. In a deficit, the job shifts from chasing PRs to protecting them.</p>
-  <div class="sec-label">Current protocol</div>
-  <ul class="klist">
-    <li><span class="kl">Split</span><span class="kv">Push / Pull / Legs + dedicated abs day 1–2×/week</span></li>
-    <li><span class="kl">Frequency</span><span class="kv">5–6× per week · morning ~7:45 AM</span></li>
-    <li><span class="kl">Progression</span><span class="kv">Progressive overload, hitting PRs across all groups <span class="pill p-green">on track</span></span></li>
-    <li><span class="kl">Cardio</span><span class="kv">20 min incline treadmill post-session (sp 4–5, incline 15+)</span></li>
-    <li><span class="kl">Steps</span><span class="kv">10k daily · Sunday rest + zone-2 walk</span></li>
-  </ul>
-  <div class="sec-label">Adjustments for the cut</div>
-  <div class="note info"><span class="ni">i</span><div><b>Keep the split.</b> PRs and leg development prove it works. Expect lifts to stall or dip slightly in a deficit — normal. <b>Maintaining strength on fewer calories = keeping muscle.</b></div></div>
-  <div class="grid g2 stack" style="margin-top:12px">
-    <div class="card"><div style="font-family:var(--ffont);font-weight:600">Add vigorous cardio 2×/wk</div><div class="subtle" style="color:var(--ink2);margin-top:5px">Intervals / zone-4, not just incline walk. Strongest lifestyle lever for raising HDL — a direct line to your cholesterol problem.</div></div>
-    <div class="card"><div style="font-family:var(--ffont);font-weight:600">Train abs as a muscle</div><div class="subtle" style="color:var(--ink2);margin-top:5px">Weighted, 2×/week. Build them now so they pop harder once the fat layer clears.</div></div>
-  </div>
-  <div class="note warn" style="margin-top:12px"><span class="ni">!</span><div><b>On feeling "not muscular enough":</b> you're not under-muscled — you're under-revealed. Most of that dissolves when the fat comes off. Reveal first; build after.</div></div>
-</section>
-
-<!-- FIT NUTRITION -->
-<section class="page" id="fit-nutrition">
-  <div class="kicker">Fitness · Fuel</div>
-  <h1 class="title">Nutrition</h1>
-  <p class="lede">Vegetarian. Soy is a medical problem — flagged everywhere. Meals built for satiety so hunger doesn't sink the cut.</p>
-  <div class="sec-label">Daily targets — the cut</div>
-  <div class="grid g4 stack">
-    <div class="stat"><div class="bar" style="background:var(--green)"></div><div class="k">Calories real</div><div class="v">~1,900</div><div class="d subtle">log ~1,750</div></div>
-    <div class="stat"><div class="bar" style="background:var(--accent)"></div><div class="k">Protein</div><div class="v">180<small>g</small></div><div class="d subtle">&lt;140 = red day</div></div>
-    <div class="stat"><div class="bar" style="background:var(--amber)"></div><div class="k">Carbs</div><div class="v">170<small>g</small></div></div>
-    <div class="stat"><div class="bar" style="background:var(--blue)"></div><div class="k">Fat</div><div class="v">52<small>g</small></div></div>
-  </div>
-  <div class="sec-label">Food stack — rated</div>
-  <div class="tscroll"><table>
-    <thead><tr><th>Food</th><th>Protein</th><th>Thyroid</th><th>Rate</th></tr></thead>
-    <tbody>
-      <tr><td class="mk-cell">Whole Truth WPI</td><td>30.4g/35g</td><td><span class="pill p-green">Safe · no soy</span></td><td>10</td></tr>
-      <tr><td class="mk-cell">Epigamia Greek Yogurt</td><td>25g/215g</td><td><span class="pill p-green">Safe</span></td><td>9.5</td></tr>
-      <tr><td class="mk-cell">Sids Farm HP Milk</td><td>25g/250ml</td><td><span class="pill p-green">Safe · evening</span></td><td>9.5</td></tr>
-      <tr><td class="mk-cell">Brazil nuts (2/day)</td><td>2g</td><td><span class="pill p-green">⭐ Selenium HERO</span></td><td>10</td></tr>
-      <tr><td class="mk-cell">Milky Mist HP Paneer</td><td>25g/100g</td><td><span class="pill p-amber">Verify soy</span></td><td>7</td></tr>
-      <tr><td class="mk-cell">ProteinChef HP Bread</td><td>25.6g/4sl</td><td><span class="pill p-amber">Verify soy</span></td><td>6</td></tr>
-      <tr><td class="mk-cell">Mill'd Atta</td><td>46g/100g</td><td><span class="pill p-red">30% soy · OUT</span></td><td>4</td></tr>
-    </tbody>
-  </table></div>
-  <div class="sec-label">Hunger management — restructure, don't restrict</div>
-  <ul class="klist">
-    <li><span class="kl">Front-load</span><span class="kv">Protein + fibre every meal — most filling per calorie</span></li>
-    <li><span class="kl">Volume eat</span><span class="kv">Veg, salad, high-protein dairy — fills stomach for almost no calories</span></li>
-    <li><span class="kl">Plan the extra</span><span class="kv">One deliberate higher day/week vs fighting cravings</span></li>
-    <li><span class="kl">Hydrate</span><span class="kv">Thirst masquerades as hunger; low-fluid days track worse</span></li>
-  </ul>
-  <div class="sec-label">Thyroid dietary rules</div>
-  <ul class="klist">
-    <li><span class="kl">① Soy</span><span class="kv">Most dangerous — cuts T4 absorption 19–35%, inhibits TPO. Eliminate.</span></li>
-    <li><span class="kl">② Calcium</span><span class="kv">None within 4h of Thyronorm → breakfast at 11:30 AM</span></li>
-    <li><span class="kl">③ Walnuts AM</span><span class="kv">Moved to evening yogurt bowl</span></li>
-    <li><span class="kl">④ High fibre AM</span><span class="kv">Seeds moved to evening</span></li>
-    <li><span class="kl">⑤ Flaxseed AM</span><span class="kv">Moved to evening</span></li>
-    <li><span class="kl">⭐ Brazil nuts</span><span class="kv">Selenium → T4→T3 conversion. <b>Never eliminate.</b></span></li>
-  </ul>
-</section>
-
 <!-- FIT SLEEP -->
 <section class="page" id="fit-sleep">
   <div class="kicker">Fitness · Recovery</div>
@@ -382,8 +318,6 @@
     <button class="navcard" data-p="h-lipids"><span class="ic">🫀</span><h3>Lipids &amp; Heart</h3><p>The cholesterol deep-dive, trend charts, three stacked causes.</p><span class="arr">→</span></button>
     <button class="navcard" data-p="h-vitamins"><span class="ic">🩸</span><h3>Vitamins &amp; Blood</h3><p>Vitamin D, B12, minerals, hemogram across dates.</p><span class="arr">→</span></button>
     <button class="navcard" data-p="h-bloodwork"><span class="ic">📋</span><h3>All Bloodwork</h3><p>Every marker, every date, side by side.</p><span class="arr">→</span></button>
-    <button class="navcard" data-p="h-meds"><span class="ic">💊</span><h3>Meds &amp; Stack</h3><p>Medication, supplements, full daily routine.</p><span class="arr">→</span></button>
-    <button class="navcard" data-p="h-actions"><span class="ic">🎯</span><h3>Action Items</h3><p>The short list that moves the needle.</p><span class="arr">→</span></button>
   </div>
   <p class="subtle" style="margin-top:20px">Personal reference record — not medical advice. The Lp(a) + family history combination genuinely warrants a doctor's review.</p>
 </section>
@@ -565,64 +499,6 @@
   <details class="acc"><summary>⚗️ Toxic Elements &amp; Urine (May 26) <span class="ac">＋</span></summary><div class="acc-body">
     <p class="subtle" style="margin-bottom:8px">Toxic metals (lead 32 / mercury 3.2 / arsenic 2.9 / cadmium 0.22) — all well within safe limits. Urine: clear, no protein/glucose/blood, no infection. All clean.</p>
   </div></details>
-</section>
-
-<!-- HEALTH MEDS -->
-<section class="page" id="h-meds">
-  <div class="kicker">Health · Protocol</div>
-  <h1 class="title">Meds &amp; Stack</h1>
-  <p class="lede">The full stack and timing — built around the thyroid protocol.</p>
-  <div class="sec-label">Medication</div>
-  <ul class="klist"><li><span class="kl">Thyronorm 100mcg</span><span class="kv">Levothyroxine · 4 AM · 4h gap before first meal <span class="pill p-amber">112mcg trial to discuss</span></span></li></ul>
-  <div class="sec-label">Supplements</div>
-  <div class="tscroll"><table>
-    <thead><tr><th>Supplement</th><th>Timing</th><th>Purpose</th></tr></thead>
-    <tbody>
-      <tr><td class="mk-cell">Whole Truth WPI</td><td>Post-gym 10 AM</td><td>Protein · no soy</td></tr>
-      <tr><td class="mk-cell">Wellcore Creatine</td><td>Post-gym</td><td>Strength / output</td></tr>
-      <tr><td class="mk-cell">Naturaltein Omega-3</td><td>After breakfast (2 caps)</td><td>Triglycerides</td></tr>
-      <tr><td class="mk-cell">Mecofol Plus B12</td><td>Afternoon</td><td>B12 + homocysteine</td></tr>
-      <tr><td class="mk-cell">MGD3 Magnesium Glycinate</td><td>Night</td><td>Sleep</td></tr>
-      <tr><td class="mk-cell">KSM-66 Ashwagandha 600mg</td><td>Dinner</td><td>Cortisol / sleep</td></tr>
-      <tr><td class="mk-cell">L-Theanine 200mg</td><td>Pre-sleep</td><td>Quiets racing mind</td></tr>
-      <tr><td class="mk-cell">Glycine 3g</td><td>Pre-sleep</td><td><span class="pill p-amber">Make nightly — deep sleep</span></td></tr>
-      <tr><td class="mk-cell">Vitamin D3</td><td>With a fatty meal</td><td><span class="pill p-amber">ADD — level 27.2</span></td></tr>
-    </tbody>
-  </table></div>
-  <div class="sec-label">Daily routine</div>
-  <ul class="klist">
-    <li><span class="kl">4:00 AM</span><span class="kv">Natural wake · Thyronorm</span></li>
-    <li><span class="kl">7:00 AM</span><span class="kv">Final wake · 1L water + sea salt</span></li>
-    <li><span class="kl">7:45 AM</span><span class="kv">Gym → post-session incline cardio</span></li>
-    <li><span class="kl">10:00 AM</span><span class="kv">Whey + creatine</span></li>
-    <li><span class="kl">11:30 AM</span><span class="kv">Breakfast (4h gap from Thyronorm)</span></li>
-    <li><span class="kl">2:00 PM</span><span class="kv">Lunch + B12</span></li>
-    <li><span class="kl">6:30 PM</span><span class="kv">Fluid cutoff (hard stop)</span></li>
-    <li><span class="kl">8:00 PM</span><span class="kv">Dinner (yogurt + whey) + Ashwagandha</span></li>
-    <li><span class="kl">9:15 PM</span><span class="kv">Hot shower (40–42°C, 15min)</span></li>
-    <li><span class="kl">9:45 PM</span><span class="kv">Magnesium + L-theanine + glycine</span></li>
-    <li><span class="kl">10:00 PM</span><span class="kv">PMR + fiction reading</span></li>
-    <li><span class="kl">11:00 PM</span><span class="kv">Sleep target</span></li>
-  </ul>
-</section>
-
-<!-- HEALTH ACTIONS -->
-<section class="page" id="h-actions">
-  <div class="kicker">Health · Next Steps</div>
-  <h1 class="title">Action Items</h1>
-  <p class="lede">The short list that actually moves the needle. Top two matter most.</p>
-  <div class="note bad" style="margin-top:20px"><span class="ni">1</span><div><b>See the doctor about the dose.</b> Take the 4.3 result + "athletic, high lean mass, still symptomatic" framing. Ask about a 112mcg trial targeting TSH ~2. Unlocks face, sleep, LDL and fat loss simultaneously.</div></div>
-  <div class="note warn"><span class="ni">2</span><div><b>Flip to a real, tracked deficit.</b> ~1,900 real kcal, protein locked 180g, meals built for satiety. You've been at maintenance 5 months — this is what finally moves the belly.</div></div>
-  <div class="sec-label">Supporting actions</div>
-  <ul class="klist">
-    <li><span class="kl">Add Vitamin D3</span><span class="kv">2000 IU/day with a fatty meal — level 27.2 (want &gt;30)</span></li>
-    <li><span class="kl">Glycine nightly</span><span class="kv">Move from optional to standard — for deep sleep</span></li>
-    <li><span class="kl">Vigorous cardio 2×/wk</span><span class="kv">Direct HDL lever</span></li>
-    <li><span class="kl">Soluble fibre</span><span class="kv">Oats / psyllium / legumes — modest LDL drop</span></li>
-    <li><span class="kl">Lp(a) review</span><span class="kv">Lipidologist/cardiologist given family history — don't wait</span></li>
-    <li><span class="kl">Retest</span><span class="kv">Thyroid 6–8 wks after dose change; lipids ~3 mo after TSH stabilises</span></li>
-  </ul>
-  <p class="subtle" style="margin-top:18px">Personal reference record, not medical advice.</p>
 </section>
 
 <!-- ══════════ TRACKER ══════════ -->

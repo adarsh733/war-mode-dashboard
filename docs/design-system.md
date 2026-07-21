@@ -98,6 +98,27 @@ Page bodies stay clean white/light.
 
 **Ring colors:** calories = green, red when over 1,750. Protein = green ≥180, amber 140–180, red <140.
 
+## 5b. Mobile rules (non-negotiable — ADR-0022)
+
+This is used daily in a phone browser, so these are correctness rules, not polish:
+
+- **Never let a form control render under 16px on touch.** Below that, iOS Safari zooms on focus and
+  never zooms back out. Enforced globally by
+  `@media(max-width:640px),(pointer:coarse){input,select,textarea{font-size:16px!important}}`.
+  Keep the `pointer:coarse` arm — phone landscape is a wide viewport but still touch.
+  Do **not** "fix" zoom with `maximum-scale=1`; that disables pinch-zoom.
+- **`overflow-x:clip`, never `overflow-x:hidden`** on `html`/`body`. `hidden` creates a scroll
+  container and breaks `position:sticky` on the topbar/subnav.
+- **Any horizontally scrollable element needs `overscroll-behavior-x:contain`**, or its scroll
+  chains out to the page and drags the whole layout sideways.
+- **Safe-area insets belong in the element's own rule.** A separate earlier `padding-*:env(...)`
+  declaration is dead code if the real rule later uses the `padding` shorthand.
+- **Sticky offsets must include the safe-area inset** they sit below
+  (`.subnav{top:calc(105px + env(safe-area-inset-top))}`).
+- **Chip rows scroll, they don't wrap** — one row, `flex-wrap:nowrap` + `overflow-x:auto`, chips at
+  `flex:0 0 auto`, bled to the card edge so a half-visible chip signals more content.
+- Top bar auto-hides on scroll-down in **every** section (`body.nav-hidden`).
+
 ## 6. Rules of thumb
 
 - Keep **calories + protein** the visual headline in Food; carbs/fat are secondary.

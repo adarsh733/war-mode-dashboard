@@ -200,3 +200,39 @@
   console errors.
 - **Known tradeoff:** white-on-neon button text is ~3.0:1, below AA — a deliberate choice to keep the
   "lightest neon green" look. Fix if needed by darkening the gradient to ~`#2ec46f → #1a9450`.
+
+### ADR-0022 — Tracker & Food promoted to top-level; Fitness/Health behind "More"; mobile-app behaviour
+- **Decision:** Three top-level tabs — **Tracker | Food | ··· More**. Fitness and Health lose their
+  tabs and live behind a `#more-home` landing of two big header-only `.navcard.lg` cards. Four
+  rarely-used pages are **deleted outright**: `fit-training`, `fit-nutrition`, `h-meds`, `h-actions`
+  (markup + subnav chips + drawer links + landing nav cards + `PAGES` entries). `fit-sleep` is kept.
+  The auto-hiding top bar, previously Food-only, now applies to **every** section. The drawer keeps
+  the full nav as the escape hatch, reordered Tracker → Food → Fitness → Health.
+- **Reason:** Tracker and Food are used daily; Fitness and Health are reference material read
+  occasionally. Splitting "top-level tab" from "section" keeps the daily surfaces uncluttered without
+  burying the rest. Introduced `SEC_TAB` (section → tab) plus a `paintNav()` helper so Fitness/Health
+  pages still light a tab (**More**) instead of none.
+- **Mobile behaviour shipped alongside:**
+  - **iOS zoom-on-focus:** any control under **16px** makes Safari zoom in and never restore. One
+    rule — `@media(max-width:640px),(pointer:coarse){input,select,textarea{font-size:16px!important}}`.
+    Keyed on `pointer:coarse` too, so a phone in **landscape** (wide viewport) is still covered.
+    `!important` is necessary, not lazy: the designed sizes sit in higher-specificity rules
+    (`.metric input`, `table.weekgrid input.gnum`, `.drawer .dsearch`) and a few **inline** styles,
+    and an inline declaration beats any selector. Deliberately **not** `maximum-scale=1`, which
+    "fixes" it by disabling pinch-zoom entirely.
+  - **Sideways drift / white gutters:** `html,body{overflow-x:clip}` — **`clip`, not `hidden`**,
+    because `hidden` creates a scroll container and silently breaks the sticky topbar/subnav — plus
+    `overscroll-behavior:none` on body and `overscroll-behavior-x:contain` on every horizontally
+    scrollable child (`.tscroll`, `.subnav`, chip rows) to stop scroll chaining out to the page.
+  - **Safe areas:** insets must be folded into the *existing* `.wrap`/`.drawer` rules — declaring
+    them earlier is dead code, since those rules use the `padding` shorthand and come later. And
+    `.subnav`'s sticky `top` must track the topbar's inset (`calc(105px + env(safe-area-inset-top))`),
+    or the chip rail hides behind the topbar on a notched iOS PWA.
+  - Chip rows (`.fsugg-row`, `.fquick-actions`, `.fslot-chips`, `.fd-chips`) scroll horizontally
+    instead of wrapping, so suggestions stop crowding the card.
+- **Status:** Accepted. Verified structurally at a real 375×812 viewport: all 111 controls ≥16px,
+  no horizontal document overflow, sticky preserved, all 18 routes correct, topbar hide/reveal
+  confirmed on a **non-Food** tab, zero console errors. On-device confirmation still pending.
+- **Known pre-existing quirk (not introduced here):** drawer search is first-match-wins over each
+  page's full text, so "sleep"/"thyroid" land on `fit-home` because its nav-card labels contain those
+  words. Unchanged by this ADR; fix would be to rank matches rather than take the first.

@@ -1,28 +1,52 @@
-/* nav.js — routing, section nav, drawer, global nav bindings */
+/* nav.js — routing, section nav, drawer, global nav bindings
+
+   Nav model (ADR-0022): three TOP-LEVEL TABS — tracker | food | more — but five SECTIONS.
+   Fitness and Health are sections without a tab of their own; they live behind the "More"
+   landing and light the More tab via SEC_TAB. Keep "section" and "tab" distinct below. */
+/* Every key MUST have a matching <section id>. The search below walks these ids and
+   calls getElementById(id).textContent — a stale key throws and kills the search. */
 const PAGES={
-  'fit-home':'fitness','fit-progress':'fitness','fit-compliance':'fitness','fit-plan':'fitness','fit-training':'fitness','fit-nutrition':'fitness','fit-sleep':'fitness',
-  'h-home':'health','h-thyroid':'health','h-lipids':'health','h-vitamins':'health','h-bloodwork':'health','h-meds':'health','h-actions':'health',
+  'fit-home':'fitness','fit-progress':'fitness','fit-compliance':'fitness','fit-plan':'fitness','fit-sleep':'fitness',
+  'h-home':'health','h-thyroid':'health','h-lipids':'health','h-vitamins':'health','h-bloodwork':'health',
   't-log':'tracker','t-history':'tracker','t-checkin':'tracker',
-  'food-today':'food','food-pantry':'food','food-meals':'food','food-add':'food'
+  'food-today':'food','food-pantry':'food','food-meals':'food','food-add':'food',
+  /* LAST on purpose: search is a first-match-wins walk over these keys, and the More landing
+     merely lists the words "Fitness"/"Health" — leading with it would hijack those searches. */
+  'more-home':'more'
 };
-const HOME={fitness:'fit-home',health:'h-home',tracker:'t-log',food:'food-today'};
+const HOME={more:'more-home',fitness:'fit-home',health:'h-home',tracker:'t-log',food:'food-today'};
+/* Tracker & Food are the daily surfaces and get their own tab. Fitness/Health are reference
+   material reached through "More", so they light the More tab rather than none. */
+const SEC_TAB={more:'more',fitness:'more',health:'more',tracker:'tracker',food:'food'};
 let curSec='tracker';
+let _lastScrollY=0;        // last scroll position — drives the auto-hiding top bar
 const charts={};
 
+/* light the top tab (via SEC_TAB) and show that section's subnav chips */
+function paintNav(sec){
+  const tab=SEC_TAB[sec]||sec;
+  document.querySelectorAll('.seg button').forEach(b=>b.classList.toggle('on',b.dataset.sec===tab));
+  let any=false;
+  document.querySelectorAll('.chip-group').forEach(g=>{
+    const on=g.dataset.for===sec; g.classList.toggle('show',on); if(on)any=true;
+  });
+  /* the More landing has no chips — collapse the rail so it isn't a bare 1px seam */
+  document.querySelector('.subnav')?.classList.toggle('empty',!any);
+}
 function setSec(sec){
   curSec=sec;
-  document.querySelectorAll('.seg button').forEach(b=>b.classList.toggle('on',b.dataset.sec===sec));
-  document.querySelectorAll('.chip-group').forEach(g=>g.classList.toggle('show',g.dataset.for===sec));
+  paintNav(sec);
   go(HOME[sec]);
 }
 function go(id){
   const sec=PAGES[id];
-  if(sec!==curSec){curSec=sec;
-    document.querySelectorAll('.seg button').forEach(b=>b.classList.toggle('on',b.dataset.sec===sec));
-    document.querySelectorAll('.chip-group').forEach(g=>g.classList.toggle('show',g.dataset.for===sec));
-  }
+  if(sec!==curSec){curSec=sec;}
+  paintNav(sec);
   document.body.classList.toggle('food-active', sec==='food');
-  if(sec!=='food') document.body.classList.remove('nav-hidden');
+  /* always reveal the bar on navigation. Seed _lastScrollY with the CURRENT position, not 0:
+     the smooth scrollTo below emits events from the old offset, and a 0 baseline would read
+     those as "scrolling down" and flash the bar hidden for a frame. */
+  document.body.classList.remove('nav-hidden'); _lastScrollY=window.scrollY||0;
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.getElementById(id).classList.add('active');
   document.querySelectorAll('.chip').forEach(c=>c.classList.toggle('on',c.dataset.p===id));
@@ -40,11 +64,9 @@ function go(id){
 }
 document.querySelectorAll('.chip,.dlink,.navcard').forEach(el=>el.addEventListener('click',()=>go(el.dataset.p)));
 
-/* auto-hide the top bar on scroll-down (Food section only) to free vertical space */
-let _lastScrollY=0;
+/* auto-hide the top bar on scroll-down — ALL sections, to free vertical space */
 window.addEventListener('scroll', ()=>{
   const y=window.scrollY||document.documentElement.scrollTop||0;
-  if(typeof curSec==='undefined' || curSec!=='food'){ document.body.classList.remove('nav-hidden'); _lastScrollY=y; return; }
   if(y>_lastScrollY && y>70) document.body.classList.add('nav-hidden');       // scrolling down → hide
   else if(y<_lastScrollY-4) document.body.classList.remove('nav-hidden');     // scrolling up → show
   _lastScrollY=y;

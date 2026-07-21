@@ -4,8 +4,10 @@ Personal health dashboard for one user (Adarsh Nagar, 27M, Bengaluru, vegetarian
 Static site: GitHub → Netlify, backed by Supabase with a localStorage fallback. Installable PWA.
 Repo: https://github.com/adarsh733/war-mode-dashboard
 
-Four top-level sections: **🏋️ Fitness**, **🩺 Health**, **📓 Tracker**, **🍽️ Food**.
-The Food tracker is the actively-developed area; the other three are stable legacy.
+Three top-level tabs: **📓 Tracker**, **🍽️ Food**, **··· More**. Tracker and Food are the daily
+surfaces; **More** is a landing page holding the rarely-read reference sections **🏋️ Fitness** and
+**🩺 Health** ([ADR-0022](docs/decisions.md)). The Food tracker is the actively-developed area;
+Fitness/Health/Tracker are stable legacy.
 
 ---
 
@@ -85,8 +87,9 @@ docs/                 the persistent knowledge base (see index above)
 
 ## Run & verify locally
 
-- Serve over http (ES-module-free, but modules need http anyway): `python -m http.server 8130`
-  then open `http://localhost:8130/index.html`. A `.claude/launch.json` config named `static` exists.
+- Serve over http (ES-module-free, but modules need http anyway): `python -m http.server <port>`
+  then open `http://localhost:<port>/index.html`. Use the `.claude/launch.json` config named
+  `static` — **its port is bumped deliberately whenever JS goes stale** (see [known-issues](docs/known-issues.md)).
 - **Verify by DOM/JS inspection, not screenshots** (screenshot capture is broken here — see
   [known-issues](docs/known-issues.md)). The in-app browser also **HTTP-caches JS hard**; bump the
   port or hard-reload to load changed files.

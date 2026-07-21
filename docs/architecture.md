@@ -38,7 +38,7 @@ Rules that keep this safe:
 | `js/dates.js`  | date helpers (`todayStr`, `iso`, `addDays`, `fmtDate`, `monthKey`, week window) |
 | `js/data.js`   | tracker data layer: `loadDB`, `persist`, `applyAuto`, sync badge, goals |
 | `js/charts.js` | Chart.js helpers + `buildCharts` + monthly aggregations + `cssv()` |
-| `js/nav.js`    | routing (`PAGES`, `setSec`, `go`), drawer, search, **scroll-hide topbar (food only)** |
+| `js/nav.js`    | routing (`PAGES`, `HOME`, `SEC_TAB`, `setSec`, `go`, `paintNav`), drawer, search, **scroll-hide topbar (all sections)** |
 | `js/tracker.js`| daily tracker: week grid, goals, tags, history, CSV export |
 | `js/checkin.js`| progress-photo check-in engine |
 | `js/app.js`    | bootstrap: `loadDB → loadGoals → loadCheckins → loadFood → render` |
@@ -55,6 +55,25 @@ Rules that keep this safe:
 | `foodLog.js`    | quick-add search, **per-slot add** (`openSlotAdd`), meal builder, repeat-yesterday, bottom-sheet infra (`fsheetOpen`) |
 | `foodDetail.js` | **detail card** (`openItemDetail`/`openMealDetail`/`openEntryDetail`), **quantity wheel**, units editor, commit/save/remove |
 | `bridge.js`     | `finishDay` (manual push), `syncFoodToTracker`, `markDayDirty` |
+
+## 3b. Navigation model (ADR-0022)
+
+**Three top-level tabs, five sections.** Tracker and Food are the daily surfaces and own a tab each.
+Fitness and Health are reference material with no tab of their own — they sit behind the **More**
+landing (`#more-home`, two big `.navcard.lg` header cards).
+
+- `PAGES` maps every **page id → section**. `HOME` maps **section → landing page id**.
+- `SEC_TAB` maps **section → the tab that should light up**: `fitness`/`health`/`more` all → `more`.
+- `paintNav(sec)` is the single place that lights the tab (via `SEC_TAB`) and shows that section's
+  subnav chip group; it also collapses the rail (`.subnav.empty`) when a section has no chips,
+  which is the case on the More landing.
+
+Two invariants worth guarding:
+1. **Every `PAGES` key must have a matching `<section id>`.** The drawer search walks `PAGES` and
+   calls `getElementById(id).textContent` with no null check — a stale key throws and kills search.
+   Delete sections and their `PAGES` entries in the same change.
+2. **`'more-home'` is deliberately the LAST `PAGES` key.** Search is a first-match-wins walk, and the
+   More landing merely lists the words "Fitness"/"Health"; leading with it would hijack those queries.
 
 ## 4. Storage & sync
 
@@ -83,8 +102,8 @@ Rules that keep this safe:
 
 ## 5. How to run & verify
 
-- `python -m http.server 8130` → `http://localhost:8130/index.html` (config `static` in
-  `.claude/launch.json`).
+- `python -m http.server <port>` → `http://localhost:<port>/index.html` (config `static` in
+  `.claude/launch.json`; its port gets bumped on purpose when the preview serves stale JS).
 - **Verify via DOM/JS inspection**, not screenshots (capture is broken here). Example checks used
   this session: read `.fslot`, `.fring-center`, `_detail`, `FOOD_LOG`, run `dayTotals` and assert
   numbers by hand.

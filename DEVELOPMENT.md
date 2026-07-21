@@ -31,7 +31,8 @@
   device.
 - **The preview browser caches JS hard.** After editing a `.js`, a plain reload may serve stale
   code. Bump the port in `.claude/launch.json` and restart the dev server, or hard-reload.
-- Run locally: `python -m http.server 8130` → `http://localhost:8130/index.html`.
+- Run locally: `python -m http.server <port>` → `http://localhost:<port>/index.html`
+  (port lives in `.claude/launch.json`; bump it when the preview serves stale JS).
 - Keep the math source of truth in `js/food/foodMath.js` (pure, testable); verify totals against it.
 
 ## Git / release discipline

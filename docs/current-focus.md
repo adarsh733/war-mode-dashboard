@@ -6,14 +6,18 @@
 > _Last updated: 2026-07-21_
 
 ## Current feature
-🎨 **Dashboard-wide design unification** (just shipped) → next up: 🍽️ Food Phase 2 (AI)
+📱 **Mobile-app feel + nav restructure** (just shipped) → next up: 🍽️ Food Phase 2 (AI)
 
 ## Current sprint
-**Whole-dashboard UI unification** — the Food tab's clean-light look is now the design for *all four*
-tabs: Plus Jakarta Sans everywhere, light theme, one neon-green accent, restrained gradients.
-Reviewed and approved by the user; pushed. See [ADR-0021](decisions.md).
+**Made it behave like a phone app, and put the daily surfaces first.** Nav is now
+**Tracker | Food | ··· More**, with Fitness/Health behind More; four unused pages deleted; iOS
+input-zoom and sideways-scroll drift fixed. See [ADR-0022](decisions.md).
 
 ## Completed (this arc)
+- ✅ **Mobile correctness + nav restructure** ([ADR-0022](decisions.md)) — top bar now auto-hides on
+  *every* tab (was Food-only); all form controls forced ≥16px on touch so iOS stops zooming and
+  sticking; `overflow-x:clip` + overscroll containment kills the sideways drift; safe-area insets;
+  chip rows scroll instead of wrapping; `fit-training`, `fit-nutrition`, `h-meds`, `h-actions` deleted.
 - ✅ **Dashboard-wide unification** ([ADR-0021](decisions.md)) — all legacy fonts (Oswald/Fraunces/
   DM Sans) retired for **Plus Jakarta Sans**; terracotta → **neon green** brand accent + `--grad`;
   one identical toggle accent on every tab; dark hero banners removed from Fitness/Health; Tracker
@@ -33,8 +37,9 @@ Reviewed and approved by the user; pushed. See [ADR-0021](decisions.md).
 - ✅ Docs / knowledge base (CLAUDE.md + docs/)
 
 ## Next
-- ⬜ Live-check the unified look on device across all four tabs (esp. button label legibility —
-  white-on-neon is ~3.0:1 by design; see the tradeoff note in [design-system.md](design-system.md))
+- ⬜ **On-device check on the phone** — the mobile fixes (no input zoom, no sideways drift, safe-area
+  insets on a notched screen) can only be truly confirmed there; also button label legibility
+  (white-on-neon is ~3.0:1 by design — see the tradeoff note in [design-system.md](design-system.md))
 - ⬜ Pre-seed his real breakfast/lunch/dinner suggestions (per-slot)
 - ⬜ Calibrate ~15 most-eaten items seed → verified (composite dishes vary by kitchen)
 - ⬜ **Phase 2 gate:** test Anthropic API from Netlify (CORS / proxy) — do before any AI UI

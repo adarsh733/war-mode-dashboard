@@ -27,6 +27,39 @@
 *{margin:0;padding:0;box-sizing:border-box}
 html{scroll-behavior:smooth;font-size:16px;-webkit-text-size-adjust:100%}
 body{background:linear-gradient(180deg,#f2f8f4 0%,var(--bg) 280px);color:var(--ink);font-family:var(--ffont);line-height:1.6;-webkit-font-smoothing:antialiased;letter-spacing:-.005em}
+
+/* ══════════ APP-LIKE MOBILE BEHAVIOUR ══════════
+   Goal: stable orientation — no stray zoom, no sideways drift, no rubber-band. */
+
+/* 1. Sideways drift / white gutters on fast scroll.
+      `clip` (NOT `hidden`): hidden creates a scroll container and breaks the sticky topbar/subnav. */
+html,body{overflow-x:clip;max-width:100%}
+body{overscroll-behavior:none}                      /* no bounce, no pull-to-refresh */
+/* stop horizontally-scrollable children from chaining their scroll out to the page */
+.tscroll,.subnav,.fsugg-row,.fquick-actions,.fslot-chips,.fd-chips,.lbv-stage,#journeyStrip{overscroll-behavior-x:contain}
+
+/* 2. Native-app touch feel */
+body{-webkit-tap-highlight-color:transparent}
+button,.chip,.seg button,.navcard,.pill,.tgl,.gcheck,.habit,.dstrip-day,.fsugg-chip,.fchip,.fd-chip,.ci-tab,.fpill-btn{touch-action:manipulation}
+button,.chip,.seg button,.sec-label,.kicker,.fslot-title,.fbadge,.creed-line,.wm{-webkit-user-select:none;user-select:none}
+
+/* 3. Notch / safe areas (installed PWA + modern phones).
+      NOTE: .wrap and .drawer take their insets in their own rules further down — declaring them
+      here would be dead code, since those rules use the `padding` shorthand and come later. */
+.topbar{padding-top:env(safe-area-inset-top)}
+
+/* 4. iOS auto-zooms any focused control under 16px and never zooms back out.
+      One rule beats patching each selector, and covers controls added later.
+      (Deliberately NOT using maximum-scale=1 — that kills pinch-zoom / accessibility.)
+      Keyed on `pointer:coarse` (touch) as well as narrow width: the zoom is a TOUCH-device
+      behaviour, so a phone in landscape (wide viewport) still needs it. Desktop mouse users
+      keep the denser designed sizes — notably the week-grid number cells.
+      !important is required, not lazy: the designed sizes live in higher-specificity rules
+      (.metric input, table.weekgrid input.gnum, .drawer .dsearch) and a few inline styles,
+      and an inline style beats any selector — only !important wins over all of them. */
+@media(max-width:640px),(pointer:coarse){
+  input,select,textarea{font-size:16px !important}
+}
 canvas{max-width:100%}
 ::selection{background:var(--accent-soft)}
 
@@ -50,8 +83,11 @@ canvas{max-width:100%}
 .menu-btn{position:absolute;left:22px;top:14px;display:none;border:1px solid var(--line2);background:var(--paper);border-radius:8px;width:38px;height:38px;cursor:pointer;font-size:1.1rem}
 
 /* subnav strip — refined pill rail */
-.subnav{position:sticky;top:105px;z-index:70;background:rgba(255,255,255,.96);backdrop-filter:blur(12px);border-bottom:1px solid var(--line);box-shadow:var(--shadow-sm);overflow-x:auto;-webkit-overflow-scrolling:touch}
+/* top offset must track the topbar's safe-area padding, else the chip rail hides behind it
+   on notched iOS (inset ~47-59px in an installed PWA; resolves to 0 elsewhere) */
+.subnav{position:sticky;top:calc(105px + env(safe-area-inset-top));z-index:70;background:rgba(255,255,255,.96);backdrop-filter:blur(12px);border-bottom:1px solid var(--line);box-shadow:var(--shadow-sm);overflow-x:auto;-webkit-overflow-scrolling:touch}
 .subnav::-webkit-scrollbar{display:none}
+.subnav.empty{display:none}   /* no chip group for this section (e.g. the More landing) */
 .subnav-inner{max-width:1080px;margin:0 auto;padding:0 18px;display:flex}
 .chip-group{display:none;gap:2px}
 .chip-group.show{display:flex}
@@ -61,7 +97,8 @@ canvas{max-width:100%}
 .chip.on{color:var(--accent-ink);font-weight:700}
 .chip.on::after{content:"";position:absolute;left:14px;right:14px;bottom:0;height:3px;background:var(--accent);border-radius:3px 3px 0 0}
 
-.wrap{max-width:1080px;margin:0 auto;padding:30px 22px 100px}
+.wrap{max-width:1080px;margin:0 auto;
+  padding:30px calc(22px + env(safe-area-inset-right)) calc(100px + env(safe-area-inset-bottom)) calc(22px + env(safe-area-inset-left))}
 .page{display:none;animation:fade .35s ease}
 .page.active{display:block}
 @keyframes fade{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
@@ -97,6 +134,16 @@ h1.title{font-family:var(--ffont);font-weight:800;font-size:2.2rem;line-height:1
 .navcard:hover .arr{color:var(--accent);transform:translateX(3px)}
 .navcard::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--accent);transform:scaleY(0);transition:transform var(--t);transform-origin:top}
 .navcard:hover::before{transform:scaleY(1)}
+
+/* big header-only cards on the More landing */
+.morecards{grid-template-columns:1fr 1fr;gap:16px;margin-top:18px}
+@media(max-width:560px){.morecards{grid-template-columns:1fr}}
+.navcard.lg{padding:30px 22px;min-height:132px;display:flex;flex-direction:column;justify-content:center;
+  background:var(--grad-soft);border-color:var(--line)}
+.navcard.lg .ic{font-size:2rem;margin-bottom:10px}
+.navcard.lg h3{font-size:1.45rem;font-weight:800;letter-spacing:-.02em}
+.navcard.lg .arr{bottom:auto;top:50%;transform:translateY(-50%);font-size:1.4rem}
+.navcard.lg:hover .arr{transform:translateY(-50%) translateX(3px)}
 
 /* ── STATS ── */
 .stat{background:var(--paper);border:1px solid var(--line);border-radius:var(--r);padding:16px;box-shadow:var(--shadow-sm);position:relative;overflow:hidden}
@@ -282,7 +329,8 @@ table.weekgrid input.gnum:focus{background:var(--green-bg)}
 .overlay.show{display:block}
 /* mobile slide menu (full nav) */
 .drawer{position:fixed;top:0;left:0;width:280px;max-width:84vw;height:100vh;background:var(--paper);z-index:90;
-  transform:translateX(-100%);transition:transform var(--t);overflow-y:auto;box-shadow:0 0 40px rgba(0,0,0,.25);padding:20px}
+  transform:translateX(-100%);transition:transform var(--t);overflow-y:auto;box-shadow:0 0 40px rgba(0,0,0,.25);
+  padding:calc(20px + env(safe-area-inset-top)) 20px calc(20px + env(safe-area-inset-bottom))}
 .drawer.open{transform:none}
 .drawer h4{font-family:var(--ffont);font-weight:600;font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin:18px 0 8px}
 .drawer button.dlink{display:block;width:100%;text-align:left;border:none;background:none;font-family:var(--ffont);font-size:.92rem;color:var(--ink2);padding:9px 10px;border-radius:8px;cursor:pointer}
@@ -309,8 +357,12 @@ table.weekgrid input.gnum:focus{background:var(--green-bg)}
 .quiet-note{font-size:.78rem;color:var(--muted);margin-top:8px}
 @media(max-width:860px){.command{grid-template-columns:1fr}.command .metricline{grid-template-columns:repeat(3,1fr)}}
 @media(max-width:520px){
-  .subnav{top:96px}.command{padding:14px}.command .metricline{grid-template-columns:1fr 1fr}.command .big{font-size:1.75rem}
-  .seg button{padding:7px 13px}.menu-btn{display:block}.tb-inner{padding-left:56px;padding-right:12px}
+  .subnav{top:calc(96px + env(safe-area-inset-top))}.command{padding:14px}.command .metricline{grid-template-columns:1fr 1fr}.command .big{font-size:1.75rem}
+  /* the ☰ button forces an asymmetric 56px/12px inset, so the rail must shrink to stay
+     inside the viewport — otherwise its right edge is clipped by overflow-x:clip */
+  .seg{max-width:100%}
+  .seg button{padding:7px 10px;font-size:.72rem;letter-spacing:.03em}
+  .menu-btn{display:block}.tb-inner{padding-left:56px;padding-right:12px}
 }
 
 /* ══════════ FOOD SECTION ══════════ */
@@ -539,7 +591,7 @@ section[id^="food-"] .lede{color:var(--fmut);font-size:1rem}
 
 .fcard{background:var(--fcard);border:1px solid var(--fline);border-radius:var(--fr);box-shadow:var(--fshadow);padding:20px}
 
-/* auto-hide top bar (food only) */
+/* auto-hide top bar (all sections) */
 .topbar{transition:transform .3s ease} .subnav{transition:top .3s ease}
 body.nav-hidden .topbar{transform:translateY(-100%)}
 body.nav-hidden .subnav{top:0}
@@ -666,3 +718,20 @@ section[id^="food-"] .fsearch-input:focus{border-color:var(--fgreen);box-shadow:
 
 /* sheets get the food font too */
 .fsheet{font-family:var(--ffont)}
+
+/* ══════════ SCROLLING CHIP ROWS ══════════
+   Chips used to wrap onto several lines and crowd the card. Now they sit on ONE row that
+   scrolls sideways. Declared last so it wins over the earlier duplicate definitions. */
+.fsugg-row,.fquick-actions,.fquick .fquick-actions,.fslot-chips,.fd-chips{
+  flex-wrap:nowrap;overflow-x:auto;overflow-y:hidden;
+  scroll-snap-type:x proximity;overscroll-behavior-x:contain;
+  -webkit-overflow-scrolling:touch;scrollbar-width:none;
+}
+.fsugg-row::-webkit-scrollbar,.fquick-actions::-webkit-scrollbar,
+.fslot-chips::-webkit-scrollbar,.fd-chips::-webkit-scrollbar{display:none}
+/* chips must not shrink, or flex squeezes them all onto the visible row */
+.fsugg-chip,.fpill-btn,.fchip,.fd-chip,.fsugg-edit{flex:0 0 auto;scroll-snap-align:start}
+/* bleed to the card edge so a half-visible chip signals "there's more" */
+.fslot .fsugg-row{margin-left:-16px;margin-right:-16px;padding-left:16px;padding-right:16px}
+/* full-width "edit suggestions" button is a block action, not a chip — keep it out of the rail */
+.fsugg-edit.wide{flex:1 0 auto}

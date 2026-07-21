@@ -19,6 +19,14 @@
 - Windows shell: `cat << 'EOF'` heredocs with quotes broke once — prefer writing content to a temp
   file and `cat tempfile >> target` for large appends.
 
+## Product quirks
+- **Drawer search is first-match-wins** over each page's entire text (`js/nav.js`), so a query can
+  land on a page that merely *links* to the topic. E.g. "sleep" and "thyroid" both open `fit-home`,
+  whose nav-card labels contain those words. Pre-existing, not caused by the nav restructure. A real
+  fix would rank matches (title/heading hits first) instead of taking the first page that contains
+  the string. Note `'more-home'` is deliberately the **last** `PAGES` key so the More landing — which
+  lists the words "Fitness"/"Health" — doesn't hijack those searches.
+
 ## Data / calibration debts
 - **Seed macros are generic** (`trust:"seed"`, ~50 items). They WILL be off for his kitchen.
   He should calibrate his ~15 most-eaten items (editing an item flips it seed→verified).

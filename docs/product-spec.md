@@ -115,5 +115,5 @@ Items carry alternate names (e.g. roti↔chapati, dahi↔curd, chole↔chana) so
 ## 9. Deferred / not doing yet
 
 - Add-Item screen redesign (leave as-is).
-- Replicating the clean-light look to Fitness/Health/Tracker (only after he approves it on Food).
+- ~~Replicating the clean-light look to Fitness/Health/Tracker~~ — **done** ([ADR-0021](decisions.md)).
 - Cross-device parity of suggestions relies on the cloud reserved row; localStorage is the primary.
