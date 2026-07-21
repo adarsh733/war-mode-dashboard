@@ -433,3 +433,39 @@
   zero console errors. Gesture *feel* still needs on-device confirmation.
 - **Touch only for now** — keyboard arrows and mouse drag were deliberately left out; both are a few
   lines on top of `swipeTo(±1)` if wanted later.
+
+### ADR-0033 — One modular type scale, mobile-first
+- **Decision:** Replace ~30 ad-hoc font sizes with a **9-step modular scale** exposed as `--fs-*`
+  tokens (11/12/13/14/15/17/20/24/28px, plus `--fs-4xl` 32px used *only* for page titles ≥820px),
+  and three line-height tokens (`--lh-tight/snug/base`). Applied across `styles.css`, inline
+  `style=""` in `index.html`, and JS-generated markup in `js/checkin.js` / `js/tracker.js`.
+  Ratio ~1.2 (minor third), rounded to whole px at the pinned `html{font-size:16px}`, aligned with
+  iOS HIG and Material 3. **Never write a raw `font-size` again** — only glyphs and form controls
+  are exempt.
+- **Reason:** Food rows read as cluttered, but the cause wasn't "fonts too big" — it was the absence
+  of any system. The slot header was 19.2px while the kcal value was **18.4px** and the item name a
+  full 16px, so rows visually competed with their own headers (header:item ratio 1.2:1). Nothing
+  shared a ratio, so nothing read as a hierarchy.
+- **Resulting hierarchy** (Food slot, the case that prompted this): section title **17** > kcal
+  **15** > item name **14** > sub-line **12**, ratio 1.21. The kcal value stays emphasised by
+  **weight 700, not size** — that is the specific fix for "the numbers shout."
+- **Hero numbers deliberately excluded from the shrink:** rings, `.stat .v`, `.fd-bigv`,
+  `.command .big` hold `--fs-3xl` (28px). Shrinking everything *around* a focal number raises
+  contrast, which declutters more than shrinking the number would.
+- **Density is half the fix:** dense rows also got `--lh-snug` and 10px padding (from 12–13px).
+  The global `line-height:1.6` is tuned for prose and was the other reason lists felt loose.
+- **Interaction with [ADR-0022](#adr-0022) (iOS zoom) — the load-bearing constraint:** form controls
+  must never render below 16px on touch, or Safari zooms on focus and never restores. The guard
+  `@media(max-width:640px),(pointer:coarse){input,select,textarea{font-size:16px!important}}` is
+  untouched, and **no input may ever be given an `!important` font-size** — it would beat the guard.
+  Verified post-change: all 111 controls compute ≥16px at 375×812.
+- **Status:** Accepted. Verified at 375×812: hierarchy exactly 17/14/15/12, zero off-scale text
+  (only decorative glyphs remain raw), smallest text 11px, all inputs ≥16px, no horizontal overflow,
+  swipe nav and auto-hiding topbar unaffected, zero console errors.
+- **Traps found during review, worth remembering:** four *later* rules were silently beating
+  tokenised earlier ones — `.sec-label{font-size:.8rem !important}` killed the token outright;
+  `.fsheet .fname` (same specificity, later) shrank the sheet **title** to a row-item 14px;
+  `.fhero-cap b.good` made the on-target state *smaller* than the over state; `.qwheel-item.on` sat
+  off-scale at 22.4px. Also, the whole **Phase-2 AI block was initially skipped** (~30 raw sizes,
+  incl. `.ai-badge` at 10.6px, under the floor). After any size change, check the **computed** value,
+  not the rule you edited.

@@ -245,9 +245,9 @@ function renderJourneyStrip(dts){
       <div class="ci-thumb jcard-tall" id="${cardId}" style="width:170px;cursor:${val?'pointer':'default'}" onclick="${val?`jlightbox('${dt}','${journeyAngle}')`:''}">
         <span class="lbl">${fmtDate(dt)}</span>
       </div>
-      ${statLine?`<div style="font-size:.72rem;color:var(--muted);margin-top:4px;text-align:center">${statLine}</div>`:''}
+      ${statLine?`<div style="font-size:var(--fs-2xs);color:var(--muted);margin-top:4px;text-align:center">${statLine}</div>`:''}
       <div style="display:flex;gap:4px;margin-top:6px;justify-content:center">
-        <button onclick="deleteCheckin('${dt}')" style="background:none;border:none;color:var(--red);cursor:pointer;font-size:.72rem;font-weight:600;padding:2px 6px">Delete</button>
+        <button onclick="deleteCheckin('${dt}')" style="background:none;border:none;color:var(--red);cursor:pointer;font-size:var(--fs-2xs);font-weight:600;padding:2px 6px">Delete</button>
       </div>
     </div>`;
   }).join('');
@@ -295,13 +295,13 @@ function renderCompare(){
 
   // Summary row
   const summaryHtml=`<div class="card" style="margin-bottom:16px">
-    <div style="font-family:var(--ffont);font-weight:600;font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:12px">${fmtDate(a)} → ${fmtDate(b)} · ${days} days</div>
+    <div style="font-family:var(--ffont);font-weight:600;font-size:var(--fs-xs);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:12px">${fmtDate(a)} → ${fmtDate(b)} · ${days} days</div>
     <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:10px;text-align:center">
       ${[['Weight','weight','kg',true],['Waist','waist','″',true],['Tummy','tummy','″',true],['Chest','chest','″',false],['Bicep','bicep','″',false]].map(([lbl,k,u,lg])=>`
         <div>
-          <div style="font-size:.68rem;color:var(--muted);font-family:var(--ffont);letter-spacing:.04em;text-transform:uppercase;margin-bottom:4px">${lbl}</div>
-          <div style="font-size:1.1rem">${deltaHtml(k,u,lg)}</div>
-          <div style="font-size:.7rem;color:var(--muted);margin-top:2px">${A[k]!=null?A[k]+(u):'—'} → ${B[k]!=null?B[k]+(u):'—'}</div>
+          <div style="font-size:var(--fs-2xs);color:var(--muted);font-family:var(--ffont);letter-spacing:.04em;text-transform:uppercase;margin-bottom:4px">${lbl}</div>
+          <div style="font-size:var(--fs-lg)">${deltaHtml(k,u,lg)}</div>
+          <div style="font-size:var(--fs-2xs);color:var(--muted);margin-top:2px">${A[k]!=null?A[k]+(u):'—'} → ${B[k]!=null?B[k]+(u):'—'}</div>
         </div>`).join('')}
     </div>
   </div>`;
@@ -314,9 +314,9 @@ function renderCompare(){
     const md=mk?deltaVal(mk):null;
     const mLabel=mk?mk.charAt(0).toUpperCase()+mk.slice(1):null;
     const mCol=md==null?'var(--muted)':md<0?'var(--green)':'var(--red)';
-    const mBadge=mLabel&&md!=null?`<div style="text-align:center;margin-bottom:8px;font-size:.8rem"><span style="font-family:var(--ffont);font-weight:600;color:var(--muted)">${mLabel}: </span><span style="color:${mCol};font-weight:700">${A[mk]}″ → ${B[mk]}″ (${md>0?'+':''}${md.toFixed(1)}″)</span></div>`:'';
+    const mBadge=mLabel&&md!=null?`<div style="text-align:center;margin-bottom:8px;font-size:var(--fs-sm)"><span style="font-family:var(--ffont);font-weight:600;color:var(--muted)">${mLabel}: </span><span style="color:${mCol};font-weight:700">${A[mk]}″ → ${B[mk]}″ (${md>0?'+':''}${md.toFixed(1)}″)</span></div>`:'';
     return `<div style="margin-top:18px" id="cmpAngle_${an.k}">
-      <div style="font-family:var(--ffont);font-weight:600;font-size:.8rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink2);margin-bottom:6px">${an.label}</div>
+      <div style="font-family:var(--ffont);font-weight:600;font-size:var(--fs-sm);letter-spacing:.1em;text-transform:uppercase;color:var(--ink2);margin-bottom:6px">${an.label}</div>
       ${mBadge}
       <div class="cmp-grid" style="position:relative">
         <div class="ci-thumb" id="cmpA_${an.k}" style="cursor:default">

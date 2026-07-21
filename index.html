@@ -195,7 +195,7 @@
   <div class="grid g3 stack">
     <div class="card" style="border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)">
       <span class="pill p-amber">Now → Aug · Phase A</span>
-      <div style="font-family:var(--ffont);font-size:1.15rem;font-weight:800;letter-spacing:-.015em;margin:10px 0 3px">The Cut</div>
+      <div style="font-family:var(--ffont);font-size:var(--fs-lg);font-weight:800;letter-spacing:-.015em;margin:10px 0 3px">The Cut</div>
       <div class="subtle" style="color:var(--ink2)">~83.5kg by Jun · ~80kg by Aug · 17–18%→~12–13%</div>
       <ul class="klist" style="margin-top:6px">
         <li style="padding:7px 0"><span class="kv">~1,900 real kcal (log ~1,750)</span></li>
@@ -206,7 +206,7 @@
     </div>
     <div class="card">
       <span class="pill p-ink">Sep → Dec · Phase B</span>
-      <div style="font-family:var(--ffont);font-size:1.15rem;font-weight:800;letter-spacing:-.015em;margin:10px 0 3px">The Lean Gain</div>
+      <div style="font-family:var(--ffont);font-size:var(--fs-lg);font-weight:800;letter-spacing:-.015em;margin:10px 0 3px">The Lean Gain</div>
       <div class="subtle" style="color:var(--ink2)">80 → 82kg · stays ~12%</div>
       <ul class="klist" style="margin-top:6px">
         <li style="padding:7px 0"><span class="kv">~maintenance +200 kcal</span></li>
@@ -217,7 +217,7 @@
     </div>
     <div class="card">
       <span class="pill p-ink">As needed · Phase C</span>
-      <div style="font-family:var(--ffont);font-size:1.15rem;font-weight:800;letter-spacing:-.015em;margin:10px 0 3px">Mini-Cut</div>
+      <div style="font-family:var(--ffont);font-size:var(--fs-lg);font-weight:800;letter-spacing:-.015em;margin:10px 0 3px">Mini-Cut</div>
       <div class="subtle" style="color:var(--ink2)">Strip the ~1kg fat from the gain</div>
       <ul class="klist" style="margin-top:6px">
         <li style="padding:7px 0"><span class="kv">Short, sharp 3–4 week deficit</span></li>
@@ -539,8 +539,8 @@
   </div>
 
   <div style="display:flex;align-items:center;gap:12px;margin-top:16px;flex-wrap:wrap">
-    <button onclick="saveWeek()" style="background:var(--green);color:#fff;border:none;border-radius:10px;padding:12px 26px;font-family:var(--ffont);font-weight:600;font-size:.88rem;letter-spacing:.05em;text-transform:uppercase;cursor:pointer;box-shadow:var(--shadow-sm)">✓ Force Sync</button>
-    <span id="saveMsg" style="font-size:.85rem;color:var(--green);font-weight:600;opacity:0;transition:opacity .3s">✓ Saved</span>
+    <button onclick="saveWeek()" style="background:var(--green);color:#fff;border:none;border-radius:10px;padding:12px 26px;font-family:var(--ffont);font-weight:600;font-size:var(--fs-sm);letter-spacing:.05em;text-transform:uppercase;cursor:pointer;box-shadow:var(--shadow-sm)">✓ Force Sync</button>
+    <span id="saveMsg" style="font-size:var(--fs-sm);color:var(--green);font-weight:600;opacity:0;transition:opacity .3s">✓ Saved</span>
     <span class="subtle" style="margin-left:auto">Every cell autosaves instantly — one day or all seven, no need to press anything</span>
   </div>
 
@@ -551,11 +551,11 @@
 
     <!-- Current Goal -->
     <details class="acc" id="goalAcc">
-      <summary>🎯 Current Goal <span id="goalSummaryMini" class="subtle" style="font-weight:400;font-size:.78rem;margin-left:6px"></span><span class="ac">＋</span></summary>
+      <summary>🎯 Current Goal <span id="goalSummaryMini" class="subtle" style="font-weight:400;font-size:var(--fs-xs);margin-left:6px"></span><span class="ac">＋</span></summary>
       <div class="acc-body">
         <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px">
-          <span id="goalSummary" class="subtle" style="font-size:.82rem"></span>
-          <button onclick="toggleGoals()" id="goalEditBtn" style="margin-left:auto;background:var(--paper2);border:1px solid var(--line2);border-radius:8px;padding:6px 14px;font-family:var(--ffont);font-weight:600;font-size:.72rem;letter-spacing:.04em;text-transform:uppercase;cursor:pointer;color:var(--ink2)">Change</button>
+          <span id="goalSummary" class="subtle" style="font-size:var(--fs-xs)"></span>
+          <button onclick="toggleGoals()" id="goalEditBtn" style="margin-left:auto;background:var(--paper2);border:1px solid var(--line2);border-radius:8px;padding:6px 14px;font-family:var(--ffont);font-weight:600;font-size:var(--fs-2xs);letter-spacing:.04em;text-transform:uppercase;cursor:pointer;color:var(--ink2)">Change</button>
         </div>
         <div id="goalEditor" style="display:none">
           <div class="note info" style="margin-bottom:14px"><span class="ni">i</span><div>Set a goal that applies <b>from a chosen date forward</b>. Past days keep the goal active then — this <b>never re-scores history</b>.</div></div>
@@ -569,8 +569,8 @@
             <div class="metric"><label>Water goal (L)</label><input type="number" id="g_water" step="0.5"></div>
           </div>
           <div style="display:flex;gap:10px;margin-top:12px;align-items:center;flex-wrap:wrap">
-            <button onclick="saveGoals()" style="background:var(--green);color:#fff;border:none;border-radius:9px;padding:10px 20px;font-family:var(--ffont);font-weight:600;font-size:.78rem;letter-spacing:.04em;text-transform:uppercase;cursor:pointer">Save Goal Period</button>
-            <span class="subtle" style="font-size:.78rem">Days from this date onward use the new thresholds.</span>
+            <button onclick="saveGoals()" style="background:var(--green);color:#fff;border:none;border-radius:9px;padding:10px 20px;font-family:var(--ffont);font-weight:600;font-size:var(--fs-xs);letter-spacing:.04em;text-transform:uppercase;cursor:pointer">Save Goal Period</button>
+            <span class="subtle" style="font-size:var(--fs-xs)">Days from this date onward use the new thresholds.</span>
           </div>
           <div class="sec-label" style="margin-top:20px">Goal history</div>
           <div id="goalHistory"></div>
@@ -580,20 +580,20 @@
 
     <!-- Context Tags -->
     <details class="acc" id="tagAcc">
-      <summary>📍 Context Tags <span class="subtle" style="font-weight:400;font-size:.78rem;margin-left:6px">Home · Travel · etc</span><span class="ac">＋</span></summary>
+      <summary>📍 Context Tags <span class="subtle" style="font-weight:400;font-size:var(--fs-xs);margin-left:6px">Home · Travel · etc</span><span class="ac">＋</span></summary>
       <div class="acc-body">
-        <p class="subtle" style="font-size:.82rem;margin-bottom:10px">Mark stretches of days. Informational only — never affects your score.</p>
+        <p class="subtle" style="font-size:var(--fs-xs);margin-bottom:10px">Mark stretches of days. Informational only — never affects your score.</p>
         <div class="metric-grid">
           <div class="metric"><label>From date</label><input type="date" id="tag_from"></div>
           <div class="metric"><label>To date</label><input type="date" id="tag_to"></div>
           <div class="metric"><label>Tag</label>
-            <select id="tag_sel" onchange="tagSelChange()" style="width:100%;border:1px solid var(--line2);border-radius:9px;padding:10px 12px;font-family:inherit;font-size:.95rem;background:var(--bg);color:var(--ink)"></select>
+            <select id="tag_sel" onchange="tagSelChange()" style="width:100%;border:1px solid var(--line2);border-radius:9px;padding:10px 12px;font-family:inherit;font-size:var(--fs-md);background:var(--bg);color:var(--ink)"></select>
           </div>
           <div class="metric" id="tag_custom_wrap" style="display:none"><label>Custom label</label><input type="text" id="tag_custom" placeholder="e.g. Wedding trip"></div>
         </div>
         <div style="display:flex;gap:10px;margin-top:12px;align-items:center;flex-wrap:wrap">
-          <button onclick="applyTagRange()" style="background:var(--green);color:#fff;border:none;border-radius:9px;padding:10px 20px;font-family:var(--ffont);font-weight:600;font-size:.78rem;letter-spacing:.04em;text-transform:uppercase;cursor:pointer">Apply Tag</button>
-          <button onclick="clearTagRange()" style="background:var(--paper);color:var(--red);border:1px solid var(--line2);border-radius:9px;padding:10px 18px;font-family:var(--ffont);font-weight:600;font-size:.78rem;letter-spacing:.04em;text-transform:uppercase;cursor:pointer">Clear in range</button>
+          <button onclick="applyTagRange()" style="background:var(--green);color:#fff;border:none;border-radius:9px;padding:10px 20px;font-family:var(--ffont);font-weight:600;font-size:var(--fs-xs);letter-spacing:.04em;text-transform:uppercase;cursor:pointer">Apply Tag</button>
+          <button onclick="clearTagRange()" style="background:var(--paper);color:var(--red);border:1px solid var(--line2);border-radius:9px;padding:10px 18px;font-family:var(--ffont);font-weight:600;font-size:var(--fs-xs);letter-spacing:.04em;text-transform:uppercase;cursor:pointer">Clear in range</button>
         </div>
         <div class="sec-label" style="margin-top:18px">Tagged periods</div>
         <div id="tagHistory"></div>
@@ -610,7 +610,7 @@
   <p class="lede">Live monthly rollups that update as you log. Month-on-month comparison below.</p>
 
   <div class="sec-label" style="display:flex;align-items:center;gap:14px">This month so far
-    <select id="monthFilter" onchange="renderHistory()" style="margin-left:auto;border:1px solid var(--line2);border-radius:8px;padding:7px 12px;font-family:inherit;font-size:.85rem;background:var(--bg);color:var(--ink);text-transform:none;letter-spacing:0;font-weight:500"></select>
+    <select id="monthFilter" onchange="renderHistory()" style="margin-left:auto;border:1px solid var(--line2);border-radius:8px;padding:7px 12px;font-family:inherit;font-size:var(--fs-sm);background:var(--bg);color:var(--ink);text-transform:none;letter-spacing:0;font-weight:500"></select>
   </div>
   <div class="grid g4 stack" id="histStats"></div>
 
@@ -632,8 +632,8 @@
 
   <div class="sec-label">All logged days</div>
   <div style="display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap">
-    <button onclick="exportCSV()" style="background:var(--ink);color:#fff;border:none;border-radius:9px;padding:10px 18px;font-family:var(--ffont);font-weight:600;font-size:.82rem;letter-spacing:.04em;text-transform:uppercase;cursor:pointer">⬇ Export CSV</button>
-    <button onclick="if(confirm('Clear all logged days on this device? Cannot be undone.')) clearAll()" style="background:var(--paper);color:var(--red);border:1px solid var(--line2);border-radius:9px;padding:10px 18px;font-family:var(--ffont);font-weight:600;font-size:.82rem;letter-spacing:.04em;text-transform:uppercase;cursor:pointer">Clear all</button>
+    <button onclick="exportCSV()" style="background:var(--ink);color:#fff;border:none;border-radius:9px;padding:10px 18px;font-family:var(--ffont);font-weight:600;font-size:var(--fs-xs);letter-spacing:.04em;text-transform:uppercase;cursor:pointer">⬇ Export CSV</button>
+    <button onclick="if(confirm('Clear all logged days on this device? Cannot be undone.')) clearAll()" style="background:var(--paper);color:var(--red);border:1px solid var(--line2);border-radius:9px;padding:10px 18px;font-family:var(--ffont);font-weight:600;font-size:var(--fs-xs);letter-spacing:.04em;text-transform:uppercase;cursor:pointer">Clear all</button>
   </div>
   <div class="tscroll"><table id="histTable">
     <thead><tr>
@@ -671,16 +671,16 @@
         <div class="metric"><label>Chest ″</label><input type="number" step="0.1" id="ci_chest"></div>
         <div class="metric"><label>Bicep ″</label><input type="number" step="0.1" id="ci_bicep"></div>
       </div>
-      <div id="ci_pulled" class="subtle" style="font-size:.78rem;margin-top:8px"></div>
+      <div id="ci_pulled" class="subtle" style="font-size:var(--fs-xs);margin-top:8px"></div>
 
       <div class="sec-label">Photos — tap to upload</div>
       <div class="ci-slots" id="ciSlots"></div>
 
-      <textarea id="ci_note" rows="2" placeholder="Optional note — how you felt, conditions, etc." style="width:100%;border:1px solid var(--line2);border-radius:9px;padding:11px;font-family:inherit;font-size:.9rem;background:var(--bg);color:var(--ink);resize:vertical;margin-top:14px"></textarea>
+      <textarea id="ci_note" rows="2" placeholder="Optional note — how you felt, conditions, etc." style="width:100%;border:1px solid var(--line2);border-radius:9px;padding:11px;font-family:inherit;font-size:var(--fs-sm);background:var(--bg);color:var(--ink);resize:vertical;margin-top:14px"></textarea>
 
       <div style="display:flex;align-items:center;gap:12px;margin-top:16px;flex-wrap:wrap">
-        <button onclick="saveCheckin()" id="ciSaveBtn" style="background:var(--green);color:#fff;border:none;border-radius:10px;padding:12px 26px;font-family:var(--ffont);font-weight:600;font-size:.88rem;letter-spacing:.05em;text-transform:uppercase;cursor:pointer">Save Check-In</button>
-        <span id="ciSaveMsg" style="font-size:.85rem;color:var(--green);font-weight:600;opacity:0;transition:opacity .3s">✓ Saved</span>
+        <button onclick="saveCheckin()" id="ciSaveBtn" style="background:var(--green);color:#fff;border:none;border-radius:10px;padding:12px 26px;font-family:var(--ffont);font-weight:600;font-size:var(--fs-sm);letter-spacing:.05em;text-transform:uppercase;cursor:pointer">Save Check-In</button>
+        <span id="ciSaveMsg" style="font-size:var(--fs-sm);color:var(--green);font-weight:600;opacity:0;transition:opacity .3s">✓ Saved</span>
       </div>
     </div>
     <div class="note info" style="margin-top:16px"><span class="ni">i</span><div>Photos upload at full iPhone quality to your private Supabase storage. Weight &amp; measurements auto-fill from that day's log if you've recorded them — otherwise just type them here.</div></div>
@@ -696,8 +696,8 @@
       <div id="journeyEmpty" class="subtle" style="text-align:center;padding:50px 0;display:none">No check-ins yet. Add your first one above.</div>
       <!-- download -->
       <div style="margin-top:20px;display:flex;align-items:center;gap:12px;flex-wrap:wrap">
-        <button onclick="downloadAllPhotos()" id="dlAllBtn" style="background:var(--ink);color:#fff;border:none;border-radius:9px;padding:11px 20px;font-family:var(--ffont);font-weight:600;font-size:.82rem;letter-spacing:.04em;text-transform:uppercase;cursor:pointer">⬇ Download All Photos</button>
-        <span id="dlProgress" style="font-size:.82rem;color:var(--green);font-weight:600;display:none"></span>
+        <button onclick="downloadAllPhotos()" id="dlAllBtn" style="background:var(--ink);color:#fff;border:none;border-radius:9px;padding:11px 20px;font-family:var(--ffont);font-weight:600;font-size:var(--fs-xs);letter-spacing:.04em;text-transform:uppercase;cursor:pointer">⬇ Download All Photos</button>
+        <span id="dlProgress" style="font-size:var(--fs-xs);color:var(--green);font-weight:600;display:none"></span>
       </div>
     </div>
   </div>

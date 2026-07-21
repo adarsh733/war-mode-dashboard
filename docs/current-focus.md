@@ -27,6 +27,11 @@ plate can be saved as a meal ([ADR-0028](decisions.md)). Suggestions moved below
 and collapsed by default.
 
 ## Completed (this arc)
+- ✅ **Type scale** ([ADR-0033](decisions.md)) — replaced ~30 ad-hoc font sizes with a 9-step modular
+  scale (`--fs-*`). Food rows were cluttered because the kcal value (18.4px) nearly matched the
+  "Breakfast" header (19.2px); now 17 / 14 / 15 / 12 with the value emphasised by **weight, not
+  size**. Hero numbers (rings, stat values) deliberately stay 28px. Applied across every tab, plus
+  inline HTML and JS-generated styles. Inputs still forced ≥16px on touch (iOS zoom guard intact).
 - ✅ **Swipe navigation** ([ADR-0032](decisions.md)) — swipe left/right anywhere to move between
   subtabs, as one 16-page chain across every tab (last subtab of a tab → first of the next), stopping
   at both ends with a nudge. Direction-aware slide, applied to chip taps too. Horizontally

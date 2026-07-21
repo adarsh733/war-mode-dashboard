@@ -81,8 +81,8 @@ function renderGoalHistory(){
     const canDel=PERIODS.length>1;
     return `<div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--line)">
       <span class="pill p-blue" style="flex-shrink:0">📍 ${fmtDate(p.from)}</span>
-      <div style="flex:1"><b style="font-size:.88rem">${p.phase}</b><div class="subtle" style="font-size:.76rem">${range} · ${p.protein}g · &lt;${p.cal}kcal · ${p.sleep}h · ${(p.steps/1000)}k</div></div>
-      ${canDel?`<button onclick="deletePeriod(${i})" style="background:none;border:none;color:var(--red);cursor:pointer;font-size:.8rem;font-weight:600">Remove</button>`:''}
+      <div style="flex:1"><b style="font-size:var(--fs-sm)">${p.phase}</b><div class="subtle" style="font-size:var(--fs-xs)">${range} · ${p.protein}g · &lt;${p.cal}kcal · ${p.sleep}h · ${(p.steps/1000)}k</div></div>
+      ${canDel?`<button onclick="deletePeriod(${i})" style="background:none;border:none;color:var(--red);cursor:pointer;font-size:var(--fs-sm);font-weight:600">Remove</button>`:''}
     </div>`;
   }).join('');
 }
@@ -177,10 +177,10 @@ function renderTagHistory(){
     const days=rangeDates(s.from,s.to).length;
     return `<div style="display:flex;align-items:center;gap:8px;padding:9px 0;border-bottom:1px solid var(--line);flex-wrap:wrap">
       <span class="pill" style="background:${c}1f;color:${c};flex-shrink:0">${lab}</span>
-      <span style="flex:1;min-width:120px;font-size:.85rem">${range}</span>
-      <span class="subtle" style="font-size:.78rem">${days}d</span>
-      <button onclick="editTagSpan('${s.from}','${s.to}','${s.tag}','${(s.name||'').replace(/'/g,"\\'")}')" style="background:none;border:none;color:var(--blue);cursor:pointer;font-size:.78rem;font-weight:600">Edit</button>
-      <button onclick="deleteTagSpan('${s.from}','${s.to}')" style="background:none;border:none;color:var(--red);cursor:pointer;font-size:.78rem;font-weight:600">Delete</button>
+      <span style="flex:1;min-width:120px;font-size:var(--fs-sm)">${range}</span>
+      <span class="subtle" style="font-size:var(--fs-xs)">${days}d</span>
+      <button onclick="editTagSpan('${s.from}','${s.to}','${s.tag}','${(s.name||'').replace(/'/g,"\\'")}')" style="background:none;border:none;color:var(--blue);cursor:pointer;font-size:var(--fs-xs);font-weight:600">Edit</button>
+      <button onclick="deleteTagSpan('${s.from}','${s.to}')" style="background:none;border:none;color:var(--red);cursor:pointer;font-size:var(--fs-xs);font-weight:600">Delete</button>
     </div>`;
   }).join('');
 }
@@ -241,7 +241,7 @@ function renderGrid(){
     const tg=DB[dt]&&DB[dt].tag?tagDef(DB[dt].tag):null;
     const lab=tg?(DB[dt].tag==='other'&&DB[dt].tagName?'📍':tg.label.split(' ')[0]):'';
     const title=DB[dt]?tagLabelFor(DB[dt]):'';
-    return `<td class="daycell ${dt===t?'today-col':''}">${tg?`<span title="${title}" style="font-size:1rem">${lab}</span>`:'<span class="subtle" style="opacity:.4">·</span>'}</td>`;
+    return `<td class="daycell ${dt===t?'today-col':''}">${tg?`<span title="${title}" style="font-size:var(--fs-md)">${lab}</span>`:'<span class="subtle" style="opacity:.4">·</span>'}</td>`;
   }).join('')+`</tr>`;
   // metrics group
   rows+=`<tr class="rowgroup-h"><td colspan="8">Numbers — type any field, save independently</td></tr>`;

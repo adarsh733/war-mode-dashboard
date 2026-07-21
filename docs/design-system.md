@@ -13,15 +13,51 @@
 - Set once on `body`; `--ffont` is also used explicitly in inline styles and JS-generated markup.
 - Chart.js is configured to the same family (`Chart.defaults.font.family`, `js/charts.js`).
 
+Body carries a slight `letter-spacing:-.005em` — Jakarta is wide by default.
+
+### The type scale ([ADR-0033](decisions.md)) — mobile-first
+
+A ~1.2 (minor-third) ramp, rounded to whole pixels at the pinned `html{font-size:16px}`. Aligned with
+iOS HIG (Caption 11–12 / Footnote 13 / Subhead 15 / Body 17) and Material 3 (Label 11 / Body 14).
+
+| Token | px | Use |
+|-------|----|-----|
+| `--fs-2xs` | 11 | badges, micro-caps, table headers, kcal units |
+| `--fs-xs`  | 12 | sub-lines, captions, meta |
+| `--fs-sm`  | 13 | secondary text, chips, table cells, `.sec-label` |
+| `--fs-base`| 14 | **list item names**, dense body |
+| `--fs-md`  | 15 | body, lede, **kcal values**, buttons |
+| `--fs-lg`  | 17 | **section + card titles** ("Breakfast"), sheet titles |
+| `--fs-xl`  | 20 | sub-headings, detail-card name, date-strip day |
+| `--fs-2xl` | 24 | page titles |
+| `--fs-3xl` | 28 | **hero numbers** — rings, stat values, `.command .big` |
+| `--fs-4xl` | 32 | page titles on ≥820px **only** — the one width-varying size |
+
+Line height: `--lh-tight 1.2` (headings/numbers), `--lh-snug 1.35` (dense list rows),
+`--lh-base 1.55` (prose).
+
+**Rules — these are what keep it from drifting back:**
+1. **Never write a raw `font-size`.** Always a token — in CSS, in inline `style=""`, and in
+   JS-generated markup. 30 ad-hoc sizes with no shared ratio is exactly what made the app feel
+   cluttered. The only sanctioned exceptions are **icon/emoji/arrow glyphs** (sized optically, not
+   for reading) and **form controls** (see rule 4).
+2. **Nothing renders below 11px.** That is the legibility floor.
+3. **A row must not out-shout its header.** In a list, section title `--fs-lg` > kcal `--fs-md` >
+   item name `--fs-base` > sub-line `--fs-xs`. Emphasise a value with **weight (700), not size**.
+4. **Form controls stay ≥16px on touch** — see §5b. Never give an input an `!important` font-size;
+   it would beat the zoom guard.
+5. **Watch for shadowing.** Food styles are declared twice (legacy v2 block, then the winning v3
+   block) and several `@media` blocks re-declare sizes. After changing a size, check the *computed*
+   value, not just the rule you edited — four defects in this refactor were later rules silently
+   beating tokenised earlier ones.
+
 | Role | Treatment |
 |------|-----------|
-| Display titles (`h1.title`, `.stat .v`, `.boss .bt`, `.dstrip-day .dd`, `.command .big`) | 800, `letter-spacing:-.02em` |
-| Slot / card titles | 700, ~1.2rem |
-| Body | 400–500, ~1rem |
+| Display titles (`h1.title`, `.stat .v`, `.boss .bt`, `.command .big`) | 800, `letter-spacing:-.02em` |
+| Slot / card titles | 700, `--fs-lg`, `--lh-tight` |
+| Body | 400–500, `--fs-md` |
 | Uppercase micro-labels (`.kicker`, `.sec-label`, `.fd-lbl`, `.stat .k`, `th`) | 600–700, `letter-spacing .06–.2em`, muted |
 | Numbers | 700–800 |
-
-Body carries a slight `letter-spacing:-.005em` — Jakarta is wide by default.
 
 ## 2. Color tokens (`:root` in `styles.css`)
 
