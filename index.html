@@ -7,11 +7,11 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="WAR MODE">
-<meta name="theme-color" content="#1c1916">
+<meta name="theme-color" content="#eef1ef">
 <link rel="apple-touch-icon" href="appicon-180.png">
 <link rel="icon" type="image/png" sizes="192x192" href="appicon-192.png">
 <link rel="manifest" href="manifest.json">
-<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <link rel="stylesheet" href="styles.css">
@@ -106,18 +106,6 @@
 
 <!-- FIT HOME -->
 <section class="page" id="fit-home">
-  <div class="banner">
-    <div class="bk">War Mode · <span id="dayCountBanner">Day —</span> &amp; counting</div>
-    <h2>The scale stayed still. I didn't.</h2>
-    <p>Five months. The number on the scale barely flinched — so it tried to tell me nothing changed. It lied. Tummy down 2.5 inches. Muscle in the "excellent" tier. And the thyroid that fought me for eight months finally cracked. That wasn't a stall — it was a recomposition won with the handbrake on. Now the handbrake comes off, and the real cut begins.</p>
-    <div class="creed">
-      <span class="ci"><b>145</b> days logged</span>
-      <span class="ci"><b>−2.5″</b> tummy</span>
-      <span class="ci"><b>10→5</b> face puffiness</span>
-      <span class="ci"><b>TSH 28→4.3</b></span>
-    </div>
-  </div>
-
   <div class="sec-label">The Boss Battles</div>
   <div class="bosses">
     <div class="boss"><div class="bn">Boss 1 · Detox</div><div class="bt">Jan–Mar</div><div class="bd">Recomp base. Puffiness 10→5.</div><span class="pill p-green">✓ Done</span></div>
@@ -164,15 +152,15 @@
   </div>
 
   <div class="grid g2 stack" style="margin-top:16px">
-    <div class="card"><div style="font-family:'Oswald';font-weight:600">Waist &amp; Tummy <span class="subtle">(inches · lower better)</span></div><div class="chart-box sm"><canvas id="cWaist"></canvas></div></div>
-    <div class="card"><div style="font-family:'Oswald';font-weight:600">Chest &amp; Bicep <span class="subtle">(inches)</span></div><div class="chart-box sm"><canvas id="cChest"></canvas></div></div>
+    <div class="card"><div style="font-family:var(--ffont);font-weight:600">Waist &amp; Tummy <span class="subtle">(inches · lower better)</span></div><div class="chart-box sm"><canvas id="cWaist"></canvas></div></div>
+    <div class="card"><div style="font-family:var(--ffont);font-weight:600">Chest &amp; Bicep <span class="subtle">(inches)</span></div><div class="chart-box sm"><canvas id="cChest"></canvas></div></div>
   </div>
 
-  <div class="card" style="margin-top:16px"><div style="font-family:'Oswald';font-weight:600">Weight — daily average per month</div><div class="chart-box"><canvas id="cWeight"></canvas></div><div class="legend-note">Flat = maintenance, not deficit. The core insight of Phase 2A.</div></div>
+  <div class="card" style="margin-top:16px"><div style="font-family:var(--ffont);font-weight:600">Weight — daily average per month</div><div class="chart-box"><canvas id="cWeight"></canvas></div><div class="legend-note">Flat = maintenance, not deficit. The core insight of Phase 2A.</div></div>
 
   <div class="grid g2 stack" style="margin-top:16px">
-    <div class="card"><div style="font-family:'Oswald';font-weight:600">Protein intake <span class="subtle">(monthly avg, g)</span></div><div class="chart-box sm"><canvas id="cProt"></canvas></div><div class="legend-note">Target 175–180g. Slipped to 162g — the #1 lever left on the table.</div></div>
-    <div class="card"><div style="font-family:'Oswald';font-weight:600">Face puffiness <span class="subtle">(lower = sharper)</span></div><div class="chart-box sm"><canvas id="cPuff"></canvas></div><div class="legend-note">Plateaued at ~5 because TSH plateaued. Should now fall.</div></div>
+    <div class="card"><div style="font-family:var(--ffont);font-weight:600">Protein intake <span class="subtle">(monthly avg, g)</span></div><div class="chart-box sm"><canvas id="cProt"></canvas></div><div class="legend-note">Target 175–180g. Slipped to 162g — the #1 lever left on the table.</div></div>
+    <div class="card"><div style="font-family:var(--ffont);font-weight:600">Face puffiness <span class="subtle">(lower = sharper)</span></div><div class="chart-box sm"><canvas id="cPuff"></canvas></div><div class="legend-note">Plateaued at ~5 because TSH plateaued. Should now fall.</div></div>
   </div>
 </section>
 
@@ -206,7 +194,7 @@
   <div class="grid g3 stack">
     <div class="card" style="border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)">
       <span class="pill p-amber">Now → Aug · Phase A</span>
-      <div style="font-family:'Fraunces',serif;font-size:1.15rem;font-weight:600;margin:10px 0 3px">The Cut</div>
+      <div style="font-family:var(--ffont);font-size:1.15rem;font-weight:800;letter-spacing:-.015em;margin:10px 0 3px">The Cut</div>
       <div class="subtle" style="color:var(--ink2)">~83.5kg by Jun · ~80kg by Aug · 17–18%→~12–13%</div>
       <ul class="klist" style="margin-top:6px">
         <li style="padding:7px 0"><span class="kv">~1,900 real kcal (log ~1,750)</span></li>
@@ -217,7 +205,7 @@
     </div>
     <div class="card">
       <span class="pill p-ink">Sep → Dec · Phase B</span>
-      <div style="font-family:'Fraunces',serif;font-size:1.15rem;font-weight:600;margin:10px 0 3px">The Lean Gain</div>
+      <div style="font-family:var(--ffont);font-size:1.15rem;font-weight:800;letter-spacing:-.015em;margin:10px 0 3px">The Lean Gain</div>
       <div class="subtle" style="color:var(--ink2)">80 → 82kg · stays ~12%</div>
       <ul class="klist" style="margin-top:6px">
         <li style="padding:7px 0"><span class="kv">~maintenance +200 kcal</span></li>
@@ -228,7 +216,7 @@
     </div>
     <div class="card">
       <span class="pill p-ink">As needed · Phase C</span>
-      <div style="font-family:'Fraunces',serif;font-size:1.15rem;font-weight:600;margin:10px 0 3px">Mini-Cut</div>
+      <div style="font-family:var(--ffont);font-size:1.15rem;font-weight:800;letter-spacing:-.015em;margin:10px 0 3px">Mini-Cut</div>
       <div class="subtle" style="color:var(--ink2)">Strip the ~1kg fat from the gain</div>
       <ul class="klist" style="margin-top:6px">
         <li style="padding:7px 0"><span class="kv">Short, sharp 3–4 week deficit</span></li>
@@ -279,8 +267,8 @@
   <div class="sec-label">Adjustments for the cut</div>
   <div class="note info"><span class="ni">i</span><div><b>Keep the split.</b> PRs and leg development prove it works. Expect lifts to stall or dip slightly in a deficit — normal. <b>Maintaining strength on fewer calories = keeping muscle.</b></div></div>
   <div class="grid g2 stack" style="margin-top:12px">
-    <div class="card"><div style="font-family:'Oswald';font-weight:600">Add vigorous cardio 2×/wk</div><div class="subtle" style="color:var(--ink2);margin-top:5px">Intervals / zone-4, not just incline walk. Strongest lifestyle lever for raising HDL — a direct line to your cholesterol problem.</div></div>
-    <div class="card"><div style="font-family:'Oswald';font-weight:600">Train abs as a muscle</div><div class="subtle" style="color:var(--ink2);margin-top:5px">Weighted, 2×/week. Build them now so they pop harder once the fat layer clears.</div></div>
+    <div class="card"><div style="font-family:var(--ffont);font-weight:600">Add vigorous cardio 2×/wk</div><div class="subtle" style="color:var(--ink2);margin-top:5px">Intervals / zone-4, not just incline walk. Strongest lifestyle lever for raising HDL — a direct line to your cholesterol problem.</div></div>
+    <div class="card"><div style="font-family:var(--ffont);font-weight:600">Train abs as a muscle</div><div class="subtle" style="color:var(--ink2);margin-top:5px">Weighted, 2×/week. Build them now so they pop harder once the fat layer clears.</div></div>
   </div>
   <div class="note warn" style="margin-top:12px"><span class="ni">!</span><div><b>On feeling "not muscular enough":</b> you're not under-muscled — you're under-revealed. Most of that dissolves when the fat comes off. Reveal first; build after.</div></div>
 </section>
@@ -371,18 +359,6 @@
 
 <!-- HEALTH HOME / SNAPSHOT -->
 <section class="page" id="h-home">
-  <div class="banner" style="background:linear-gradient(135deg,#211d18,#3a2018,#5a1f14)">
-    <div class="bk">Health · 30 May 2026 Panel</div>
-    <h2>The thyroid finally broke.</h2>
-    <p>First full bloodwork on 100mcg — the most important data point of the year. TSH out of the red for the first time in 8 months. Triglycerides crashed. The cholesterol cluster is the remaining fight.</p>
-    <div class="creed">
-      <span class="ci">TSH <b>7.57→4.3</b></span>
-      <span class="ci">TG <b>181→73</b></span>
-      <span class="ci">HbA1c <b>5.5%</b></span>
-      <span class="ci">Inflammation <b>near zero</b></span>
-    </div>
-  </div>
-
   <div class="sec-label">Status board</div>
   <div class="grid g3 stack">
     <div class="stat"><div class="bar" style="background:var(--green)"></div><div class="k">TSH</div><div class="v">4.3</div><div class="d up">▼ 7.57 · 🟡 1st time out of red</div></div>
@@ -417,10 +393,10 @@
   <div class="kicker">Health · Endocrine</div>
   <h1 class="title">Thyroid</h1>
   <p class="lede">Subclinical hypothyroidism · Thyronorm 100mcg at 4 AM. The central variable governing nearly everything.</p>
-  <div class="card" style="margin-top:20px"><div style="font-family:'Oswald';font-weight:600">TSH — full history (Nov 2023 → May 2026)</div><div class="chart-box"><canvas id="cTSH"></canvas></div><div class="legend-note">🟢 0.5–2.5 · 🟡 2.5–5.30 · 🔴 &gt;5.30. The Aug–Sep 2025 spike to ~29 was the crisis that started treatment. First time in amber now.</div></div>
+  <div class="card" style="margin-top:20px"><div style="font-family:var(--ffont);font-weight:600">TSH — full history (Nov 2023 → May 2026)</div><div class="chart-box"><canvas id="cTSH"></canvas></div><div class="legend-note">🟢 0.5–2.5 · 🟡 2.5–5.30 · 🔴 &gt;5.30. The Aug–Sep 2025 spike to ~29 was the crisis that started treatment. First time in amber now.</div></div>
   <div class="grid g2 stack" style="margin-top:16px">
-    <div class="card"><div style="font-family:'Oswald';font-weight:600">FT4 <span class="subtle">(ng/dL · rising = good)</span></div><div class="chart-box sm"><canvas id="cFT4"></canvas></div></div>
-    <div class="card"><div style="font-family:'Oswald';font-weight:600">FT3 <span class="subtle">(pg/mL)</span></div><div class="chart-box sm"><canvas id="cFT3"></canvas></div></div>
+    <div class="card"><div style="font-family:var(--ffont);font-weight:600">FT4 <span class="subtle">(ng/dL · rising = good)</span></div><div class="chart-box sm"><canvas id="cFT4"></canvas></div></div>
+    <div class="card"><div style="font-family:var(--ffont);font-weight:600">FT3 <span class="subtle">(pg/mL)</span></div><div class="chart-box sm"><canvas id="cFT3"></canvas></div></div>
   </div>
 
   <div class="sec-label">Latest panel (30 May)</div>
@@ -444,10 +420,10 @@
   <h1 class="title">Lipids &amp; Heart</h1>
   <p class="lede">Your suspicion is right — this isn't a diet problem. It's three things stacked.</p>
   <div class="grid g2 stack" style="margin-top:20px">
-    <div class="card"><div style="font-family:'Oswald';font-weight:600">HDL vs LDL <span class="subtle">(want HDL↑ LDL↓)</span></div><div class="chart-box sm"><canvas id="cHL"></canvas></div></div>
-    <div class="card"><div style="font-family:'Oswald';font-weight:600">Triglycerides <span class="subtle">(crashed — the win)</span></div><div class="chart-box sm"><canvas id="cTG"></canvas></div></div>
+    <div class="card"><div style="font-family:var(--ffont);font-weight:600">HDL vs LDL <span class="subtle">(want HDL↑ LDL↓)</span></div><div class="chart-box sm"><canvas id="cHL"></canvas></div></div>
+    <div class="card"><div style="font-family:var(--ffont);font-weight:600">Triglycerides <span class="subtle">(crashed — the win)</span></div><div class="chart-box sm"><canvas id="cTG"></canvas></div></div>
   </div>
-  <div class="card" style="margin-top:16px"><div style="font-family:'Oswald';font-weight:600">TC / HDL ratio <span class="subtle">(cardiovascular risk · target &lt;5)</span></div><div class="chart-box sm"><canvas id="cTCHDL"></canvas></div></div>
+  <div class="card" style="margin-top:16px"><div style="font-family:var(--ffont);font-weight:600">TC / HDL ratio <span class="subtle">(cardiovascular risk · target &lt;5)</span></div><div class="chart-box sm"><canvas id="cTCHDL"></canvas></div></div>
 
   <div class="sec-label">Lipid trend — every date</div>
   <div class="tscroll"><table>
@@ -466,9 +442,9 @@
 
   <div class="sec-label">Why it won't move — three stacked causes</div>
   <div class="grid g3 stack">
-    <div class="card"><span class="pill p-red">Dominant</span><div style="font-family:'Oswald';font-weight:600;margin:8px 0 4px">Genetics</div><div class="subtle" style="color:var(--ink2)">Mum has elevated cholesterol. Lp(a) 52.6 is almost purely genetic, diet-resistant — doesn't care about olive oil. The biggest mover isn't lifestyle-movable.</div></div>
-    <div class="card"><span class="pill p-amber">Improving</span><div style="font-family:'Oswald';font-weight:600;margin:8px 0 4px">Hypothyroidism</div><div class="subtle" style="color:var(--ink2)">Low thyroid lowers HDL + raises LDL via reduced LDL-receptor activity. LDL rising while TSH was 7.5 is textbook. TG crashing proves the gland is helping. <b>Lipids lag TSH — tested too soon to see LDL benefit.</b></div></div>
-    <div class="card"><span class="pill p-blue">Controllable</span><div style="font-family:'Oswald';font-weight:600;margin:8px 0 4px">Leanness + cardio</div><div class="subtle" style="color:var(--ink2)">HDL responds to vigorous aerobic work + being leaner, not diet. Steady incline walk is moderate; you're at maintenance, not lean. Both suppress HDL.</div></div>
+    <div class="card"><span class="pill p-red">Dominant</span><div style="font-family:var(--ffont);font-weight:600;margin:8px 0 4px">Genetics</div><div class="subtle" style="color:var(--ink2)">Mum has elevated cholesterol. Lp(a) 52.6 is almost purely genetic, diet-resistant — doesn't care about olive oil. The biggest mover isn't lifestyle-movable.</div></div>
+    <div class="card"><span class="pill p-amber">Improving</span><div style="font-family:var(--ffont);font-weight:600;margin:8px 0 4px">Hypothyroidism</div><div class="subtle" style="color:var(--ink2)">Low thyroid lowers HDL + raises LDL via reduced LDL-receptor activity. LDL rising while TSH was 7.5 is textbook. TG crashing proves the gland is helping. <b>Lipids lag TSH — tested too soon to see LDL benefit.</b></div></div>
+    <div class="card"><span class="pill p-blue">Controllable</span><div style="font-family:var(--ffont);font-weight:600;margin:8px 0 4px">Leanness + cardio</div><div class="subtle" style="color:var(--ink2)">HDL responds to vigorous aerobic work + being leaner, not diet. Steady incline walk is moderate; you're at maintenance, not lean. Both suppress HDL.</div></div>
   </div>
 
   <div class="sec-label">What actually moves YOUR numbers (by leverage)</div>
@@ -489,8 +465,8 @@
   <h1 class="title">Vitamins &amp; Blood</h1>
   <p class="lede">Vitamin D, B12, minerals and hemogram tracked across dates.</p>
   <div class="grid g2 stack" style="margin-top:20px">
-    <div class="card"><div style="font-family:'Oswald';font-weight:600">Vitamin D <span class="subtle">(want &gt;30)</span></div><div class="chart-box sm"><canvas id="cVitD"></canvas></div><div class="legend-note">Dropped to 27.2 — insufficient. Add D3.</div></div>
-    <div class="card"><div style="font-family:'Oswald';font-weight:600">Vitamin B12 <span class="subtle">(197–771)</span></div><div class="chart-box sm"><canvas id="cB12"></canvas></div><div class="legend-note">509 — solid. Mecofol Plus working.</div></div>
+    <div class="card"><div style="font-family:var(--ffont);font-weight:600">Vitamin D <span class="subtle">(want &gt;30)</span></div><div class="chart-box sm"><canvas id="cVitD"></canvas></div><div class="legend-note">Dropped to 27.2 — insufficient. Add D3.</div></div>
+    <div class="card"><div style="font-family:var(--ffont);font-weight:600">Vitamin B12 <span class="subtle">(197–771)</span></div><div class="chart-box sm"><canvas id="cB12"></canvas></div><div class="legend-note">509 — solid. Mecofol Plus working.</div></div>
   </div>
   <div class="sec-label">Minerals &amp; markers (30 May)</div>
   <div class="tscroll"><table>
@@ -687,7 +663,7 @@
   </div>
 
   <div style="display:flex;align-items:center;gap:12px;margin-top:16px;flex-wrap:wrap">
-    <button onclick="saveWeek()" style="background:var(--green);color:#fff;border:none;border-radius:10px;padding:12px 26px;font-family:'Oswald';font-weight:600;font-size:.88rem;letter-spacing:.05em;text-transform:uppercase;cursor:pointer;box-shadow:var(--shadow-sm)">✓ Force Sync</button>
+    <button onclick="saveWeek()" style="background:var(--green);color:#fff;border:none;border-radius:10px;padding:12px 26px;font-family:var(--ffont);font-weight:600;font-size:.88rem;letter-spacing:.05em;text-transform:uppercase;cursor:pointer;box-shadow:var(--shadow-sm)">✓ Force Sync</button>
     <span id="saveMsg" style="font-size:.85rem;color:var(--green);font-weight:600;opacity:0;transition:opacity .3s">✓ Saved</span>
     <span class="subtle" style="margin-left:auto">Every cell autosaves instantly — one day or all seven, no need to press anything</span>
   </div>
@@ -703,7 +679,7 @@
       <div class="acc-body">
         <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px">
           <span id="goalSummary" class="subtle" style="font-size:.82rem"></span>
-          <button onclick="toggleGoals()" id="goalEditBtn" style="margin-left:auto;background:var(--paper2);border:1px solid var(--line2);border-radius:8px;padding:6px 14px;font-family:'Oswald';font-weight:600;font-size:.72rem;letter-spacing:.04em;text-transform:uppercase;cursor:pointer;color:var(--ink2)">Change</button>
+          <button onclick="toggleGoals()" id="goalEditBtn" style="margin-left:auto;background:var(--paper2);border:1px solid var(--line2);border-radius:8px;padding:6px 14px;font-family:var(--ffont);font-weight:600;font-size:.72rem;letter-spacing:.04em;text-transform:uppercase;cursor:pointer;color:var(--ink2)">Change</button>
         </div>
         <div id="goalEditor" style="display:none">
           <div class="note info" style="margin-bottom:14px"><span class="ni">i</span><div>Set a goal that applies <b>from a chosen date forward</b>. Past days keep the goal active then — this <b>never re-scores history</b>.</div></div>
@@ -717,7 +693,7 @@
             <div class="metric"><label>Water goal (L)</label><input type="number" id="g_water" step="0.5"></div>
           </div>
           <div style="display:flex;gap:10px;margin-top:12px;align-items:center;flex-wrap:wrap">
-            <button onclick="saveGoals()" style="background:var(--green);color:#fff;border:none;border-radius:9px;padding:10px 20px;font-family:'Oswald';font-weight:600;font-size:.78rem;letter-spacing:.04em;text-transform:uppercase;cursor:pointer">Save Goal Period</button>
+            <button onclick="saveGoals()" style="background:var(--green);color:#fff;border:none;border-radius:9px;padding:10px 20px;font-family:var(--ffont);font-weight:600;font-size:.78rem;letter-spacing:.04em;text-transform:uppercase;cursor:pointer">Save Goal Period</button>
             <span class="subtle" style="font-size:.78rem">Days from this date onward use the new thresholds.</span>
           </div>
           <div class="sec-label" style="margin-top:20px">Goal history</div>
@@ -740,8 +716,8 @@
           <div class="metric" id="tag_custom_wrap" style="display:none"><label>Custom label</label><input type="text" id="tag_custom" placeholder="e.g. Wedding trip"></div>
         </div>
         <div style="display:flex;gap:10px;margin-top:12px;align-items:center;flex-wrap:wrap">
-          <button onclick="applyTagRange()" style="background:var(--green);color:#fff;border:none;border-radius:9px;padding:10px 20px;font-family:'Oswald';font-weight:600;font-size:.78rem;letter-spacing:.04em;text-transform:uppercase;cursor:pointer">Apply Tag</button>
-          <button onclick="clearTagRange()" style="background:var(--paper);color:var(--red);border:1px solid var(--line2);border-radius:9px;padding:10px 18px;font-family:'Oswald';font-weight:600;font-size:.78rem;letter-spacing:.04em;text-transform:uppercase;cursor:pointer">Clear in range</button>
+          <button onclick="applyTagRange()" style="background:var(--green);color:#fff;border:none;border-radius:9px;padding:10px 20px;font-family:var(--ffont);font-weight:600;font-size:.78rem;letter-spacing:.04em;text-transform:uppercase;cursor:pointer">Apply Tag</button>
+          <button onclick="clearTagRange()" style="background:var(--paper);color:var(--red);border:1px solid var(--line2);border-radius:9px;padding:10px 18px;font-family:var(--ffont);font-weight:600;font-size:.78rem;letter-spacing:.04em;text-transform:uppercase;cursor:pointer">Clear in range</button>
         </div>
         <div class="sec-label" style="margin-top:18px">Tagged periods</div>
         <div id="tagHistory"></div>
@@ -768,7 +744,7 @@
     <tbody id="monthBody"></tbody>
   </table></div>
 
-  <div class="card" style="margin-top:16px"><div style="font-family:'Oswald';font-weight:600">Score trend by month</div><div class="chart-box sm"><canvas id="cMonthScore"></canvas></div></div>
+  <div class="card" style="margin-top:16px"><div style="font-family:var(--ffont);font-weight:600">Score trend by month</div><div class="chart-box sm"><canvas id="cMonthScore"></canvas></div></div>
 
   <div class="sec-label">Performance by context</div>
   <p class="subtle" style="margin-top:-6px;margin-bottom:12px">How your numbers held up Home vs Travel vs other tagged stretches. This is where you see what schedule did to your discipline.</p>
@@ -780,8 +756,8 @@
 
   <div class="sec-label">All logged days</div>
   <div style="display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap">
-    <button onclick="exportCSV()" style="background:var(--ink);color:#fff;border:none;border-radius:9px;padding:10px 18px;font-family:'Oswald';font-weight:600;font-size:.82rem;letter-spacing:.04em;text-transform:uppercase;cursor:pointer">⬇ Export CSV</button>
-    <button onclick="if(confirm('Clear all logged days on this device? Cannot be undone.')) clearAll()" style="background:var(--paper);color:var(--red);border:1px solid var(--line2);border-radius:9px;padding:10px 18px;font-family:'Oswald';font-weight:600;font-size:.82rem;letter-spacing:.04em;text-transform:uppercase;cursor:pointer">Clear all</button>
+    <button onclick="exportCSV()" style="background:var(--ink);color:#fff;border:none;border-radius:9px;padding:10px 18px;font-family:var(--ffont);font-weight:600;font-size:.82rem;letter-spacing:.04em;text-transform:uppercase;cursor:pointer">⬇ Export CSV</button>
+    <button onclick="if(confirm('Clear all logged days on this device? Cannot be undone.')) clearAll()" style="background:var(--paper);color:var(--red);border:1px solid var(--line2);border-radius:9px;padding:10px 18px;font-family:var(--ffont);font-weight:600;font-size:.82rem;letter-spacing:.04em;text-transform:uppercase;cursor:pointer">Clear all</button>
   </div>
   <div class="tscroll"><table id="histTable">
     <thead><tr>
@@ -827,7 +803,7 @@
       <textarea id="ci_note" rows="2" placeholder="Optional note — how you felt, conditions, etc." style="width:100%;border:1px solid var(--line2);border-radius:9px;padding:11px;font-family:inherit;font-size:.9rem;background:var(--bg);color:var(--ink);resize:vertical;margin-top:14px"></textarea>
 
       <div style="display:flex;align-items:center;gap:12px;margin-top:16px;flex-wrap:wrap">
-        <button onclick="saveCheckin()" id="ciSaveBtn" style="background:var(--green);color:#fff;border:none;border-radius:10px;padding:12px 26px;font-family:'Oswald';font-weight:600;font-size:.88rem;letter-spacing:.05em;text-transform:uppercase;cursor:pointer">Save Check-In</button>
+        <button onclick="saveCheckin()" id="ciSaveBtn" style="background:var(--green);color:#fff;border:none;border-radius:10px;padding:12px 26px;font-family:var(--ffont);font-weight:600;font-size:.88rem;letter-spacing:.05em;text-transform:uppercase;cursor:pointer">Save Check-In</button>
         <span id="ciSaveMsg" style="font-size:.85rem;color:var(--green);font-weight:600;opacity:0;transition:opacity .3s">✓ Saved</span>
       </div>
     </div>
@@ -844,7 +820,7 @@
       <div id="journeyEmpty" class="subtle" style="text-align:center;padding:50px 0;display:none">No check-ins yet. Add your first one above.</div>
       <!-- download -->
       <div style="margin-top:20px;display:flex;align-items:center;gap:12px;flex-wrap:wrap">
-        <button onclick="downloadAllPhotos()" id="dlAllBtn" style="background:var(--ink);color:#fff;border:none;border-radius:9px;padding:11px 20px;font-family:'Oswald';font-weight:600;font-size:.82rem;letter-spacing:.04em;text-transform:uppercase;cursor:pointer">⬇ Download All Photos</button>
+        <button onclick="downloadAllPhotos()" id="dlAllBtn" style="background:var(--ink);color:#fff;border:none;border-radius:9px;padding:11px 20px;font-family:var(--ffont);font-weight:600;font-size:.82rem;letter-spacing:.04em;text-transform:uppercase;cursor:pointer">⬇ Download All Photos</button>
         <span id="dlProgress" style="font-size:.82rem;color:var(--green);font-weight:600;display:none"></span>
       </div>
     </div>

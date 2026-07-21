@@ -6,7 +6,7 @@
 
 - **No build step.** Plain HTML/CSS/JS served statically. Deploy = push to GitHub → Netlify.
 - CDNs in `<head>`: Chart.js 4.4.1, `@supabase/supabase-js@2`, Google Fonts
-  (Oswald/Fraunces/DM Sans for legacy; **Plus Jakarta Sans** for Food).
+  (**Plus Jakarta Sans** only — the sole font across all four tabs since [ADR-0021](decisions.md)).
 - PWA: `manifest.json` + `appicon-180/192/512.png`; `index.html` links them.
 
 ## 2. Script model — classic scripts, one global scope
@@ -48,7 +48,7 @@ Rules that keep this safe:
 |------|----------------|
 | `foodMath.js`   | **pure deterministic math**: per-100, `toBaseAmount`, `macrosForAmount`, `mealTotals` (+overrides), `entryMacros`, `dayTotals`, oil, `fmtMacros`. No DOM/state. |
 | `foodData.js`   | in-memory maps `FOOD_ITEMS/MEALS/LOG`; local-first cache; Supabase load/reconcile/CRUD; `itemMatchesQuery`, `findItemByNameBrand` (dedup), `normName` |
-| `seed.js`       | ~50 vegetarian seed items (`FOOD_SEED`) + `_SEED_ALIASES` |
+| `seed.js`       | **GENERATED** — 158 vegetarian seed items (`FOOD_SEED`), mirrors the live cloud set 1:1 (same ids); aliases folded per-item. Source: `data/food-seed/food-seed.v1.1.json`. Do not hand-edit — see [ADR-0020](decisions.md) |
 | `foodSuggest.js`| `FOOD_SUGGESTIONS` (taught) + `learnedScores` (recency) + `suggestionsFor`, quick-log, manager UI |
 | `foodUI.js`     | `FOOD_TARGETS`; Today (`renderToday`, hero rings, `slotsHtml`, `entryRowHtml`), Pantry, Meals, drag reorder, `foodRing` |
 | `foodForm.js`   | Add/Edit item manual form + deterministic per-serving→per-100 conversion |
@@ -70,7 +70,16 @@ Rules that keep this safe:
   meal lists) so no extra table is needed. localStorage mirrors it.
 - **Reconcile:** last-write-wins by `updated_at` vs local `updatedAt`. If the tables don't exist
   (SQL not run), the app degrades to **local-only** and flags "⚠ Local only" — never blocks.
-- On first run the ~50 seed items are created locally and pushed to the cloud.
+- On first run the 158 seed items (`js/food/seed.js`) are created locally and pushed to the cloud.
+
+### Seed source of truth & importer
+- Canonical seed data: **`data/food-seed/food-seed.v1.1.json`** (151 items + 30 meals,
+  IFCT-2017/USDA-anchored). `js/food/seed.js` is generated from it (id-parity with cloud).
+- **`scripts/import_food_seed.mjs`** loads the canonical JSON into `food_items`/`food_meals` via the
+  Supabase REST API (reads `SUPA_URL`/`SUPA_KEY` from `config.js`), de-duplicating by normalized
+  name + a curated alias map (see [ADR-0019](decisions.md)). Deterministic, idempotent, dry-run by
+  default (`--commit` to write). Backs up current cloud state to `data/food-seed/backups/`
+  (gitignored) and writes a report to `data/food-seed/reports/` before/after each run.
 
 ## 5. How to run & verify
 

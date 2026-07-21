@@ -3,16 +3,25 @@
 > The fast **"where are we right now"** snapshot — read this first each session.
 > Full plan & context: [roadmap.md](roadmap.md). Keep this short; update it whenever the focus moves.
 >
-> _Last updated: 2026-07-20_
+> _Last updated: 2026-07-21_
 
 ## Current feature
-🍽️ **Food module**
+🎨 **Dashboard-wide design unification** (just shipped) → next up: 🍽️ Food Phase 2 (AI)
 
 ## Current sprint
-**Clean & light, mobile-first Food redesign** (scoped to the Food tab). Shipped locally, **awaiting
-review on the user's device.**
+**Whole-dashboard UI unification** — the Food tab's clean-light look is now the design for *all four*
+tabs: Plus Jakarta Sans everywhere, light theme, one neon-green accent, restrained gradients.
+Reviewed and approved by the user; pushed. See [ADR-0021](decisions.md).
 
 ## Completed (this arc)
+- ✅ **Dashboard-wide unification** ([ADR-0021](decisions.md)) — all legacy fonts (Oswald/Fraunces/
+  DM Sans) retired for **Plus Jakarta Sans**; terracotta → **neon green** brand accent + `--grad`;
+  one identical toggle accent on every tab; dark hero banners removed from Fitness/Health; Tracker
+  command deck restyled light; `-ink` token variants added so pill/badge text passes WCAG AA;
+  `cWaist`/`cComp` charts moved to `--violet` to avoid an accent/green collision.
+- ✅ **Real seed loaded** — 158 items + 30 meals imported to Supabase via
+  `scripts/import_food_seed.mjs` (smart-merge, no dupes, verified data preserved, logs intact);
+  `js/food/seed.js` regenerated to match. See [ADR-0019/0020](decisions.md).
 - ✅ Repo consolidation + restructure into classic-script modules
 - ✅ Food Phase 1 (no AI): pantry/items, meals, logging, oil capture, Tracker bridge
 - ✅ Hero: calories + protein **rings** (target 1,750 kcal + 150 buffer, 180 g protein)
@@ -24,14 +33,14 @@ review on the user's device.**
 - ✅ Docs / knowledge base (CLAUDE.md + docs/)
 
 ## Next
-- ⬜ User reviews the redesigned Food tab on device → collect tuning feedback
-- ⬜ Pre-seed his real breakfast/lunch/dinner suggestions
-- ⬜ Calibrate ~15 most-eaten seed items (seed → verified)
+- ⬜ Live-check the unified look on device across all four tabs (esp. button label legibility —
+  white-on-neon is ~3.0:1 by design; see the tradeoff note in [design-system.md](design-system.md))
+- ⬜ Pre-seed his real breakfast/lunch/dinner suggestions (per-slot)
+- ⬜ Calibrate ~15 most-eaten items seed → verified (composite dishes vary by kitchen)
 - ⬜ **Phase 2 gate:** test Anthropic API from Netlify (CORS / proxy) — do before any AI UI
 - ⬜ Phase 2: label scan · screenshot import · natural-language logging · AI estimate + dedup
 
 ## Blocked / needs the user
-- 🚧 **Visual review must happen on his device** — screenshot tool is broken here
+- 🚧 **Visual review must happen on his device** — screenshot capture is broken here (the preview
+  pane reports a 0×0 viewport, so Chart.js canvases never paint). Verify via DOM/computed styles.
 - 🚧 Needs his real per-meal foods + calibrated numbers
-- 🚧 Decide whether to replicate the clean-light look to the other tabs
-- 🚧 Redesign + docs **not yet pushed to GitHub** (awaiting his go-ahead)

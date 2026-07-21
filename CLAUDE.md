@@ -47,7 +47,7 @@ right now) and [DEVELOPMENT.md](DEVELOPMENT.md) (how we work).
 | [docs/architecture.md](docs/architecture.md) | File/module map, load model, storage, sync, how to run & verify |
 | [docs/data-model.md](docs/data-model.md) | Exact schemas: item, meal, log entry, suggestions; the math rules |
 | [docs/decisions.md](docs/decisions.md) | ADRs (Decision / Reason / Status) for every significant call |
-| [docs/design-system.md](docs/design-system.md) | Typography, color, spacing, component rules (warm legacy + clean-light Food) |
+| [docs/design-system.md](docs/design-system.md) | Typography, color, spacing, component rules (one unified clean-light + neon-green system) |
 | [docs/known-issues.md](docs/known-issues.md) | Environment quirks, calibration debts, deferred work, risks |
 | [docs/roadmap.md](docs/roadmap.md) | What's done, what's next (Phase 2 AI), open questions for the user |
 
@@ -63,7 +63,7 @@ Load order matters; `js/app.js` bootstraps last.
 
 ```
 index.html            markup only (nav, sections, page shells)
-styles.css            all CSS (warm legacy tokens + Food v3 clean-light tokens)
+styles.css            all CSS (one unified clean-light + neon-green token system — ADR-0021)
 manifest.json         PWA
 appicon-*.png         PWA icons
 supabase/food_tables.sql   one-time SQL for the Food tables
@@ -92,7 +92,9 @@ docs/                 the persistent knowledge base (see index above)
   port or hard-reload to load changed files.
 - Git checkpoint before risky work. Commit messages end with the Co-Authored-By trailer.
 
-## Current status (2026-07-20)
+## Current status (2026-07-21)
 
-Food **Phase 1 complete** (no AI) and **redesigned** to a clean-light aesthetic. Phase 2 (AI) not
-started and is gated on a Netlify→Anthropic connectivity test. See [roadmap](docs/roadmap.md).
+Food **Phase 1 complete** (no AI). The clean-light aesthetic has been **unified across all four
+tabs** — Plus Jakarta Sans everywhere, light theme, one neon-green accent ([ADR-0021](docs/decisions.md)).
+Phase 2 (AI) not started and is gated on a Netlify→Anthropic connectivity test.
+See [roadmap](docs/roadmap.md).

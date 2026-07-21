@@ -1,7 +1,7 @@
 /* charts.js — Chart.js helpers + buildCharts + monthly aggregations */
 /* ── charts ── */
 const cssv=k=>getComputedStyle(document.documentElement).getPropertyValue(k).trim();
-if(window.Chart){Chart.defaults.font.family="'DM Sans',sans-serif";Chart.defaults.font.size=11;}
+if(window.Chart){Chart.defaults.font.family="'Plus Jakarta Sans',sans-serif";Chart.defaults.font.size=11;}
 const gridc='rgba(0,0,0,0.05)';
 function axes(extra={}){return{x:{grid:{color:gridc},ticks:{color:cssv('--muted')}},y:Object.assign({grid:{color:gridc},ticks:{color:cssv('--muted')}},extra)};}
 function line(id,labels,series,opt={}){
@@ -91,7 +91,7 @@ function buildCharts(id){
   if(id==='fit-progress'){
     paintProgressStats();
     const mLabels=monthsInDB().map(monthLabel);
-    line('cWaist',mLabels,[{l:'Waist',d:monthlyLast('waist'),c:cssv('--green')},{l:'Tummy',d:monthlyLast('tummy'),c:cssv('--accent')}]);
+    line('cWaist',mLabels,[{l:'Waist',d:monthlyLast('waist'),c:cssv('--green')},{l:'Tummy',d:monthlyLast('tummy'),c:cssv('--violet')}]);
     line('cChest',mLabels,[{l:'Chest',d:monthlyLast('chest'),c:cssv('--blue')},{l:'Bicep',d:monthlyLast('bicep'),c:cssv('--amber')}],{y:{min:13,max:43}});
     line('cWeight',mLabels,[{l:'Weight',d:monthlyAvg('weight'),c:cssv('--blue')}],{y:{min:80,max:88}});
     bars('cProt',mLabels,[{l:'Protein',d:monthlyAvg('proteinAmt'),c:cssv('--accent')}]);
@@ -102,7 +102,7 @@ function buildCharts(id){
     const g=curGoal();
     bars('cComp',mLabels,[
       {l:'Gym',d:monthlyCompliance('gym',true),c:cssv('--green')},
-      {l:'Protein '+g.protein+'g',d:monthlyCompliance('protein',false),c:cssv('--accent')},
+      {l:'Protein '+g.protein+'g',d:monthlyCompliance('protein',false),c:cssv('--violet')},
       {l:'Steps '+(g.steps/1000)+'k',d:monthlyCompliance('steps10k',false),c:cssv('--blue')},
       {l:'Sleep '+g.sleep+'h',d:monthlyCompliance('sleep8',false),c:cssv('--amber')}
     ],{pct:true,thick:22,y:{min:0,max:100,ticks:{callback:v=>v+'%',color:cssv('--muted')}}});

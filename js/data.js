@@ -83,7 +83,6 @@ function dayCount(){
 function paintDayCount(){
   const n=dayCount();
   const a=document.getElementById('dayCountTop'); if(a)a.textContent='DAY '+n;
-  const b=document.getElementById('dayCountBanner'); if(b)b.textContent='Day '+n;
 }
 
 

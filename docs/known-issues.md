@@ -6,6 +6,13 @@
 - **Screenshot tool is broken here.** `computer{action:"screenshot"}` times out every time, on all
   ports — not a page bug (it failed on the untouched baseline too). **Verify via DOM/JS inspection.**
   Real visual review must happen on the user's device.
+- **The preview pane reports a 0×0 viewport** (`window.innerWidth/innerHeight === 0`, `.wrap` ~44px).
+  Consequence: **Chart.js refuses to paint** — every chart/ring canvas reads back 0 painted pixels
+  even though the instances build fine. Raw canvas 2D still works (a control `fillRect` reads back
+  normally), so a blank chart canvas here is **not** a regression. To verify chart/ring colors,
+  inspect the instances instead: `charts.cWaist.data.datasets[].borderColor`,
+  `foodCharts.ringKcal.data.datasets[0].backgroundColor`. Note `charts`/`DB` are top-level `const`s
+  in classic scripts — reachable by bare name, **not** on `window`.
 - **Preview browser caches JS hard.** After editing a `.js`, a normal reload can serve stale code
   (bit us: a `nav.js` change didn't take until we moved the dev server to a new port). Workaround:
   bump the port in `.claude/launch.json` and restart, or hard-reload.

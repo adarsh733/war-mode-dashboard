@@ -1,73 +1,114 @@
 # Design System — WAR MODE
 
-> Two coexisting systems: the **warm legacy** WAR MODE identity (Fitness/Health/Tracker) and the
-> **clean-light Food** system (ADR-0013). Update when visuals change. All CSS is in `styles.css`;
-> Food v3 rules live at the bottom, scoped to `section[id^="food-"]` and the food sheets.
+> **One system across all four tabs** (Fitness / Health / Tracker / Food): clean-light,
+> Plus Jakarta Sans, a single neon-green brand accent with restrained gradients.
+> Unified in [ADR-0021](decisions.md) — this replaced the earlier split between the warm legacy
+> identity and the Food-only clean-light system ([ADR-0013](decisions.md)).
+> All CSS lives in `styles.css`. Update this file whenever visuals change.
 
-## 1. Warm legacy (Fitness / Health / Tracker) — unchanged
+## 1. Typography
 
-- **Fonts:** Oswald (labels/headings, condensed), Fraunces (serif display titles), DM Sans (body).
-- **Palette tokens** (`:root`): `--bg #f5f4ef`, `--paper #fffdfa`, `--paper2 #ece8df`,
-  `--ink #17191b`, `--ink2`, `--muted`, `--line/-2`; accents `--accent #a43a24` (terracotta),
-  `--green #2f7652`, `--amber`, `--red`, `--blue`, each with a `-bg` tint.
-- **Section accent on the top toggle:** fitness = ink, health = accent, tracker = green,
-  **food = blue** (`.seg button.on[data-sec="food"]`).
-- **Components:** `.card`, `.stat`, `.pill` (`p-green/amber/red/blue/ink`), `.sec-label`,
-  `.kicker`, `.title`, `.navcard`, chips. Radius `--r 10px`. Soft shadows `--shadow`.
+- **Plus Jakarta Sans everywhere** (weights 400–800), via the `--ffont` token. It is the only
+  font loaded. Oswald, Fraunces and DM Sans are fully retired.
+- Set once on `body`; `--ffont` is also used explicitly in inline styles and JS-generated markup.
+- Chart.js is configured to the same family (`Chart.defaults.font.family`, `js/charts.js`).
 
-## 2. Clean-light Food (ADR-0013) — the active design
+| Role | Treatment |
+|------|-----------|
+| Display titles (`h1.title`, `.stat .v`, `.boss .bt`, `.dstrip-day .dd`, `.command .big`) | 800, `letter-spacing:-.02em` |
+| Slot / card titles | 700, ~1.2rem |
+| Body | 400–500, ~1rem |
+| Uppercase micro-labels (`.kicker`, `.sec-label`, `.fd-lbl`, `.stat .k`, `th`) | 600–700, `letter-spacing .06–.2em`, muted |
+| Numbers | 700–800 |
 
-**Scope:** applied via `section[id^="food-"]`, `.fsheet`, `.fd-card`. Does NOT touch other tabs.
-When Food is active, `body.food-active` sets the light background.
+Body carries a slight `letter-spacing:-.005em` — Jakarta is wide by default.
 
-### Typography
-- **Plus Jakarta Sans** everywhere in Food (400–800). Numbers use 700–800.
-- Titles `.title` 800 / ~2rem, tight tracking. Slot titles 700 / ~1.2rem. Body ~1rem.
-- Uppercase micro-labels (`.fd-lbl`, `.fmini`) 700, letter-spacing .06em, muted.
+## 2. Color tokens (`:root` in `styles.css`)
 
-### Color tokens (`:root`, Food-only usage)
+### Neutrals (light theme)
 ```
---fbg #eef1ef   page background        --fcard #ffffff  cards
---fink #17241d  text                   --fmut #7b8a82   muted text
---fline #e9eeeb hairlines
---fgreen #3f9d5a  (+bg #e6f4ea)  primary accent / calories ring / positive
---fblue  #3b7fc4  (+bg #e7f0f9)  meal badge / links / secondary
---famber #dd9a2b  (+bg #fbf1dc)  protein-mid / warnings
---fred   #d75a4a  (+bg #fbe9e6)  over-target / destructive
---fviolet #7a6bd6 (+bg #ece9fb)  spare accent for headers
+--bg #eef1ef      page          --paper  #ffffff   cards
+--paper2 #e9eeeb  inset/track   --ink    #17241d   text
+--ink2 #3f4f47    secondary     --muted  #7b8a82   muted
+--line #e6ece8    hairline      --line2  #d4ded8   stronger border
 ```
-- **Ring colors:** calories = green (red when over 1,750); protein = green if ≥180, amber if
-  140–180, red if <140.
 
-### Shape & spacing
-- Radius: cards `--fr 18px`, inputs/sheets 12–16px, detail card 24px top corners.
-- Shadow `--fshadow` (soft, low-contrast). Generous padding (cards 16–24px). Airy.
+### Brand — neon green (lightest)
+```
+--accent      #1faa5d   brand green (fills, bars, borders, ring)
+--accent2     #63e79a   bright neon stop (gradient light end)
+--accent-soft #e6f8ee   light green tint background
+--accent-ink  #14713f   ACCESSIBLE green for small text on light backgrounds
+--grad        linear-gradient(135deg, var(--accent2), var(--accent))
+--grad-soft   very light green wash (command deck, soft panels)
+```
 
-### Components
-- **`.fcard`** — white rounded card with `--fshadow`.
-- **Hero** (`.fhero`): two rings (`.fring-wrap` 132px canvas + centered value/label overlay),
-  caption row (`.fhero-cap`), green buffer note (`.fhero-buf`).
-- **Slot card** (`.fslot`): header (`.fslot-title` + `.fslot-sub` subtotal + round green
-  `.fslot-add` `+`), suggestion chips (`.fsugg-chip.item/.meal` with `+`), entry rows.
-- **Log row** (`.logrow` in `.fslot`): drag handle (`.fdrag`), `.fbadge.item/.meal/.adhoc`, name,
-  kcal, delete. Tap opens the detail card.
-- **Detail card** (`.fd-*`): bottom-sheet, `max-height 92vh`, sticky footer buttons
-  (`.fd-btn.primary` green / `.fd-btn.danger`). Header band tinted from item name hash. Big
-  calories+protein (`.fd-two`/`.fd-bigv`). Inline edit panel `.fd-edit` (macros + units).
-- **Quantity wheel** (`.qwheel`): 184px tall, item height **46px** (kept in sync with
-  `QWHEEL_IH` in `foodDetail.js`), center highlight `.qwheel-hl` at top:69px, scroll-snap; the
-  centered value gets `.on`; "type" button for manual entry.
-- **Pills/buttons:** `.fpill-btn` (quick actions), `.fd-chip`/`.fchip` (selectable), `.btn-primary.wide`.
-- **Search** `.fsearch-input`: big (15–18px padding), rounded 14px, soft shadow, green focus ring;
-  live results dropdown `.fsearch-results`.
-- **Badges/legend:** items = green (`🥗`), meals = blue (`🍲`), ad-hoc = amber.
+### Semantic status — preserved, they carry meaning
+```
+--green #3f9d5a  --green-bg #e6f4ea  --green-ink #256b3d
+--amber #dd9a2b  --amber-bg #fbf1dc  --amber-ink #8a5c10
+--red   #d75a4a  --red-bg   #fbe9e6  --red-ink   #a3392b
+--blue  #3b7fc4  --blue-bg  #e7f0f9  --blue-ink  #255d94
+--violet #7a6bd6 --violet-bg #ece9fb
+```
 
-### Motion
-- Sheets slide up (`translateY` + opacity, ~.25–.28s). Topbar hide/show `.3s`. Ring draw ~.45s.
+**The `-ink` rule:** base tokens are vivid and belong on **charts, bars, rings and borders**.
+The `-ink` variants are the **text** colors on the matching `-bg` tint (pills, badges, chips) and
+all pass WCAG AA (~5.2–5.9:1). Never put a base token on its own tint as small text — that combo
+sits near 2–3:1. Same applies to `--accent`: use `--accent-ink` for small green text on white.
 
-## 3. Rules of thumb
+**Green vs green:** `--accent` is the *brand*; `--green` is *semantic success*. They are close but
+intentionally distinct. Consequence: **no chart may plot `--accent` and `--green` together** — they
+would read as one series. `js/charts.js` uses `--violet` for the second series in `cWaist` and
+`cComp` for exactly this reason.
 
-- Keep **calories + protein** the visual headline in Food; carbs/fat are secondary detail.
-- New Food UI uses Food tokens/`--ffont`; never reach for the warm legacy tokens inside Food.
-- Any change here that alters look → update this file (per the working agreement).
-- Before replicating this system to other tabs, get user approval (ADR-0013).
+### Food-specific tokens
+The `--f*` set (`--fbg`, `--fcard`, `--fink`, `--fmut`, `--fline`, `--fr`, `--fshadow`) still scopes
+Food layout. `--fgreen` is unified to the brand green `#1faa5d` as a **literal hex** — the canvas
+rings read it through `cssv()`, which needs a real color string, not a `var()` reference.
+
+## 3. Shape, depth, motion
+
+- Radius: `--r 16px` global cards; Food cards `--fr 18px`; inputs 10–14px; detail card 24px top.
+- Shadows: `--shadow` / `--shadow-sm` (soft, low-contrast, green-tinted).
+- Generous padding (cards 16–24px). Airy.
+- Sheets slide up (~.25–.28s); topbar hide/show `.3s`; ring draw ~.45s.
+
+## 4. Gradient usage — restrained
+
+`--grad` is reserved for **primary interactive surfaces**, not decoration:
+active seg toggle, `.btn-primary` / `.btn-primary.wide`, `.fd-btn.primary`, `.fslot-add`, `.ci-tab.on`,
+`.fseg button.on`, plus the `.wm` wordmark (ink→green) and `--grad-soft` on the command deck.
+Page bodies stay clean white/light.
+
+## 5. Components
+
+- **`.card` / `.fcard`** — white, hairline border, soft shadow.
+- **Nav/tabs:** `.seg` top toggle — active = green gradient, **identical on all four tabs** (no
+  per-section accent). `.subnav .chip.on` = `--accent-ink` text + bright `--accent` underline.
+- **`.stat`** — value 800; `.bar` left edge uses a semantic token.
+- **`.pill`** (`p-green/amber/red/blue/ink`) — `-bg` tint + `-ink` text.
+- **`.command`** (Tracker daily deck) — light `--grad-soft` card, white panels, green headline number.
+- **`.note`** (`good/warn/bad/info`) — semantic tint with its own dark text.
+- **Food:** hero rings (calories + protein), `.fslot` slot cards with round green `+`, suggestion
+  chips, `.logrow` entries, `.fd-*` detail card, `.qwheel` quantity wheel (item height **46px**, kept
+  in sync with `QWHEEL_IH` in `foodDetail.js`).
+- **Badges/legend:** items = green, meals = blue, ad-hoc = amber — a *data* distinction, so these
+  stay non-green by design.
+
+**Ring colors:** calories = green, red when over 1,750. Protein = green ≥180, amber 140–180, red <140.
+
+## 6. Rules of thumb
+
+- Keep **calories + protein** the visual headline in Food; carbs/fat are secondary.
+- Reach for tokens, never raw hex — the whole recolor works because everything resolves through
+  `var()` / `cssv()`.
+- Small colored text → `-ink` variant. Fills, bars, rings → base token.
+- Any change that alters the look → update this file (per the working agreement).
+
+## 7. Known tradeoff
+
+White text on the neon gradient buttons is ~3.0:1 at the dark stop (~1.6:1 at the light stop),
+below the 4.5:1 AA threshold. This is a **deliberate, user-approved** choice to keep the "lightest
+neon green" identity. If it ever needs fixing, darken the gradient to roughly `#2ec46f → #1a9450`,
+which stays fresh but reaches acceptable contrast.

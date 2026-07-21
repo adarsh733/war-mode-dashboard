@@ -134,3 +134,69 @@
 - **Reason:** Preserve the remote's history and PWA assets (`manifest.json`, appicons) rather than
   clobbering them.
 - **Status:** Accepted.
+
+### ADR-0019 — Seed import via smart-merge (name + curated alias map), not literal name-match
+- **Decision:** Import `data/food-seed/food-seed.v1.1.json` (151 items + 30 meals) into the live
+  `food_items`/`food_meals` tables with a re-runnable script (`scripts/import_food_seed.mjs`).
+  Match seed→existing by the spec's normalization
+  (`name.trim().toLowerCase().replace(/\s+/g,' ')`) **plus a curated old→new alias map** (21 pairs,
+  e.g. `Roti / Chapati` → `Roti / Chapati (plain, no oil)`). Replace-on-match **preserves the
+  existing `id`/`useCount`/`createdAt`** and refreshes only nutrition fields; **verified rows are
+  never overwritten**; known test rows are deleted. Deterministic — no macro arithmetic in the
+  importer (per-100 copied verbatim). Dry-run by default; `--commit` writes after a full backup.
+- **Reason:** The new names are richer than the legacy app-seed names, so literal matching would
+  leave ~27 staples as visible duplicates — and several (`seed_roti`, `seed_oats`, `seed_curd`,
+  `seed_toordal`…) are referenced by logged days, so they can't be deleted. Alias-merging onto the
+  legacy ids keeps the log/meal history linked, kills the duplicates, and refreshes the data. The
+  app's original `_SEED_ALIASES` (never persisted to cloud) are re-applied so search still matches
+  `chapati`/`chole`/`dahi`/`badam`.
+- **Status:** Accepted. Idempotent (a second run = 0 inserts/0 deletes). Result: 51→158 items,
+  3→30 meals, 0 duplicate names, `Sids Farm` (verified) untouched.
+
+### ADR-0020 — `js/food/seed.js` is now GENERATED from the canonical seed JSON
+- **Decision:** The canonical seed is `data/food-seed/food-seed.v1.1.json` (the redundant
+  `warmode_food_items_only.json` was deleted; both files moved out of the repo root into
+  `data/food-seed/`). `js/food/seed.js` is regenerated from the import report to **mirror the live
+  cloud item set 1:1, reusing the same ids** (merged staples keep `seed_*`, new items keep `itm_*`);
+  it is marked generated and should not be hand-edited.
+- **Reason:** A fresh device / cleared cache first-run-seeds locally then reconciles with cloud by
+  `id`. If `seed.js` used different ids than the cloud, reconcile would re-create duplicates. Id
+  parity makes the import durable across devices.
+- **Status:** Accepted. `_SEED_ALIASES` behavior folded into each item's `aliases`; `useCount`
+  reset to 0 (cloud carries real usage and wins on reconcile).
+
+### ADR-0021 — Unify the whole dashboard on the clean-light + neon-green system
+- **Decision:** Replicate the Food tab's clean-light design across **all four tabs**, replacing the
+  warm legacy identity. Concretely: (a) **Plus Jakarta Sans everywhere** — Oswald, Fraunces and DM
+  Sans removed from CSS, from inline `style=""` in `index.html`, from JS-generated markup in
+  `checkin.js`, and from the Chart.js default; only Jakarta is loaded. (b) A light palette with a
+  **neon-green brand accent** (`--accent #1faa5d`, bright stop `#63e79a`, `--grad`) replacing the
+  terracotta `--accent`. (c) **One green across every tab** — the per-section toggle accents
+  (fitness=ink, health=terracotta, tracker=green, food=blue) are gone; Food's `--fgreen` points at
+  the same brand green. (d) The dark hero **banners are deleted** from Fitness and Health; the
+  Tracker command deck is **kept but restyled** from near-black to a light card. (e) Gradients are
+  restrained to primary interactive surfaces. This **supersedes the two-coexisting-systems premise
+  of [ADR-0013](#adr-0013)**, whose own condition was "get user approval before replicating" — given.
+- **Reason:** Two design languages in one app read as unfinished; the user asked for consistency,
+  a light theme and a neon-green identity. Doing it as a **token remap** rather than a component
+  rewrite meant the recolor cascaded automatically through inline styles, `cssv()` chart colors and
+  the Food canvas rings — a presentational-only change with no logic touched.
+- **Consequences / guards:**
+  - `--accent` became green while `--green` already existed, so any chart plotting both would show
+    two identical series. `cWaist` and `cComp` reassign their `--accent` series to **`--violet`**.
+    *Rule: never plot `--accent` and `--green` in the same chart.*
+  - Lightening the palette dropped pill/badge text contrast to ~2.1–3.2:1. Added **`-ink` token
+    variants** (`--green-ink`, `--amber-ink`, `--red-ink`, `--blue-ink`, `--accent-ink`) for text on
+    tints; base tokens remain for charts/bars/rings. All now pass WCAG AA (~5.2–5.9:1).
+  - `--fgreen` is a **literal hex**, not `var(--accent)` — `foodRing` reads it via `cssv()` and needs
+    a real color string for canvas.
+  - `manifest.json` `theme_color`/`background_color` updated too, else the installed PWA would still
+    flash the old dark identity on its splash screen.
+  - Removing the banners orphaned `dayCountBanner`; its writer in `js/data.js` was deleted. The
+    topbar's `.creed-line` is a *different* element and remains.
+- **Status:** Accepted. Verified by DOM/computed-style inspection across all four tabs (screenshots
+  are unreliable in this environment — the preview pane reports a 0×0 viewport, so Chart.js does not
+  paint; colors were confirmed on the chart instances instead). Zero legacy-font elements, zero
+  console errors.
+- **Known tradeoff:** white-on-neon button text is ~3.0:1, below AA — a deliberate choice to keep the
+  "lightest neon green" look. Fix if needed by darkening the gradient to ~`#2ec46f → #1a9450`.
