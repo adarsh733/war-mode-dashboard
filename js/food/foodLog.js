@@ -30,13 +30,32 @@ const OIL_CHIPS = [['none','None',0],['tsp','1 tsp',5],['tbsp','1 tbsp',14]];
 function oilChips(sel){ return `<div class="fslot-chips">${OIL_CHIPS.map(([k,l,g])=>`<button type="button" class="fchip ${sel===g?'on':''}" onclick="logSetOil(${g})">${l}</button>`).join('')}<button type="button" class="fchip" onclick="logSetOilCustom()">custom…</button></div>`; }
 
 /* ---------- quick add (search on Today) ---------- */
+/* Search that survives a typo. `itemMatchesQuery` is a plain substring test, so
+ * "panner" or "paneer lababdar sabzi" used to return nothing at all — the same
+ * failure the AI logger had. foodMatch.js is the shared fix; substring results
+ * still come first since an exact hit should never be reordered. */
+function foodSearchItems(q, limit){
+  const exact = Object.values(FOOD_ITEMS).filter(it => itemMatchesQuery(it, q))
+      .sort((a,b)=>(b.useCount||0)-(a.useCount||0));
+  if(exact.length >= (limit||10) || typeof fuzzyFindItems !== 'function') return exact.slice(0, limit||10);
+  const seen = {}; exact.forEach(it => seen[it.id] = 1);
+  const fuzzy = fuzzyFindItems(q, { limit: limit||10 }).map(h=>h.item).filter(it => !seen[it.id]);
+  return exact.concat(fuzzy).slice(0, limit||10);
+}
+function foodSearchMeals(q, limit){
+  const exact = Object.values(FOOD_MEALS).filter(m => !String(m.id).startsWith('__') && m.name.toLowerCase().includes(q));
+  if(exact.length >= (limit||4) || typeof fuzzyFindMeals !== 'function') return exact.slice(0, limit||4);
+  const seen = {}; exact.forEach(m => seen[m.id] = 1);
+  const fuzzy = fuzzyFindMeals(q, { limit: limit||4 }).map(h=>h.meal).filter(m => !seen[m.id]);
+  return exact.concat(fuzzy).slice(0, limit||4);
+}
+
 function renderQuickResults(q){
   const box = document.getElementById('quickResults'); if(!box) return;
   q = (q||'').trim().toLowerCase();
   if(q.length < 1){ box.innerHTML=''; return; }
-  const meals = Object.values(FOOD_MEALS).filter(m => !String(m.id).startsWith('__') && m.name.toLowerCase().includes(q)).slice(0,4);
-  const items = Object.values(FOOD_ITEMS).filter(it => itemMatchesQuery(it, q))
-      .sort((a,b)=>(b.useCount||0)-(a.useCount||0)).slice(0,10);
+  const meals = foodSearchMeals(q, 4);
+  const items = foodSearchItems(q, 10);
   let html = '';
   meals.forEach(m=>{ const t=fmtMacros(mealTotals(m,FOOD_ITEMS));
     html += `<div class="frow" onclick="openMealLogSheet('${m.id}')">${avatarFor(m.name)}<div class="fmain"><div class="fname">${htmlSafe(m.name)} <span class="fbadge meal">🍲 Meal</span></div><div class="fsub">${t.kcal} kcal · ${t.protein}g P</div></div><div class="fkcal">＋</div></div>`; });
@@ -59,8 +78,8 @@ function openSlotAdd(slot){
 function renderSlotAddResults(q){
   const box=document.getElementById('slotAddResults'); if(!box) return;
   q=(q||'').trim().toLowerCase(); if(q.length<1){ box.innerHTML=''; return; }
-  const meals=Object.values(FOOD_MEALS).filter(m=>!String(m.id).startsWith('__') && m.name.toLowerCase().includes(q)).slice(0,4);
-  const items=Object.values(FOOD_ITEMS).filter(it=>itemMatchesQuery(it,q)).sort((a,b)=>(b.useCount||0)-(a.useCount||0)).slice(0,10);
+  const meals=foodSearchMeals(q,4);
+  const items=foodSearchItems(q,10);
   let html='';
   meals.forEach(m=>{ const t=fmtMacros(mealTotals(m,FOOD_ITEMS)); html+=`<div class="frow" onclick="fsheetClose();openMealDetail('${m.id}',{slot:'${_slotAddSlot}'})">${avatarFor(m.name)}<div class="fmain"><div class="fname">${htmlSafe(m.name)} <span class="fbadge meal">🍲 Meal</span></div><div class="fsub">${t.kcal} kcal · ${t.protein}g P</div></div><div class="fkcal">＋</div></div>`; });
   items.forEach(it=>{ const d=defaultServingMacros(it); html+=`<div class="frow" onclick="fsheetClose();openItemDetail('${it.id}',{slot:'${_slotAddSlot}'})">${avatarFor(it.name)}<div class="fmain"><div class="fname">${htmlSafe(it.name)} <span class="ftrust">${TRUST_DOT[it.trust]||''}</span></div><div class="fsub">${htmlSafe(d.label)} · ${d.m.kcal} kcal · ${d.m.protein}g P</div></div><div class="fkcal">＋</div></div>`; });
@@ -202,7 +221,7 @@ function mealDraftAsMeal(){ return { name:_mealDraft.name, components:_mealDraft
 function renderMealPicker(q){
   const box=document.getElementById('mealPickResults'); if(!box) return;
   q=(q||'').trim().toLowerCase(); if(q.length<1){ box.innerHTML=''; return; }
-  const items=Object.values(FOOD_ITEMS).filter(it=>it.name.toLowerCase().includes(q)).slice(0,8);
+  const items=foodSearchItems(q,8);
   box.innerHTML=items.map(it=>`<div class="frow" onclick="mealAdd('${it.id}')">${avatarFor(it.name)}<div class="fmain"><div class="fname">${htmlSafe(it.name)}</div><div class="fsub">per 100${baseUnit(it)}: ${it.per100.kcal} kcal</div></div><div class="fkcal">+</div></div>`).join('')||`<div class="fempty">No match.</div>`;
 }
 function mealAdd(itemId){

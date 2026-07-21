@@ -139,22 +139,47 @@ function heroHtml(t){
   </div>`;
 }
 
+/* ---- suggestions: collapsed by default, and BELOW what he actually ate ----
+ * They used to sit above the entries, expanded, in every slot — four rows of
+ * chips pushing the real log off the screen. Collapsed state is per slot and
+ * remembered; toggling flips a class rather than calling renderToday(), because
+ * a full re-render destroys and redraws the Chart.js rings. */
+const FOOD_SUGG_OPEN_KEY = 'warmode_food_sugg_open_v1';
+let FOOD_SUGG_OPEN = (function(){
+  try{ return JSON.parse(localStorage.getItem(FOOD_SUGG_OPEN_KEY)||'{}') || {}; }catch(e){ return {}; }
+})();
+function toggleSuggestions(slot){
+  FOOD_SUGG_OPEN[slot] = !FOOD_SUGG_OPEN[slot];
+  try{ localStorage.setItem(FOOD_SUGG_OPEN_KEY, JSON.stringify(FOOD_SUGG_OPEN)); }catch(e){}
+  const el = document.getElementById('sugg_'+slot);
+  if(el) el.classList.toggle('open', !!FOOD_SUGG_OPEN[slot]);
+}
+
 function slotsHtml(entries){
   let html = '';
   TODAY_SLOTS.forEach(([k,label,emoji])=>{
     const idxs = entries.map((e,i)=>({e,i})).filter(x=>(x.e.meal||'')===k || (k==='snack' && (x.e.meal||'')===''));
     const st = fmtMacros(idxs.reduce((acc,x)=>addInto(acc, entryMacros(x.e,FOOD_ITEMS,FOOD_MEALS)), zeroMacros()));
     const sugg = (typeof suggestionsFor==='function') ? suggestionsFor(k) : [];
+    const open = !!FOOD_SUGG_OPEN[k];
+    const toggleText = sugg.length
+      ? `${sugg.length} usual ${label.toLowerCase()} food${sugg.length>1?'s':''}`
+      : `Add your usual ${label.toLowerCase()} foods`;
     html += `
     <section class="fslot" ondragover="foodDragOver(event)" ondrop="foodDropSlot(event,'${k}')">
       <div class="fslot-head">
         <div class="fslot-title">${emoji} ${label}</div>
         <div class="fslot-right"><span class="fslot-sub">${st.kcal} kcal · ${st.protein}g P</span><button class="fslot-add" onclick="openSlotAdd('${k}')" title="Add to ${label}">＋</button></div>
       </div>
-      ${sugg.length?`<div class="fsugg-row">${sugg.map(s=>`<button class="fsugg-chip ${s.type}" onclick="quickLogSuggestion('${k}','${s.type}','${s.id}')" title="${s.kcal} kcal · ${s.protein}g P">${s.type==='meal'?'🍲':'🥗'} ${htmlSafe(s.name)} <b>＋</b></button>`).join('')}<button class="fsugg-edit" onclick="openSuggestManager('${k}')" title="Edit suggestions">✎</button></div>`
-        : `<div class="fsugg-row"><button class="fsugg-edit wide" onclick="openSuggestManager('${k}')">✎ Add your usual ${label.toLowerCase()} foods</button></div>`}
       <div class="fslot-entries">
         ${idxs.length ? idxs.map(x=>entryRowHtml(x.e,x.i,k)).join('') : '<div class="fslot-empty">— nothing yet —</div>'}
+      </div>
+      <div class="fsugg-wrap ${open?'open':''}" id="sugg_${k}">
+        <button type="button" class="fsugg-toggle" onclick="toggleSuggestions('${k}')"><span class="fsugg-caret">›</span>${toggleText}</button>
+        <div class="fsugg-row">
+          ${sugg.map(s=>`<button class="fsugg-chip ${s.type}" onclick="quickLogSuggestion('${k}','${s.type}','${s.id}')" title="${s.kcal} kcal · ${s.protein}g P">${s.type==='meal'?'🍲':'🥗'} ${htmlSafe(s.name)} <b>＋</b></button>`).join('')}
+          <button class="fsugg-edit" onclick="openSuggestManager('${k}')" title="Edit suggestions">✎ edit</button>
+        </div>
       </div>
     </section>`;
   });
@@ -226,8 +251,11 @@ function foodRing(canvasId, value, target, colorVar){
 /* ══════════ MEALS ══════════ */
 function renderMeals(){
   const box=document.getElementById('mealsList'); if(!box) return;
-  const meals=Object.values(FOOD_MEALS).filter(m=>!String(m.id).startsWith('__'));
-  if(!meals.length){ box.innerHTML=`<div class="fempty">No meals yet. Build reusable bundles like “Oats Whey Smoothie”. <button class="chip" onclick="createMeal&&createMeal()">+ Create a meal</button></div>`; return; }
+  /* only meals he built — the 30 seeded starter combos stay out of this tab but
+   * remain searchable and loggable from Today (see FOOD_STARTER_MEAL_IDS) */
+  const meals=(typeof ownMeals==='function')?ownMeals():Object.values(FOOD_MEALS).filter(m=>!String(m.id).startsWith('__'));
+  const starterNote=`<div class="fempty subtle" style="margin-top:12px;padding:10px">Starter combos like “Rajma Chawal” aren’t listed here any more — search for them on Today and they’ll still come up.</div>`;
+  if(!meals.length){ box.innerHTML=`<div class="fempty">No meals of your own yet. Build reusable bundles like “Blueberry Yeast Protein Smoothie”. <button class="chip" onclick="createMeal&&createMeal()">+ Create a meal</button></div>`+starterNote; return; }
   box.innerHTML = meals.sort((a,b)=>a.name.localeCompare(b.name)).map(meal=>{
     const t=fmtMacros(mealTotals(meal,FOOD_ITEMS));
     return `<div class="frow">
@@ -237,7 +265,7 @@ function renderMeals(){
       <button class="btn-sm" onclick="editMealById&&editMealById('${meal.id}')">✎</button>
       <button class="btn-sm danger" onclick="confirmDeleteMeal('${meal.id}')">🗑</button>
     </div>`;
-  }).join('');
+  }).join('') + starterNote;
 }
 
 /* ══════════ ADD ITEM — form lives in foodForm.js ══════════ */

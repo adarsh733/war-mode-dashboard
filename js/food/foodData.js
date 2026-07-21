@@ -47,6 +47,39 @@ async function loadFood(){
   await foodCloudReconcile();
 }
 
+/* ---- starter meals: loggable, but not shown in the Meals tab ----
+ * The importer seeded 30 generic combos ("Rajma Chawal", "Pav Bhaji (full
+ * plate)"). The Meals tab is for meals HE builds, so these are filtered out of
+ * it — while staying fully searchable and loggable everywhere else.
+ *
+ * Identified by id rather than by a flag written onto the rows: no migration to
+ * half-apply, nothing to sync, and it reverses by deleting this list. Half of
+ * them are near-duplicates of items he already has, so converting them into
+ * pantry items instead would have put 15 confusable rows next to the real ones
+ * and degraded the search in foodMatch.js.
+ *
+ * His own meals (meal_soaked_nuts_seeds, meal_blueberry_yeast_smoothie,
+ * meal_quinoa_paneer_upma, meal_high_protein_kebab,
+ * meal_high_protein_garlic_bread) are deliberately NOT in this list. */
+const FOOD_STARTER_MEAL_IDS = {
+  meal_zjipuomscclp:1, meal_xfyedyfhogfn:1, meal_oeociknlygon:1, meal_btbzntdxjrid:1,
+  meal_ksaidepzwyil:1, meal_kfqhmqdvsvzv:1, meal_agkikfxwnwef:1, meal_sboogyvpkmbo:1,
+  meal_oqbbvwnblrws:1, meal_ghgbtdxrylbk:1, meal_nnesqvgvddmf:1, meal_mliuksksunbw:1,
+  meal_awpphqabilhk:1, meal_ekehfnacbjeb:1, meal_qbckhdcuncnb:1, meal_ogqascftxlkd:1,
+  meal_hkcbesrvqwgp:1, meal_wmdlchfyanfp:1, meal_sgpccmpijkgt:1, meal_gedawyzpgaus:1,
+  meal_mepmyjwwzypl:1, meal_duzhqngvidhc:1, meal_qfrhvzjoosvw:1, meal_ruzvqzgsynfc:1,
+  meal_cqwjbcnkeznu:1, meal_afenptiebcyv:1, meal_toemooklsxfx:1, meal_wnxryytipwye:1,
+  meal_scshzxvqrxxt:1, meal_nijwczirkikg:1
+};
+/* true for a generic starter combo, false for anything he made. */
+function isStarterMeal(m){
+  return !!(m && FOOD_STARTER_MEAL_IDS[String(m.id)]);
+}
+/* the meals the Meals tab shows: his own, never the starters, never reserved rows */
+function ownMeals(){
+  return Object.values(FOOD_MEALS).filter(m => !String(m.id).startsWith('__') && !isStarterMeal(m));
+}
+
 /* ---- search matching (includes aliases + tags) ---- */
 function normName(s){ return (s||'').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim(); }
 function itemMatchesQuery(it, q){

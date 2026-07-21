@@ -239,6 +239,20 @@ async function main() {
   await del('food_items', deleteItemIds);
   await del('food_meals', deleteMealIds);
   console.log('Write complete.');
+
+  // Step 7 — Regenerate js/food/seed.js
+  const seedJsPath = join(ROOT, 'js', 'food', 'seed.js');
+  const seedJsContent = `/* seed.js — GENERATED. Do not hand-edit.
+ * Source: data/food-seed/food-seed.v1.1.json
+ * Regenerate: run scripts/import_food_seed.mjs --commit
+ */
+
+const FOOD_SEED = [
+${[...finalItems.values()].map(it => '  ' + JSON.stringify(it)).join(',\n')}
+];
+`;
+  writeFileSync(seedJsPath, seedJsContent, 'utf8');
+  console.log(`Rebuilt js/food/seed.js (${finalItems.size} items)`);
 }
 
 main().catch(e => { console.error('\nIMPORT FAILED:', e.message); process.exit(1); });

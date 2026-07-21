@@ -63,12 +63,17 @@ No build step. Plain static files served as-is by Netlify. All JS files are **cl
 scripts sharing one global scope** (NOT ES modules) — see [ADR-0002](docs/decisions.md).
 Load order matters; `js/app.js` bootstraps last.
 
+The repo root is `Health & Medicine/war-mode-dashboard/`. Its parent holds the private medical
+data (`../Medical Records/`, `../Physique Progress/`, `../Trackers/`), which is deliberately
+**outside git** — see [ADR-0031](docs/decisions.md). Never move that data into the repo.
+
 ```
 index.html            markup only (nav, sections, page shells)
 styles.css            all CSS (one unified clean-light + neon-green token system — ADR-0021)
 manifest.json         PWA
-appicon-*.png         PWA icons
 netlify.toml          publish dir + functions dir (no build step for the site itself)
+assets/               PWA icons (appicon-180/192/512.png) + app-icon-source.jpeg
+archive/phase-1/      pre-rewrite standalone HTML dashboards, kept as history (ADR-0001)
 netlify/functions/
   ai.js               the ONLY place the Anthropic key exists — PIN gate, daily cap, task whitelist
 supabase/food_tables.sql   one-time SQL for the Food tables
@@ -78,8 +83,9 @@ js/
   config.js dates.js data.js charts.js nav.js tracker.js checkin.js   ← legacy engine
   app.js              ← bootstrap (runs last)
   food/
-    foodMath.js       deterministic macro engine (pure, unit-testable)
-    foodData.js       local-first cache + Supabase sync + search/dedup helpers
+    foodMath.js       deterministic macro engine (pure, unit-testable) + HOUSEHOLD_G unit table
+    foodMatch.js      deterministic fuzzy matcher — the non-AI safety net under search (ADR-0027)
+    foodData.js       local-first cache + Supabase sync + search/dedup + FOOD_STARTER_MEAL_IDS
     seed.js           GENERATED — 158 vegetarian seed items, id-parity with cloud (ADR-0020)
     foodSuggest.js    per-slot suggestions (taught + recency-learned) + manager
     foodUI.js         Today (rings, slots, entries), Pantry, Meals rendering
@@ -89,12 +95,14 @@ js/
     bridge.js         Food → Tracker push ("Done for the day")
     aiClient.js       the one door to the AI proxy (PIN, image downscale, fail-soft) — ADR-0023
     aiValidate.js     deterministic guards: Atwater check, ranges, veg guard, per-100 conversion
-    aiLabel.js        label photo → ⭐ verified item (+ correction loop)
-    aiParse.js        natural-language logging → editable confirm list
+    aiLabel.js        ANY image (panel/screenshot/menu) → item; trust follows source (ADR-0029)
+    aiParse.js        natural-language logging → editable confirm list + did-you-mean fallback
     aiMealName.js     meal-name suggestions
-    aiLookup.js       web lookup for unknown foods → 🤖 ai item + sources
-    aiPlate.js        plate photo → DRAFT rows, forced grams + oil confirmation (ADR-0025)
+    aiLookup.js       unknown food → 🤖 ai item + assumptions (one call, NO web search — ADR-0026)
+    aiPlate.js        plate photo → DRAFT rows in real units, editable kcal, save-as-meal (ADR-0028)
 docs/                 the persistent knowledge base (see index above)
+  food-tracker-spec.md      the original Food Tracker spec
+  history-phase-1-to-2.md   narrative history of Phase 1 → Phase 2
 ```
 
 ## Run & verify locally
@@ -113,8 +121,15 @@ Food **Phase 1 complete**; the real seed (158 items / 30 meals) is loaded. The c
 is **unified across the whole dashboard** ([ADR-0021](docs/decisions.md)) and the nav is mobile-first
 ([ADR-0022](docs/decisions.md)).
 
-**Phase 2 (AI) is BUILT but has never run live.** All five features sit behind one Netlify Function
-proxy ([ADR-0023](docs/decisions.md)). Two things to know before touching it:
+**Phase 2 (AI) has now run live once, and four things came back broken** — all fixed locally, none
+retried against the real API yet (AI is inert on localhost). See
+[current-focus](docs/current-focus.md) for the table. The one constraint that now governs the whole
+proxy: **Netlify's synchronous function timeout is 10 seconds** ([ADR-0026](docs/decisions.md)) — one
+upstream call per task, `thinking` omitted deliberately, depth tuned with `output_config.effort`.
+Turning on adaptive thinking is the change most likely to break it again.
+
+All five features sit behind one Netlify Function proxy ([ADR-0023](docs/decisions.md)). Two more
+things to know before touching it:
 
 - **The API key lives only in Netlify env vars** (`ANTHROPIC_API_KEY`, `WARMODE_AI_PIN`), never in
   the repo, never in client JS — the site is public. Don't move an AI call into the browser.

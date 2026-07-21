@@ -6,15 +6,25 @@
 > _Last updated: 2026-07-21_
 
 ## Current feature
-🤖 **Food Phase 2 — the AI layer** (built; awaiting its first live run on the deployed site)
+🤖 **Food Phase 2 — the AI layer, after its first real day of use** (fixes built locally, not yet
+deployed)
 
 ## Current sprint
-**All five AI features built behind one Netlify Function proxy.** Label scan · natural-language
-logging · meal naming · web lookup · plate photo. Governed by the accuracy contract
-([ADR-0024](decisions.md)): AI proposes, `foodMath.js` calculates, a deterministic validator checks,
-nothing saves or logs without an explicit confirm.
-**One thing blocks "done":** the live round-trip has never run. Netlify Functions don't exist on the
-local static server, so the real gate test is ⚡ **Test AI connection** on the deployed site.
+Phase 2 ran live for the first time and four things came back broken. All are fixed locally and
+verified; **none has been exercised against the real API yet** — AI is inert on localhost, so the
+next step is deploy + retry on the phone.
+
+| # | What was wrong | Root cause | Fix |
+|---|---|---|---|
+| 1 | Lookup failed 100% of the time (HTTP 504) | two Opus calls + web search vs Netlify's **10s** timeout | one call, model knowledge, `assumptions` instead of sources ([ADR-0026](decisions.md)) |
+| 2 | "paneer lababdar sabzi, 2 garlic naan, 1 glass lassi" matched **nothing** | pantry index sent `'i:'+id`, so the model echoed a decorated id and every row fell to "unknown"; units were never sent | bare ids + unit labels, defensive resolve, and a deterministic fuzzy matcher underneath ([ADR-0027](decisions.md)) |
+| 3 | Label scan was camera-only | forced `capture:'environment'`, prompt assumed a printed panel | 📸 Add from a photo — camera or screenshot, trust follows source ([ADR-0029](decisions.md)) |
+| 4 | 30 seeded combos cluttered the Meals tab | `renderMeals()` showed every non-reserved meal | hidden by id, still loggable from Today ([ADR-0030](decisions.md)) |
+
+Plate photo was the one feature he liked, so it was deepened rather than repaired: portions are now
+counted in the unit the food comes in (1 coconut, 3 roti, 1 katori), calories are correctable, and a
+plate can be saved as a meal ([ADR-0028](decisions.md)). Suggestions moved below the logged entries
+and collapsed by default.
 
 ## Completed (this arc)
 - ✅ **Phase 2 AI layer** ([ADR-0023/0024/0025](decisions.md)) — proxy (PIN + daily cap + task
@@ -46,6 +56,11 @@ local static server, so the real gate test is ⚡ **Test AI connection** on the 
 - ✅ Docs / knowledge base (CLAUDE.md + docs/)
 
 ## Next
+- ⬜ **Deploy, then re-run the four that failed** — a real lookup, a HealthifyMe screenshot import,
+  the sentence "paneer lababdar sabzi, 2 garlic naan and 1 glass lassi", and one plate photo. Every
+  fix is verified against mocks and against his real 178-item pantry, but none has met the live API.
+- ⬜ **Watch lookup latency.** The 10s budget is the whole design constraint now; if a real lookup
+  still times out the next move is a background function + polling, not a longer synchronous call.
 - ⬜ **On-device check on the phone** — the mobile fixes (no input zoom, no sideways drift, safe-area
   insets on a notched screen) can only be truly confirmed there; also button label legibility
   (white-on-neon is ~3.0:1 by design — see the tradeoff note in [design-system.md](design-system.md))
@@ -59,6 +74,9 @@ local static server, so the real gate test is ⚡ **Test AI connection** on the 
 - 🚧 **Visual review must happen on his device** — screenshot capture is broken here (the preview
   pane reports a 0×0 viewport, so Chart.js canvases never paint). Verify via DOM/computed styles.
 - 🚧 Needs his real per-meal foods + calibrated numbers
-- 🚧 **Stale test rows in the cloud:** `food_log` still holds `2099-01-01` and `2099-01-02` from old
-  test sessions. Harmless (he'd have to navigate to 2099 to see them) but they're junk — awaiting
-  his go-ahead to delete.
+- 🚧 **Stale test rows in the cloud, now in two places** — awaiting his go-ahead to delete:
+  - `food_log`: `2099-01-01`, `2099-01-02`
+  - `food_meals`: **“Test Smoothie”, “ZZ Test Bowl” ×2** — these DO show in his Meals tab, so they're
+    the visible ones. (The 2098-03-03 day and the Coconut/Roti/ZZ Plate Test rows created during
+    this session's verification were cleaned up immediately; item and meal counts are back to
+    178 / 38.)

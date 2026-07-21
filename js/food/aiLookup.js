@@ -1,29 +1,40 @@
-/* aiLookup.js — a food isn't in the pantry, so go and find it.
+/* aiLookup.js — a food isn't in the pantry, so ask for reference numbers.
  *
- * The proxy runs this as a research call (web search) followed by a structuring
- * call, then the same validator every other AI path uses. Saved as trust:'ai'
- * with its sources kept in notes — these are reference numbers off the internet,
- * not a label he read, so they must never masquerade as verified.
+ * ONE structured call, no web search (ADR-0026). The original two-call
+ * research-then-structure path could not finish inside Netlify's 10-second
+ * function timeout and failed with a 504 every single time. Opus already knows
+ * IFCT/USDA reference values for Indian and branded foods, so what it returns
+ * is what a search would mostly have found anyway — the honest difference is
+ * that we get `assumptions` (preparation, oil, restaurant vs home) instead of
+ * source URLs, which is the part that actually explains a wrong number later.
  *
- * Learn-once: the item lands in the pantry, so the same food is never
- * researched twice (product-spec §3.4 — the main Phase 2 cost control).
+ * Saved as trust:'ai'. These are generic reference numbers, not a label he
+ * read, so they must never masquerade as verified.
+ *
+ * Learn-once: the item lands in the pantry, so the same food is never looked up
+ * twice (product-spec §3.4 — the main Phase 2 cost control).
+ *
+ * opts.onSaved(item) — when a lookup is launched from somewhere that still has
+ * state to return to (the natural-language confirm list), this fires instead of
+ * the "log some now?" prompt so the caller can slot the new item back in.
  */
 
-let _aiLookup = null;   // { query, data, per100, editId, vet }
+let _aiLookup = null;   // { query, data, per100, editId, vet, onSaved }
 
-async function aiLookupFood(query) {
+async function aiLookupFood(query, opts) {
   const q = (query && String(query).trim()) || prompt('What food should I look up?') || '';
   if (!q.trim()) return;
 
-  _aiLookup = { query: q.trim(), data: null, per100: null, editId: null };
+  _aiLookup = { query: q.trim(), data: null, per100: null, editId: null,
+                onSaved: (opts && opts.onSaved) || null };
 
   fdOpen(`
     <div class="fd-hero" style="background:linear-gradient(135deg,var(--famber-bg),var(--fcard))">
       <button class="fd-x" onclick="aiLookupClose()">✕</button>
       <div class="fd-hero-name">🔎 ${htmlSafe(q)}</div>
-      <div class="fd-hero-sub">Searching for reference nutrition data</div>
+      <div class="fd-hero-sub">Getting reference nutrition values</div>
     </div>
-    <div class="fd-body" id="aiLookupBody">${aiBusyHtml('Searching — this one takes a few seconds…')}</div>
+    <div class="fd-body" id="aiLookupBody">${aiBusyHtml('Looking it up…')}</div>
     <div class="fd-foot" id="aiLookupFoot"></div>
   `);
 
@@ -83,11 +94,18 @@ function aiLookupRender() {
     <div id="lk_flags">${aiIssuesHtml(vet)}</div>
     ${dupNote}
 
-    <div class="ai-flag info"><b>🤖 Saved as AI-estimated</b>
-      <div>Generic internet data, not your kitchen. Calibrate it once you've weighed it — editing later flips it to ⭐ verified.</div></div>
+    ${(d.servings || []).length ? '<div class="ai-sec"><div class="fd-lbl">How it\'s usually eaten <span class="subtle">(saved as units you can log)</span></div>'
+      + d.servings.slice(0, 5).map(s => '<div class="fd-unitrow"><span class="fd-ulabel">' + htmlSafe(s.label) + '</span><span class="fd-uamt">' + s.amount + ' ' + u + '</span></div>').join('')
+      + '</div>' : ''}
 
-    ${(d.sources || []).length ? '<div class="ai-sec"><div class="fd-lbl">Sources</div>'
-      + d.sources.slice(0, 5).map(s => '<div class="ai-src">' + htmlSafe(s) + '</div>').join('') + '</div>' : ''}
+    <div class="ai-flag info"><b>🤖 Saved as AI-estimated</b>
+      <div>Generic reference values, not your kitchen. Calibrate once you've weighed it — editing later flips it to ⭐ verified.</div></div>
+
+    ${(d.assumptions || []).length ? '<div class="ai-sec"><div class="fd-lbl">What it assumed</div><ul class="ai-assume">'
+      + d.assumptions.slice(0, 5).map(s => '<li>' + htmlSafe(s) + '</li>').join('') + '</ul></div>' : ''}
+
+    ${(d.warnings || []).length ? '<div class="ai-flag warn"><b>The model noted</b><ul>'
+      + d.warnings.slice(0, 4).map(w => '<li>' + htmlSafe(w) + '</li>').join('') + '</ul></div>' : ''}
 
     <div class="ai-conf subtle">Model confidence ${Math.round((d.confidence || 0) * 100)}%${aiUsageNote()}</div>
   `, `<button class="fd-btn primary" id="lk_save" ${vet.level === 'fail' ? 'disabled' : ''} onclick="aiLookupSave()">${st.editId ? 'Update item' : 'Save to pantry'}</button>
@@ -120,7 +138,7 @@ function aiLookupSave() {
       !confirm('"' + existing.name + '" is ⭐ verified — your own calibration.\n\nReplace it with looked-up averages?')) return;
   st.saving = true;
 
-  const srcNote = (st.data.sources || []).slice(0, 3).join(' · ');
+  const assume = (st.data.assumptions || []).slice(0, 3).join(' · ');
   const item = Object.assign(existing ? JSON.parse(JSON.stringify(existing)) : {}, {
     id: st.editId || undefined,
     name,
@@ -131,18 +149,22 @@ function aiLookupSave() {
       ? existing.servings
       : (st.data.servings || []).filter(s => s && s.label && s.amount > 0),
     trust: 'ai',
-    source: 'web-lookup',
-    notes: (srcNote ? 'Sources: ' + srcNote : ''),
-    aiMeta: { source: 'web-lookup', model: 'claude-opus-4-8', at: new Date().toISOString(),
-      query: st.query, confidence: st.data.confidence, sources: st.data.sources || [] }
+    source: 'ai-lookup',
+    notes: (assume ? 'Assumed: ' + assume : ''),
+    aiMeta: { source: 'ai-lookup', model: 'claude-opus-4-8', at: new Date().toISOString(),
+      query: st.query, confidence: st.data.confidence, assumptions: st.data.assumptions || [] }
   });
   if (item.defaultServingIndex == null) item.defaultServingIndex = (item.servings || []).length ? 0 : -1;
 
-  saveItem(item);
+  const saved = saveItem(item);
+  const onSaved = st.onSaved;
   fdClose(); _aiLookup = null;
   if (typeof renderPantry === 'function') renderPantry();
 
-  const saved = findItemByNameBrand(item.name, item.brand);
+  /* Launched from somewhere with state to go back to (the NL confirm list) —
+   * hand the item over instead of dead-ending in a confirm() dialog. */
+  if (onSaved) { onSaved(saved); return; }
+
   if (saved && confirm('Added "' + item.name + '" to your pantry. Log some now?')) openItemDetail(saved.id, {});
 }
 

@@ -10,19 +10,33 @@
 
 let _aiParse = null;   // { text, rows:[], unknowns:[] }
 
-/* Compact pantry index — ids, names and aliases only. Deliberately excludes
- * macros: the model doesn't need them and they'd bloat every request. */
+/* Compact pantry index — ids, names, aliases and the item's own unit labels.
+ * Deliberately excludes macros: the model doesn't need them and they'd bloat
+ * every request.
+ *
+ * Two things here were broken and are worth not re-breaking:
+ *
+ * 1. Ids are BARE. This used to emit 'i:' + it.id, so the model dutifully
+ *    returned "i:itm_mbdsflngpibm", FOOD_ITEMS[...] missed, and every row fell
+ *    through to "unknown". That is why "paneer lababdar, 2 garlic naan and 1
+ *    glass lassi" matched nothing despite all three being in the pantry.
+ * 2. Unit labels are INCLUDED. Without them "1 glass lassi" had no `glass` to
+ *    map onto, so the quantity silently became something else. */
 function aiPantryIndex() {
-  const lines = [];
-  Object.values(FOOD_ITEMS).forEach(it => {
+  const items = Object.values(FOOD_ITEMS).map(it => {
     const al = (it.aliases || []).slice(0, 6).join(', ');
-    lines.push('i:' + it.id + ' | ' + it.name + (al ? ' | ' + al : ''));
+    const units = (it.servings || []).slice(0, 5)
+      .map(s => s.label + '=' + s.amount + baseUnit(it)).join(', ');
+    return it.id + ' | ' + it.name
+      + (al ? ' | aliases: ' + al : '')
+      + ' | units: ' + (units ? units + ', ' + baseUnit(it) : baseUnit(it));
   });
-  Object.values(FOOD_MEALS).forEach(m => {
-    if (String(m.id).startsWith('__')) return;      // reserved rows
-    lines.push('m:' + m.id + ' | ' + m.name);
-  });
-  return lines.join('\n');
+  const meals = Object.values(FOOD_MEALS)
+    .filter(m => !String(m.id).startsWith('__'))     // reserved rows
+    .map(m => m.id + ' | ' + m.name);
+
+  return 'ITEMS (matchType "item"):\n' + items.join('\n')
+    + '\n\nSAVED MEALS (matchType "meal"):\n' + meals.join('\n');
 }
 
 /* Map a unit string onto the item's own servings.
@@ -58,26 +72,33 @@ function aiResolveUnit(item, unitStr) {
 }
 
 /* ---------- entry point ---------- */
-function aiLogText() {
-  _aiParse = null;
+/* The sheet shell is separate so it can be rebuilt after a lookup replaces the
+ * overlay's DOM — _aiParse survives as a JS variable, the markup does not. */
+function aiParseShell(body, foot) {
   fdOpen(`
     <div class="fd-hero" style="background:linear-gradient(135deg,var(--fblue-bg),var(--fcard))">
-      <button class="fd-x" onclick="fdClose()">✕</button>
+      <button class="fd-x" onclick="aiParseClose()">✕</button>
       <div class="fd-hero-name">🗣 Log by typing</div>
       <div class="fd-hero-sub">Say what you ate — you'll review everything before it's logged</div>
     </div>
-    <div class="fd-body" id="aiParseBody">
-      <textarea class="fd-inp wide ai-ta" id="ap_text" rows="3" placeholder="e.g. 3 roti, a katori of toor dal, curd and one scoop of whey"></textarea>
-      <div class="subtle" style="margin-top:8px">It maps onto your own pantry — it won't invent foods you don't have.</div>
-    </div>
-    <div class="fd-foot" id="aiParseFoot"><button class="fd-btn primary" onclick="aiParseRun()">Read it</button></div>
+    <div class="fd-body" id="aiParseBody">${body || ''}</div>
+    <div class="fd-foot" id="aiParseFoot">${foot || ''}</div>
   `);
+}
+
+function aiLogText() {
+  _aiParse = null;
+  aiParseShell(
+    `<textarea class="fd-inp wide ai-ta" id="ap_text" rows="3" placeholder="e.g. paneer lababdar sabzi, 2 garlic naan and 1 glass lassi"></textarea>
+     <div class="subtle" style="margin-top:8px">Type it however you like — spelling and extra words are fine. It maps onto your own pantry first.</div>`,
+    `<button class="fd-btn primary" onclick="aiParseRun()">Read it</button>`);
   setTimeout(() => { const t = document.getElementById('ap_text'); if (t) t.focus(); }, 50);
 }
+function aiParseClose() { _aiParse = null; fdClose(); }
 
 async function aiParseRun() {
   const ta = document.getElementById('ap_text');
-  const text = ta ? ta.value.trim() : '';
+  const text = (ta ? ta.value.trim() : '') || (_aiParse && _aiParse.text) || '';
   if (!text) { alert('Type what you ate first.'); return; }
 
   aiParseSetBody(aiBusyHtml('Matching against your pantry…'), '');
@@ -88,27 +109,86 @@ async function aiParseRun() {
     localTime: new Date().toLocaleString()
   });
 
-  if (!r.ok) { aiParseSetBody(aiErrorHtml(r.error, 'aiParseRun()'), ''); return; }
+  if (!r.ok) {
+    _aiParse = { text, rows: [], unknowns: [], warnings: [] };
+    aiParseSetBody(aiErrorHtml(r.error, 'aiParseRun()'), '');
+    return;
+  }
 
   const rows = [], unknowns = [];
   (r.data.items || []).forEach(x => {
-    if (x.matchType === 'item' && x.id && FOOD_ITEMS[x.id]) {
-      const u = aiResolveUnit(FOOD_ITEMS[x.id], x.unit);
-      rows.push({ kind: 'item', id: x.id, qty: Number(x.qty) > 0 ? Number(x.qty) : 1,
+    /* aiResolveItem/aiResolveMeal tolerate a decorated id ("i:itm_…", quoted).
+     * The prompt now asks for bare ids, but a silent miss here costs a whole
+     * row, so it is not worth trusting the prompt alone. */
+    const item = (x.matchType === 'item') ? aiResolveItem(x.id) : null;
+    const meal = (x.matchType === 'meal') ? aiResolveMeal(x.id) : null;
+
+    if (item) {
+      const u = aiResolveUnit(item, x.unit);
+      rows.push({ kind: 'item', id: item.id, qty: Number(x.qty) > 0 ? Number(x.qty) : 1,
         si: u.si, unitGuessed: u.guessed, saidUnit: x.unit || '',
         slot: x.slot || defaultSlot(),
         conf: x.confidence, raw: x.rawText,
-        alts: (x.altIds || []).filter(id => FOOD_ITEMS[id]) });
-    } else if (x.matchType === 'meal' && x.id && FOOD_MEALS[x.id]) {
-      rows.push({ kind: 'meal', id: x.id, qty: Number(x.qty) > 0 ? Number(x.qty) : 1,
+        alts: (x.altIds || []).map(id => aiResolveItem(id)).filter(Boolean).map(o => o.id) });
+    } else if (meal) {
+      rows.push({ kind: 'meal', id: meal.id, qty: Number(x.qty) > 0 ? Number(x.qty) : 1,
         slot: x.slot || defaultSlot(), conf: x.confidence, raw: x.rawText, alts: [] });
     } else {
-      unknowns.push({ name: x.name || x.rawText, raw: x.rawText });
+      unknowns.push(aiParseMakeUnknown(x));
     }
   });
 
   _aiParse = { text, rows, unknowns, warnings: r.data.warnings || [] };
   aiParseRenderConfirm();
+}
+
+/* An unmatched row keeps the quantity/unit/slot the model heard, so adopting a
+ * suggestion later doesn't lose "2 garlic naan" down to a bare "naan".
+ * fuzzyFindItems is the deterministic second opinion: the model said unknown,
+ * but "paneer lababdar sabzi" is one filler word away from something he owns. */
+function aiParseMakeUnknown(x) {
+  const name = x.name || x.rawText || '';
+  const near = (typeof fuzzyFindItems === 'function')
+    ? fuzzyFindItems(name, { limit: 3 }) : [];
+  return {
+    name, raw: x.rawText || name,
+    qty: Number(x.qty) > 0 ? Number(x.qty) : 1,
+    unit: x.unit || '',
+    slot: x.slot || defaultSlot(),
+    near: near.map(h => ({ id: h.item.id, name: h.item.name, score: h.score }))
+  };
+}
+
+/* Unknown → a real row, using the quantity the model already heard. */
+function aiParseAdoptUnknown(ui, itemId) {
+  const st = _aiParse; if (!st) return;
+  const u = st.unknowns[ui]; if (!u) return;
+  const it = aiResolveItem(itemId); if (!it) return;
+
+  const un = aiResolveUnit(it, u.unit);
+  st.rows.push({ kind: 'item', id: it.id, qty: u.qty, si: un.si,
+    unitGuessed: un.guessed, saidUnit: u.unit, slot: u.slot,
+    conf: null, raw: u.raw, alts: [] });
+  st.unknowns.splice(ui, 1);
+  aiParseRenderConfirm();
+}
+
+/* Look one up without throwing away the rest of the parse — the sheet is
+ * rebuilt and the new item slotted into its row on save. */
+function aiParseLookupUnknown(ui) {
+  const st = _aiParse; if (!st) return;
+  const u = st.unknowns[ui]; if (!u) return;
+  aiLookupFood(u.name, {
+    onSaved: (item) => {
+      aiParseShell('', '');
+      if (item) aiParseAdoptUnknown(ui, item.id);
+      else aiParseRenderConfirm();
+    }
+  });
+}
+function aiParseDropUnknown(ui) {
+  const st = _aiParse; if (!st) return;
+  st.unknowns.splice(ui, 1); aiParseRenderConfirm();
 }
 
 /* ---------- confirm list ---------- */
@@ -127,8 +207,8 @@ function aiParseRenderConfirm() {
   const st = _aiParse; if (!st) return;
 
   if (!st.rows.length && !st.unknowns.length) {
-    aiParseSetBody('<div class="ai-err"><b>Nothing matched.</b><div>Try naming the foods the way they appear in your pantry.</div></div>'
-      + '<button class="fd-chip" onclick="aiLogText()">Try again</button>', '');
+    aiParseSetBody('<div class="ai-err"><b>Nothing matched.</b><div>Try naming the foods the way they appear in your pantry.</div></div>',
+      '<button class="fd-btn" onclick="aiLogText()">Start over</button>');
     return;
   }
 
@@ -177,11 +257,17 @@ function aiParseRenderConfirm() {
   }).join('');
 
   const unknownHtml = st.unknowns.length ? `
-    <div class="ai-flag warn"><b>Not in your pantry</b>
-      <div>These weren't logged. Add them first if you want them counted.</div>
-      ${st.unknowns.map(x => `<div class="ai-unknown"><span>${htmlSafe(x.name)}</span>
-        <button class="fd-chip" onclick="aiLookupFood(${aiJsAttr(x.name)})">🔎 Look it up</button>
-        <button class="fd-chip" onclick="fdClose();go('food-add')">✎ Add manually</button></div>`).join('')}
+    <div class="ai-flag warn"><b>Not matched yet</b>
+      <div>These aren't logged. Pick the right food, look it up, or drop it.</div>
+      ${st.unknowns.map((x, ui) => `<div class="ai-unknown">
+        <div class="ai-unknown-h"><span class="ai-unknown-name">${x.qty > 1 ? x.qty + ' × ' : ''}${htmlSafe(x.name)}</span>
+          <button class="fd-x2" onclick="aiParseDropUnknown(${ui})" title="Drop it">✕</button></div>
+        ${x.near.length ? `<div class="ai-didyoumean"><span class="fd-mini">did you mean</span>
+          ${x.near.map(n => `<button class="fd-chip on" onclick="aiParseAdoptUnknown(${ui},${aiJsAttr(n.id)})">${htmlSafe(n.name)}</button>`).join('')}</div>` : ''}
+        <div class="fd-chips">
+          <button class="fd-chip" onclick="aiParseLookupUnknown(${ui})">🔎 Look it up</button>
+          <button class="fd-chip" onclick="aiParseClose();go('food-add')">✎ Add manually</button>
+        </div></div>`).join('')}
     </div>` : '';
 
   const warnHtml = (st.warnings || []).length
@@ -192,8 +278,8 @@ function aiParseRenderConfirm() {
     + rowsHtml + unknownHtml + warnHtml
     + `<div class="ai-total" id="apTotal">Total to log: <b>${Math.round(totK)}</b> kcal · <b>${Math.round(totP)}</b>g protein</div>`
     + aiUsageNote(),
-    st.rows.length ? `<button class="fd-btn primary" onclick="aiParseCommit()">Add ${st.rows.length} item${st.rows.length > 1 ? 's' : ''}</button>
-                      <button class="fd-btn" onclick="aiLogText()">Start over</button>` : ''
+    (st.rows.length ? `<button class="fd-btn primary" onclick="aiParseCommit()">Add ${st.rows.length} item${st.rows.length > 1 ? 's' : ''}</button>` : '')
+    + `<button class="fd-btn" onclick="aiLogText()">Start over</button>`
   );
 }
 

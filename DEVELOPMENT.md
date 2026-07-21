@@ -41,7 +41,9 @@
 - Branch off `main` for risky work; git-checkpoint before large/irreversible changes.
 - **Local commits are fine anytime; pushing is user-gated.** Push (→ Netlify deploy) only when the
   user says so.
-- Private data (`Clinical Records/`, `Physique Progress/`, `*.xlsx`) stays gitignored.
+- Private medical data lives **outside the repo**, one level up in `../Medical Records/`,
+  `../Physique Progress/`, `../Trackers/`. It is not in git at all; `.gitignore` keeps
+  matching patterns only as a backstop.
 
 ## Documentation cadence — what to update when
 

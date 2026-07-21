@@ -288,5 +288,110 @@
   measure volume or density, and cooking oil is invisible, which is the exact undercount this app
   was built to fix. Presenting a photo estimate as a measurement would violate the prime directive,
   so the interaction is designed to make the user supply the two numbers the model cannot see.
-- **Status:** Accepted. Built last, deliberately, so the confirm pipeline was already proven by the
-  label-scan and natural-language flows.
+- **Status:** Accepted, and **extended by [ADR-0028](#adr-0028--plate-portions-are-expressed-in-the-unit-the-food-comes-in)** —
+  the forced-confirmation principle is unchanged, but "an explicit grams field" turned out to be the
+  wrong question to ask about a coconut.
+
+---
+
+### ADR-0026 — Web lookup uses model knowledge, not web search
+- **Decision:** The `lookup` task is **one** structured call with no tools. The previous
+  research-then-structure pair (a `web_search_20260209` pass with `max_uses: 4`, then a structuring
+  call) is deleted. Source URLs are replaced by an `assumptions` array — preparation method, oil
+  included or not, restaurant vs home style, brand substitutions.
+- **Reason:** Netlify's synchronous function timeout is **10 seconds**, and the two-call path could
+  never finish inside it. It failed with an HTTP 504 on **100% of real attempts** — the feature had
+  never once worked in production. Opus already holds IFCT/NIN and USDA reference values for Indian
+  and branded foods, so a single call returns substantially what the search would have found. The
+  honest trade is losing citations; `assumptions` replaces them and is arguably more useful, since
+  what makes a looked-up number wrong is almost always an assumption about preparation, not a bad
+  source.
+- **Consequences — the 10s budget now governs the whole proxy:** one upstream call per task, ever;
+  `thinking` deliberately omitted (an absent thinking field means Opus 4.8 runs without thinking,
+  which is why the vision tasks fit) with depth tuned via `output_config.effort` per task instead;
+  and an 8s `AbortController` so a slow upstream returns our own readable sentence rather than
+  Netlify's opaque gateway 504. **Do not switch on adaptive thinking here** — it is the single
+  change most likely to reintroduce the timeout.
+- **Status:** Accepted. If citations are ever genuinely needed, the route is a Netlify *background*
+  function plus polling — not a longer synchronous call.
+
+---
+
+### ADR-0027 — A deterministic fuzzy matcher sits underneath the AI
+- **Decision:** New pure module `js/food/foodMatch.js` scores a query against the pantry using token
+  overlap + trigram Dice + prefix signals. It backs the AI's "unknown" rows with a *did you mean*
+  picker, and replaces the substring test in every manual search box.
+- **Reason:** "paneer lababdar sabzi" matched nothing, though Paneer Lababdar was in the pantry. Two
+  causes: the pantry index sent to the model prefixed every id (`'i:' + it.id`), so the model echoed
+  the decorated id straight back and `FOOD_ITEMS[id]` missed — every row fell through to "unknown";
+  and search itself was `hay.includes(q)`, so one extra word or one transposed letter dropped a food
+  entirely. The prefix is gone and ids are resolved defensively, but the deeper fix is having a
+  non-AI second opinion: when the model says unknown, something deterministic, free and offline
+  should still find the obvious near-miss.
+- **The one subtle rule:** filler words (`sabzi`, `curry`, `masala`, `katori`, quantities) are **not
+  stripped** — half of them appear in real pantry names. Instead they are asymmetric: a filler word
+  that *matches* counts as evidence for; one that *doesn't* is excused rather than counted against.
+  That single rule is what lets both "paneer lababdar **sabzi**" and "**masala** dosa" land correctly.
+- **Status:** Accepted. Verified against the real seed: all 25 regression queries pass, every item
+  self-matches by its own name, and nonsense still matches nothing.
+
+---
+
+### ADR-0028 — Plate portions are expressed in the unit the food comes in
+- **Decision:** The plate-photo model proposes a **unit** (`count` / `household` / `weight`) with a
+  per-unit weight, not a total gram figure — 1 coconut, 3 roti, 1 katori. `HOUSEHOLD_G` in
+  `foodMath.js` holds the conversions and the app does the multiplication. Grams stay visible and
+  editable underneath.
+- **Reason:** ADR-0025 forced every dish through a grams field, which is unanswerable for a
+  photographed coconut and unnatural for rotis. Asking for a number the user cannot estimate
+  produces a worse figure than asking for one they can count.
+- **Also decided — where a calorie correction lands.** Correcting a row that matched a pantry item
+  writes `entry.macroOverride`, a one-off on that log entry; correcting a brand-new dish edits the
+  per-100 of the item being created. Rationale: a bad photo estimate must never overwrite a ⭐
+  verified item calibrated by weighing, but a new dish should be right from then on. `entryMacros()`
+  honours the override and still adds oil on top.
+- **Safety net:** when the model returns no pantry match, `fuzzyBestItem` (ADR-0027) gets a second
+  look at a high threshold (0.72) and pre-links the row as *auto-matched, check it*. Without this a
+  dish the model called "Roti" created a fourth roti in the pantry.
+- **Status:** Accepted.
+
+---
+
+### ADR-0029 — Image import accepts any image; trust follows the source
+- **Decision:** The label scanner becomes **📸 Add from a photo**, offering camera *or* gallery, and
+  the model is told to expect a printed panel, an e-commerce product page, a nutrition-app
+  screenshot, a menu, a recipe card or handwriting (`sourceKind` in the schema). A panel he
+  photographed saves as `trust:'verified'`; anything else saves as `trust:'ai'` with a one-tap
+  promote.
+- **Reason:** Most of the time the numbers are already on a screen, and a screenshot is one tap where
+  re-shooting a packet is not. But a screenshot of someone else's database is still someone else's
+  estimate — conflating it with a label he read himself is how a guess quietly becomes a fact.
+- **Status:** Accepted.
+
+---
+
+### ADR-0030 — Seeded starter meals are hidden from the Meals tab, not deleted
+- **Decision:** The 30 generic combos from the importer are listed by id in `FOOD_STARTER_MEAL_IDS`
+  and filtered out of the Meals tab. They stay fully searchable and loggable from Today. His own
+  meals are untouched. No flag is written to any row.
+- **Reason:** The Meals tab should hold meals *he* builds. Converting the starters into pantry items
+  was the alternative, but 15 of the 30 are near-duplicates of items he already has (`Pav Bhaji
+  (full plate)` vs `Pav Bhaji`), which would have put confusable rows next to the real ones and
+  degraded the matcher from ADR-0027. Identifying them by id rather than by a written flag means no
+  migration to half-apply, nothing to sync, and the change reverses by deleting the list.
+- **Status:** Accepted.
+
+---
+
+### ADR-0031 — The repo owns a folder; private medical data lives outside it
+- **Decision:** `Health & Medicine/` is now a plain parent folder, not the repo. The repo moved
+  whole (with `.git`) into `Health & Medicine/war-mode-dashboard/`. Private data sits beside it as
+  `../Medical Records/`, `../Physique Progress/`, `../Trackers/` — outside git's reach entirely.
+  Inside the repo: PWA icons moved to `assets/`, the old `Phase 1 Archive/` to `archive/phase-1/`,
+  and the two stray project docs (the Food Tracker spec, the Phase 1→2 history note) into `docs/`.
+- **Reason:** The repo root was doing two unrelated jobs — public static site *and* personal medical
+  archive — and the only thing keeping MRI reports and prescriptions off a public GitHub repo was
+  three `.gitignore` lines. One mistaken `git add -f`, one edited ignore file, and private health
+  records ship to a public remote. Moving the data outside the repo makes that failure impossible
+  rather than merely discouraged. The `.gitignore` patterns are kept as a backstop.
+- **Status:** Accepted.

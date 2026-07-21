@@ -1,7 +1,11 @@
-# Private medical & personal data — never commit
+# Private medical & personal data now lives OUTSIDE this repo, one level up
+# (../Medical Records, ../Physique Progress, ../Trackers). These patterns are
+# kept as a backstop in case such a folder is ever dropped in here by mistake.
 Clinical Records/
+Medical Records/
 Physique Progress/
-Trackers & Briefs/*.xlsx
+Trackers/
+*.xlsx
 
 # OS / editor cruft
 .DS_Store
@@ -16,3 +20,5 @@ node_modules/
 
 # Food seed importer — DB snapshots (may contain personal log data)
 data/food-seed/backups/
+# Food seed importer — per-run reports (regenerated on every import)
+data/food-seed/reports/

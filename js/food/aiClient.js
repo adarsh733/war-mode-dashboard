@@ -12,6 +12,11 @@ const AI_PIN_KEY = 'warmode_ai_pin';
 const AI_MAX_EDGE = 2576;     // Opus 4.8's high-res ceiling; also caps image tokens
 const AI_JPEG_Q = 0.85;
 
+/* The function itself aborts upstream at 8s and Netlify's gateway gives up at
+ * 10s, so anything still open at 25s is a dead connection, not a slow model.
+ * Without this the spinner can hang forever on a flaky mobile network. */
+const AI_CLIENT_TIMEOUT_MS = 25000;
+
 let AI_LAST_USAGE = null;     // most recent { callsToday, dailyCap }
 
 /* ---------- PIN ---------- */
@@ -48,15 +53,24 @@ async function aiCall(task, payload) {
   const pin = aiEnsurePin();
   if (!pin) return { ok: false, code: 'no_pin', error: 'AI needs your PIN.' };
 
+  const ctl = new AbortController();
+  const timer = setTimeout(() => ctl.abort(), AI_CLIENT_TIMEOUT_MS);
+
   let res;
   try {
     res = await fetch(AI_ENDPOINT, {
       method: 'POST',
       headers: { 'content-type': 'application/json', 'x-warmode-pin': pin },
-      body: JSON.stringify({ task, payload: payload || {} })
+      body: JSON.stringify({ task, payload: payload || {} }),
+      signal: ctl.signal
     });
   } catch (e) {
+    if (ctl.signal.aborted) {
+      return { ok: false, code: 'timeout', error: 'That took too long and gave up. Try again — it usually works on the second go.' };
+    }
     return { ok: false, code: 'offline', error: 'Couldn\'t reach the AI service. You\'re offline or the site is still deploying.' };
+  } finally {
+    clearTimeout(timer);
   }
 
   let body = null;
@@ -67,6 +81,11 @@ async function aiCall(task, payload) {
     let msg = (body && body.error) || ('AI call failed (HTTP ' + res.status + ').');
     if (res.status === 401) { aiClearPin(); msg = 'That PIN was rejected. You\'ll be asked again next time.'; }
     if (res.status === 404) msg = 'The AI function isn\'t deployed yet.';
+    /* 502/504 with no readable body is the gateway timing out, not the model
+     * refusing. Say something the user can act on rather than a status code. */
+    if (!body && (res.status === 502 || res.status === 504 || res.status === 408)) {
+      msg = 'That took too long to come back. Try again — it usually works on the second go.';
+    }
     return { ok: false, code, error: msg };
   }
 
@@ -156,12 +175,37 @@ function aiJsAttr(s) {
   return JSON.stringify(String(s == null ? '' : s)).replace(/"/g, '&quot;');
 }
 
+/* ---------- id hygiene ----------
+ * Every pantry index sent to the model is now a bare id, but a model can still
+ * echo back a decorated one ("i:itm_abc", quoted, whitespace-padded). Resolving
+ * that against FOOD_ITEMS silently misses and the row is dropped as "unknown" —
+ * which is exactly how "3 roti, dal, curd" came back matching nothing. Strip
+ * defensively at every resolve site rather than trusting the prompt. */
+function aiStripIdPrefix(id) {
+  return String(id == null ? '' : id).trim().replace(/^["']|["']$/g, '').replace(/^[a-z]:/i, '').trim();
+}
+/* → the item, or null. Accepts a decorated id. */
+function aiResolveItem(id) {
+  if (id == null) return null;
+  const raw = String(id);
+  if (FOOD_ITEMS[raw]) return FOOD_ITEMS[raw];
+  const clean = aiStripIdPrefix(raw);
+  return FOOD_ITEMS[clean] || null;
+}
+function aiResolveMeal(id) {
+  if (id == null) return null;
+  const raw = String(id);
+  if (FOOD_MEALS[raw]) return FOOD_MEALS[raw];
+  const clean = aiStripIdPrefix(raw);
+  return FOOD_MEALS[clean] || null;
+}
+
 /* The AI routes offered when a search finds nothing. Lives here (not in
  * foodLog.js) so that deleting the ai*.js scripts silently removes the chips
  * instead of breaking search — the call sites are typeof-guarded. */
 function aiNoMatchChips(q, prefix) {
   return '<button class="chip" onclick="' + (prefix || '') + 'aiLookupFood(' + aiJsAttr(q) + ')">🔎 Look it up</button>'
-    + '<button class="chip" onclick="' + (prefix || '') + 'aiScanLabel(true)">📷 Scan label</button>';
+    + '<button class="chip" onclick="' + (prefix || '') + 'aiAddFromImage()">📸 Add from a photo</button>';
 }
 
 /* ---------- shared UI bits ---------- */

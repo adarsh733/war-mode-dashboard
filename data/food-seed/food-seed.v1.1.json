@@ -2,8 +2,8 @@
   "meta": {
     "generated": "2026-07-20T17:20:19.638362Z",
     "schema": "warmode-food-v1",
-    "itemCount": 151,
-    "mealCount": 30,
+    "itemCount": 171,
+    "mealCount": 35,
     "sources": "ICMR-NIN IFCT 2017 (ifct2017.github.io) + USDA FoodData Central. Raw/standard items are high-confidence. Composite/cooked dishes are home-style estimates flagged trust:'seed' — calibrate to your kitchen.",
     "trust_legend": {
       "seed": "Pre-loaded generic. Reasonable but not tuned to your kitchen/portion. Calibrate items you eat often.",
@@ -4757,6 +4757,763 @@
         "vegan"
       ],
       "notes": "SOY — flagged for thyroid. COOKED/hydrated chunks (dry granules are ~345 kcal/100g). Corrected kcal to match macros. Very high protein. Calibrate to your brand if reintroduced."
+    },
+    {
+      "id": "itm_milkymist_hppaneer",
+      "name": "Milky Mist Low Fat High Protein Paneer",
+      "basis": "g",
+      "brand": "Milky Mist",
+      "trust": "verified",
+      "per100": {
+        "kcal": 203.8,
+        "protein": 25.0,
+        "carbs": 5.7,
+        "fat": 9.0
+      },
+      "source": "label-scan",
+      "servings": [
+        {
+          "label": "50g (1 serving)",
+          "amount": 50
+        },
+        {
+          "label": "100g",
+          "amount": 100
+        },
+        {
+          "label": "1 pack (200g)",
+          "amount": 200
+        }
+      ],
+      "useCount": 0,
+      "createdAt": "2026-07-21T20:07:30.000Z",
+      "updatedAt": "2026-07-21T20:07:30.000Z",
+      "isHomeCooked": false,
+      "defaultServingIndex": 0,
+      "tags": [
+        "paneer",
+        "protein",
+        "dairy"
+      ],
+      "aliases": [
+        "milky mist paneer",
+        "high protein paneer",
+        "milky mist low fat paneer"
+      ],
+      "notes": "Label verified: 203.8 kcal, 25g protein, 5.7g carbs, 9g fat per 100g. 529mg calcium. 1 pack = 200g (4x50g servings)."
+    },
+    {
+      "id": "seed_sidsfarm",
+      "name": "Sids Farm High Protein Milk",
+      "basis": "ml",
+      "brand": "Sid's Farm",
+      "trust": "verified",
+      "per100": {
+        "kcal": 63.3,
+        "protein": 10.0,
+        "carbs": 5.46,
+        "fat": 0.0
+      },
+      "source": "label-scan",
+      "servings": [
+        {
+          "label": "1 pouch (250ml)",
+          "amount": 250
+        },
+        {
+          "label": "1 glass (200ml)",
+          "amount": 200
+        },
+        {
+          "label": "100ml",
+          "amount": 100
+        }
+      ],
+      "useCount": 0,
+      "createdAt": "2026-07-20T10:58:26.384316Z",
+      "updatedAt": "2026-07-21T20:12:46.000Z",
+      "isHomeCooked": false,
+      "defaultServingIndex": 0,
+      "tags": [
+        "dairy",
+        "protein",
+        "drink"
+      ],
+      "aliases": [
+        "sids milk",
+        "high protein milk",
+        "sids farm"
+      ],
+      "notes": "Verified from label: 250ml pouch = 158.24 kcal, 25g protein, 13.66g carbs (0g added sugar), <0.5g fat, 600mg calcium, 78.7mg sodium."
+    },
+    {
+      "id": "itm_superyou_yeast_protein",
+      "name": "Superyou Unflavoured Fermented Yeast Protein",
+      "basis": "g",
+      "brand": "Superyou",
+      "trust": "verified",
+      "per100": {
+        "kcal": 405.98,
+        "protein": 81.90,
+        "carbs": 6.50,
+        "fat": 5.82,
+        "fiber": 4.30
+      },
+      "source": "label-scan",
+      "servings": [
+        {
+          "label": "1 scoop (33g)",
+          "amount": 33
+        }
+      ],
+      "useCount": 0,
+      "createdAt": "2026-07-21T20:14:08.000Z",
+      "updatedAt": "2026-07-21T20:14:08.000Z",
+      "isHomeCooked": false,
+      "defaultServingIndex": 0,
+      "tags": [
+        "protein",
+        "supplement",
+        "yeast",
+        "vegan"
+      ],
+      "aliases": [
+        "superyou",
+        "yeast protein",
+        "superyou protein",
+        "fermented yeast protein"
+      ],
+      "notes": "Label verified: 1 scoop (33g) = 133.97 kcal, 27.03g protein, 2.15g carbs (1.42g fiber), 1.92g fat, 101.52mg sodium. BCAA 5.4g, EAA 12g, 1 Billion CFU Bacillus Coagulans."
+    },
+    {
+      "id": "itm_raisins",
+      "name": "Raisins",
+      "basis": "g",
+      "brand": "",
+      "trust": "verified",
+      "per100": {
+        "kcal": 299,
+        "protein": 3.1,
+        "carbs": 79.0,
+        "fat": 0.5
+      },
+      "source": "manual",
+      "servings": [
+        {
+          "label": "10 raisins (5g)",
+          "amount": 5
+        },
+        {
+          "label": "1 tbsp (10g)",
+          "amount": 10
+        }
+      ],
+      "useCount": 0,
+      "createdAt": "2026-07-21T20:15:32.000Z",
+      "updatedAt": "2026-07-21T20:15:32.000Z",
+      "isHomeCooked": false,
+      "defaultServingIndex": 0,
+      "tags": ["fruit", "dried", "snack"],
+      "aliases": ["raisin", "kishmish"],
+      "notes": "Dried raisins."
+    },
+    {
+      "id": "itm_anjeer",
+      "name": "Anjeer / Dried Fig",
+      "basis": "g",
+      "brand": "",
+      "trust": "verified",
+      "per100": {
+        "kcal": 249,
+        "protein": 3.3,
+        "carbs": 63.9,
+        "fat": 0.9
+      },
+      "source": "manual",
+      "servings": [
+        {
+          "label": "1 piece (8g)",
+          "amount": 8
+        }
+      ],
+      "useCount": 0,
+      "createdAt": "2026-07-21T20:15:32.000Z",
+      "updatedAt": "2026-07-21T20:15:32.000Z",
+      "isHomeCooked": false,
+      "defaultServingIndex": 0,
+      "tags": ["fruit", "dried", "snack"],
+      "aliases": ["anjeer", "fig", "dried fig"],
+      "notes": "Raw/dried fig."
+    },
+    {
+      "id": "itm_sunflower_seeds",
+      "name": "Sunflower Seeds",
+      "basis": "g",
+      "brand": "",
+      "trust": "verified",
+      "per100": {
+        "kcal": 584,
+        "protein": 20.8,
+        "carbs": 20.0,
+        "fat": 51.5
+      },
+      "source": "manual",
+      "servings": [
+        {
+          "label": "1 tsp (3g)",
+          "amount": 3
+        },
+        {
+          "label": "1 tbsp (10g)",
+          "amount": 10
+        }
+      ],
+      "useCount": 0,
+      "createdAt": "2026-07-21T20:15:32.000Z",
+      "updatedAt": "2026-07-21T20:15:32.000Z",
+      "isHomeCooked": false,
+      "defaultServingIndex": 0,
+      "tags": ["seeds", "snack"],
+      "aliases": ["sunflower seed", "sunflower"],
+      "notes": "Raw/soaked sunflower seeds."
+    },
+    {
+      "id": "itm_chia_seeds",
+      "name": "Chia Seeds",
+      "basis": "g",
+      "brand": "",
+      "trust": "verified",
+      "per100": {
+        "kcal": 486,
+        "protein": 16.5,
+        "carbs": 42.1,
+        "fat": 30.7,
+        "fiber": 34.4
+      },
+      "source": "manual",
+      "servings": [
+        {
+          "label": "1 tsp (3.3g)",
+          "amount": 3.3
+        },
+        {
+          "label": "1 tbsp (10g)",
+          "amount": 10
+        }
+      ],
+      "useCount": 0,
+      "createdAt": "2026-07-21T20:15:32.000Z",
+      "updatedAt": "2026-07-21T20:15:32.000Z",
+      "isHomeCooked": false,
+      "defaultServingIndex": 0,
+      "tags": ["seeds", "fiber", "snack"],
+      "aliases": ["chia seed", "chia"],
+      "notes": "Whole/soaked chia seeds."
+    },
+    {
+      "id": "itm_flaxseeds",
+      "name": "Flaxseeds (ground)",
+      "basis": "g",
+      "brand": "",
+      "trust": "verified",
+      "per100": {
+        "kcal": 534,
+        "protein": 18.3,
+        "carbs": 28.9,
+        "fat": 42.2,
+        "fiber": 27.3
+      },
+      "source": "manual",
+      "servings": [
+        {
+          "label": "1 tsp (2.5g)",
+          "amount": 2.5
+        },
+        {
+          "label": "1 tbsp (7g)",
+          "amount": 7
+        }
+      ],
+      "useCount": 0,
+      "createdAt": "2026-07-21T20:15:32.000Z",
+      "updatedAt": "2026-07-21T20:15:32.000Z",
+      "isHomeCooked": false,
+      "defaultServingIndex": 0,
+      "tags": ["seeds", "omega3", "snack"],
+      "aliases": ["flaxseed", "alasi", "ground flaxseed"],
+      "notes": "Ground flaxseed (lignans/omega-3). Best eaten in evening per thyroid protocol."
+    },
+    {
+      "id": "itm_pumpkin_seeds",
+      "name": "Pumpkin Seeds",
+      "basis": "g",
+      "brand": "",
+      "trust": "verified",
+      "per100": {
+        "kcal": 559,
+        "protein": 30.2,
+        "carbs": 10.7,
+        "fat": 49.0
+      },
+      "source": "manual",
+      "servings": [
+        {
+          "label": "1 tsp (3g)",
+          "amount": 3
+        },
+        {
+          "label": "1 tbsp (10g)",
+          "amount": 10
+        }
+      ],
+      "useCount": 0,
+      "createdAt": "2026-07-21T20:15:32.000Z",
+      "updatedAt": "2026-07-21T20:15:32.000Z",
+      "isHomeCooked": false,
+      "defaultServingIndex": 0,
+      "tags": ["seeds", "protein", "snack"],
+      "aliases": ["pumpkin seed", "kaddu beej"],
+      "notes": "Raw/soaked pumpkin seeds."
+    },
+    {
+      "id": "itm_superyou_multigrain_chips",
+      "name": "SuperYou Multigrain Chips",
+      "basis": "g",
+      "brand": "SuperYou",
+      "trust": "verified",
+      "per100": {
+        "kcal": 422.5,
+        "protein": 25.0,
+        "carbs": 62.5,
+        "fat": 7.28,
+        "fiber": 7.5
+      },
+      "source": "label-scan",
+      "servings": [
+        {
+          "label": "1 pack (40g)",
+          "amount": 40
+        },
+        {
+          "label": "100g",
+          "amount": 100
+        }
+      ],
+      "useCount": 0,
+      "createdAt": "2026-07-21T20:18:18.000Z",
+      "updatedAt": "2026-07-21T20:18:18.000Z",
+      "isHomeCooked": false,
+      "defaultServingIndex": 0,
+      "tags": [
+        "snack",
+        "chips",
+        "protein",
+        "multigrain"
+      ],
+      "aliases": [
+        "superyou chips",
+        "multigrain chips",
+        "super you chips"
+      ],
+      "notes": "Label verified per 40g pack: 169 kcal, 10g protein, 25g carbs (3g fiber), 2.91g fat, 280mg sodium, 80mg calcium."
+    },
+    {
+      "id": "itm_sidsfarm_hpcurd",
+      "name": "Sids Farm High Protein Curd",
+      "basis": "g",
+      "brand": "Sid's Farm",
+      "trust": "verified",
+      "per100": {
+        "kcal": 57.7,
+        "protein": 6.3,
+        "carbs": 7.0,
+        "fat": 0.0
+      },
+      "source": "label-scan",
+      "servings": [
+        {
+          "label": "100g (1 serving)",
+          "amount": 100
+        },
+        {
+          "label": "1 katori (150g)",
+          "amount": 150
+        },
+        {
+          "label": "1 tub (400g)",
+          "amount": 400
+        }
+      ],
+      "useCount": 0,
+      "createdAt": "2026-07-21T20:19:25.000Z",
+      "updatedAt": "2026-07-21T20:19:25.000Z",
+      "isHomeCooked": false,
+      "defaultServingIndex": 0,
+      "tags": [
+        "dairy",
+        "protein",
+        "curd"
+      ],
+      "aliases": [
+        "sids curd",
+        "high protein curd",
+        "sids farm curd",
+        "sids hp curd"
+      ],
+      "notes": "Label verified per 100g: 57.7 kcal, 6.3g protein, 7.0g carbs (0g added sugar), <0.5g fat, 200mg calcium, 60mg sodium. 1 tub = 400g."
+    },
+    {
+      "id": "itm_bakersloaf_hpbread",
+      "name": "Baker's Loaf High Protein Wheat Bread",
+      "basis": "g",
+      "brand": "Baker's Loaf",
+      "trust": "verified",
+      "per100": {
+        "kcal": 261.54,
+        "protein": 21.32,
+        "carbs": 39.75,
+        "fat": 2.01,
+        "fiber": 8.01
+      },
+      "source": "label-scan",
+      "servings": [
+        {
+          "label": "1 slice (35.7g)",
+          "amount": 35.7
+        },
+        {
+          "label": "2 slices (71.4g)",
+          "amount": 71.4
+        },
+        {
+          "label": "100g",
+          "amount": 100
+        },
+        {
+          "label": "1 loaf (250g)",
+          "amount": 250
+        }
+      ],
+      "useCount": 0,
+      "createdAt": "2026-07-21T20:21:21.000Z",
+      "updatedAt": "2026-07-21T20:21:21.000Z",
+      "isHomeCooked": false,
+      "defaultServingIndex": 0,
+      "tags": [
+        "bread",
+        "protein",
+        "packaged",
+        "soy-flagged"
+      ],
+      "aliases": [
+        "bakers loaf",
+        "bakers loaf bread",
+        "high protein bread",
+        "bakers loaf hp bread"
+      ],
+      "notes": "⚠️ CONTAINS SOY (Soya protein isolate + Soyabean oil) — flagged for thyroid protocol! Label verified per 100g: 261.54 kcal, 21.32g protein, 39.75g carbs (8.01g fiber), 2.01g fat, 597.56mg sodium. 1 slice (~35.7g) = 93.4 kcal, 7.61g protein."
+    },
+    {
+      "id": "itm_epigamia_turbo_protein",
+      "name": "Epigamia Turbo Protein Yogurt",
+      "basis": "g",
+      "brand": "Epigamia",
+      "trust": "verified",
+      "per100": {
+        "kcal": 65.0,
+        "protein": 11.63,
+        "carbs": 4.0,
+        "fat": 0.1
+      },
+      "source": "label-scan",
+      "servings": [
+        {
+          "label": "1 tub (215g)",
+          "amount": 215
+        },
+        {
+          "label": "100g",
+          "amount": 100
+        }
+      ],
+      "useCount": 0,
+      "createdAt": "2026-07-21T20:23:22.000Z",
+      "updatedAt": "2026-07-21T20:23:22.000Z",
+      "isHomeCooked": false,
+      "defaultServingIndex": 0,
+      "tags": [
+        "dairy",
+        "protein",
+        "yogurt"
+      ],
+      "aliases": [
+        "epigamia turbo",
+        "epigamia 215g",
+        "epigamia protein yogurt",
+        "epigamia greek yogurt 215g"
+      ],
+      "notes": "Label verified: 1 tub (215g) = 139.75 kcal (~140 kcal), 25.0g protein, 8.6g carbs (0g added sugar), 0.2g fat, 430mg calcium, 133.3mg sodium."
+    },
+    {
+      "id": "itm_amul_hp_atta",
+      "name": "Amul High Protein Atta",
+      "basis": "g",
+      "brand": "Amul",
+      "trust": "verified",
+      "per100": {
+        "kcal": 370.77,
+        "protein": 30.77,
+        "carbs": 57.69,
+        "fat": 1.85,
+        "fiber": 10.15
+      },
+      "source": "label-scan",
+      "servings": [
+        {
+          "label": "1 serving (65g)",
+          "amount": 65
+        },
+        {
+          "label": "1 roti flour (20g)",
+          "amount": 20
+        },
+        {
+          "label": "100g",
+          "amount": 100
+        }
+      ],
+      "useCount": 0,
+      "createdAt": "2026-07-21T20:24:50.000Z",
+      "updatedAt": "2026-07-21T20:24:50.000Z",
+      "isHomeCooked": false,
+      "defaultServingIndex": 0,
+      "tags": [
+        "atta",
+        "grain",
+        "protein",
+        "soy-free",
+        "staple"
+      ],
+      "aliases": [
+        "amul hp atta",
+        "amul protein atta",
+        "amul wheat flour",
+        "amul high protein wheat flour"
+      ],
+      "notes": "✅ SOY-FREE high protein wheat flour (milk protein boosted). Label verified per 65g serving: 241 kcal, 20.0g protein, 37.5g carbs (6.6g fiber), 1.2g fat, 34mg sodium."
+    },
+    {
+      "id": "itm_amul_diced_cheese",
+      "name": "Amul Blend Diced Cheese",
+      "basis": "g",
+      "brand": "Amul",
+      "trust": "verified",
+      "per100": {
+        "kcal": 260.0,
+        "protein": 19.33,
+        "carbs": 3.33,
+        "fat": 18.67
+      },
+      "source": "label-scan",
+      "servings": [
+        {
+          "label": "1 serving (15g)",
+          "amount": 15
+        },
+        {
+          "label": "30g (handful)",
+          "amount": 30
+        },
+        {
+          "label": "100g",
+          "amount": 100
+        }
+      ],
+      "useCount": 0,
+      "createdAt": "2026-07-21T20:26:39.000Z",
+      "updatedAt": "2026-07-21T20:26:39.000Z",
+      "isHomeCooked": false,
+      "defaultServingIndex": 0,
+      "tags": [
+        "dairy",
+        "cheese",
+        "protein"
+      ],
+      "aliases": [
+        "amul cheese",
+        "diced cheese",
+        "amul diced cheese",
+        "amul blend cheese"
+      ],
+      "notes": "Label verified per 15g serving: 39 kcal, 2.9g protein, 0.5g carbs, 2.8g fat, 120mg sodium. Blend of mozzarella & processed cheese."
+    },
+    {
+      "id": "itm_blueberries",
+      "name": "Blueberries (fresh/frozen)",
+      "basis": "g",
+      "brand": "",
+      "trust": "verified",
+      "per100": {
+        "kcal": 57,
+        "protein": 0.7,
+        "carbs": 14.5,
+        "fat": 0.3,
+        "fiber": 2.4
+      },
+      "source": "manual",
+      "servings": [
+        {
+          "label": "10 berries (15g)",
+          "amount": 15
+        },
+        {
+          "label": "1 cup (148g)",
+          "amount": 148
+        }
+      ],
+      "useCount": 0,
+      "createdAt": "2026-07-21T20:30:17.000Z",
+      "updatedAt": "2026-07-21T20:30:17.000Z",
+      "isHomeCooked": false,
+      "defaultServingIndex": 0,
+      "tags": ["fruit", "berries", "antioxidant"],
+      "aliases": ["blueberries", "blueberry"],
+      "notes": "USDA: 57 kcal/100g."
+    },
+    {
+      "id": "itm_quinoa_raw",
+      "name": "Quinoa (raw/dry)",
+      "basis": "g",
+      "brand": "",
+      "trust": "verified",
+      "per100": {
+        "kcal": 368,
+        "protein": 14.1,
+        "carbs": 64.2,
+        "fat": 6.1,
+        "fiber": 7.0
+      },
+      "source": "manual",
+      "servings": [
+        {
+          "label": "30g",
+          "amount": 30
+        },
+        {
+          "label": "1 cup (170g)",
+          "amount": 170
+        }
+      ],
+      "useCount": 0,
+      "createdAt": "2026-07-21T20:30:17.000Z",
+      "updatedAt": "2026-07-21T20:30:17.000Z",
+      "isHomeCooked": false,
+      "defaultServingIndex": 0,
+      "tags": ["grain", "pseudo-grain", "protein", "staple"],
+      "aliases": ["quinoa", "raw quinoa"],
+      "notes": "USDA: 368 kcal/100g dry. High complete protein plant grain."
+    },
+    {
+      "id": "itm_chickpeas_raw",
+      "name": "Raw Chickpeas (dry)",
+      "basis": "g",
+      "brand": "",
+      "trust": "verified",
+      "per100": {
+        "kcal": 364,
+        "protein": 19.3,
+        "carbs": 60.6,
+        "fat": 6.0,
+        "fiber": 17.4
+      },
+      "source": "manual",
+      "servings": [
+        {
+          "label": "50g",
+          "amount": 50
+        },
+        {
+          "label": "1 cup (200g)",
+          "amount": 200
+        }
+      ],
+      "useCount": 0,
+      "createdAt": "2026-07-21T20:30:17.000Z",
+      "updatedAt": "2026-07-21T20:30:17.000Z",
+      "isHomeCooked": false,
+      "defaultServingIndex": 0,
+      "tags": ["legume", "protein"],
+      "aliases": ["raw chickpea", "chana raw", "kabuli chana raw"],
+      "notes": "Raw dry chickpeas."
+    },
+    {
+      "id": "itm_green_peas",
+      "name": "Green Peas (raw/frozen)",
+      "basis": "g",
+      "brand": "",
+      "trust": "verified",
+      "per100": {
+        "kcal": 81,
+        "protein": 5.4,
+        "carbs": 14.5,
+        "fat": 0.4,
+        "fiber": 5.7
+      },
+      "source": "manual",
+      "servings": [
+        {
+          "label": "50g",
+          "amount": 50
+        },
+        {
+          "label": "1 cup (150g)",
+          "amount": 150
+        }
+      ],
+      "useCount": 0,
+      "createdAt": "2026-07-21T20:30:17.000Z",
+      "updatedAt": "2026-07-21T20:30:17.000Z",
+      "isHomeCooked": false,
+      "defaultServingIndex": 0,
+      "tags": ["veg", "legume"],
+      "aliases": ["pea", "peas", "matar", "green peas"],
+      "notes": "Fresh or frozen green peas."
+    },
+    {
+      "id": "itm_olive_oil",
+      "name": "Olive Oil",
+      "basis": "ml",
+      "brand": "",
+      "trust": "verified",
+      "per100": {
+        "kcal": 884,
+        "protein": 0.0,
+        "carbs": 0.0,
+        "fat": 100.0
+      },
+      "source": "manual",
+      "servings": [
+        {
+          "label": "1 tsp (5ml)",
+          "amount": 5
+        },
+        {
+          "label": "1.5 tsp (7.5ml)",
+          "amount": 7.5
+        },
+        {
+          "label": "1 tbsp (15ml)",
+          "amount": 15
+        }
+      ],
+      "useCount": 0,
+      "createdAt": "2026-07-21T20:30:17.000Z",
+      "updatedAt": "2026-07-21T20:30:17.000Z",
+      "isHomeCooked": false,
+      "defaultServingIndex": 0,
+      "tags": ["fat", "cooking", "oil"],
+      "aliases": ["olive oil", "evoo"],
+      "notes": "Pure olive oil."
     }
   ],
   "meals": [
@@ -5295,6 +6052,156 @@
       "createdAt": "2026-07-20T10:58:26.384316Z",
       "updatedAt": "2026-07-20T10:58:26.384316Z",
       "notes": ""
+    },
+    {
+      "id": "meal_soaked_nuts_seeds",
+      "name": "Soaked Nuts & Seeds",
+      "components": [
+        {
+          "itemName": "Raisins",
+          "amount": 5
+        },
+        {
+          "itemName": "Anjeer / Dried Fig",
+          "amount": 8
+        },
+        {
+          "itemName": "Almonds",
+          "amount": 6
+        },
+        {
+          "itemName": "Sunflower Seeds",
+          "amount": 3
+        },
+        {
+          "itemName": "Walnuts",
+          "amount": 4
+        },
+        {
+          "itemName": "Chia Seeds",
+          "amount": 3.3
+        },
+        {
+          "itemName": "Brazil Nuts",
+          "amount": 10
+        },
+        {
+          "itemName": "Flaxseeds (ground)",
+          "amount": 2.5
+        },
+        {
+          "itemName": "Pumpkin Seeds",
+          "amount": 3
+        }
+      ],
+      "addedOil": null,
+      "createdAt": "2026-07-21T20:15:32.000Z",
+      "updatedAt": "2026-07-21T20:15:32.000Z",
+      "notes": "Daily soaked nuts & seeds bowl: 10 raisins, 1 anjeer, 5 almonds, 1 tsp sunflower seeds, 2 walnut halves, 1 tsp chia seeds, 2 Brazil nuts, 1 tsp ground flaxseed, 1 tsp pumpkin seeds."
+    },
+    {
+      "id": "meal_blueberry_yeast_smoothie",
+      "name": "High Protein Smoothie",
+      "components": [
+        {
+          "itemName": "Sids Farm High Protein Milk",
+          "amount": 250
+        },
+        {
+          "itemName": "Superyou Unflavoured Fermented Yeast Protein",
+          "amount": 33
+        },
+        {
+          "itemName": "Blueberries (fresh/frozen)",
+          "amount": 15
+        }
+      ],
+      "addedOil": null,
+      "createdAt": "2026-07-21T20:30:17.000Z",
+      "updatedAt": "2026-07-21T23:03:37.000Z",
+      "notes": "High-protein smoothie: 1 pouch Sids Farm HP Milk (250ml) + 1 scoop Superyou Fermented Yeast Protein (33g) + 10 blueberries (15g). ~300.8 kcal, 52.1g protein."
+    },
+    {
+      "id": "meal_quinoa_paneer_upma",
+      "name": "Quinoa Paneer Upma",
+      "components": [
+        {
+          "itemName": "Milky Mist Low Fat High Protein Paneer",
+          "amount": 100
+        },
+        {
+          "itemName": "Quinoa (raw/dry)",
+          "amount": 30
+        },
+        {
+          "itemName": "Raw Chickpeas (dry)",
+          "amount": 50
+        },
+        {
+          "itemName": "Green Peas (raw/frozen)",
+          "amount": 50
+        },
+        {
+          "itemName": "Sids Farm High Protein Curd",
+          "amount": 200
+        },
+        {
+          "itemName": "SuperYou Multigrain Chips",
+          "amount": 40
+        }
+      ],
+      "addedOil": null,
+      "createdAt": "2026-07-21T20:30:17.000Z",
+      "updatedAt": "2026-07-21T23:03:37.000Z",
+      "notes": "High protein quinoa upma meal: 100g Milky Mist HP Paneer + 30g quinoa + 50g chickpeas + 50g green peas + 200g Sids Farm HP Curd + 1 pack SuperYou Multigrain Chips (40g). ~821.1 kcal, 64.2g protein."
+    },
+    {
+      "id": "meal_high_protein_kebab",
+      "name": "High Protein Kebab & Toast",
+      "components": [
+        {
+          "itemName": "Milky Mist Low Fat High Protein Paneer",
+          "amount": 100
+        },
+        {
+          "itemName": "Epigamia Turbo Protein Yogurt",
+          "amount": 110
+        },
+        {
+          "itemName": "Baker's Loaf High Protein Wheat Bread",
+          "amount": 35.7
+        },
+        {
+          "itemName": "Olive Oil",
+          "amount": 7.5
+        }
+      ],
+      "addedOil": null,
+      "createdAt": "2026-07-21T20:30:17.000Z",
+      "updatedAt": "2026-07-21T20:30:17.000Z",
+      "notes": "Paneer kebab platter: 100g Milky Mist HP Paneer + 110g Epigamia Turbo Yogurt + 1.5 tsp olive oil + 1 slice Baker's Loaf HP Bread. ~435.0 kcal, 45.4g protein."
+    },
+    {
+      "id": "meal_high_protein_garlic_bread",
+      "name": "High Protein Garlic Toast & Paneer",
+      "components": [
+        {
+          "itemName": "Milky Mist Low Fat High Protein Paneer",
+          "amount": 100
+        },
+        {
+          "itemName": "Baker's Loaf High Protein Wheat Bread",
+          "amount": 107.1
+        },
+        {
+          "itemName": "Amul Blend Diced Cheese",
+          "amount": 25
+        }
+      ],
+      "addedOil": null,
+      "createdAt": "2026-07-21T20:30:17.000Z",
+      "updatedAt": "2026-07-21T20:30:17.000Z",
+      "notes": "Cheesy garlic bread platter: 100g Milky Mist HP Paneer + 3 slices Baker's Loaf HP Bread + 25g Amul Diced Cheese. ~548.9 kcal, 52.7g protein."
     }
   ]
 }

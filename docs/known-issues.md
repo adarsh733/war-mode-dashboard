@@ -1,4 +1,31 @@
-# Known Issues & Debts — WAR MODE
+# Known Issues
+
+## Failure classes worth re-checking (not one-off bugs)
+
+These each cost a whole feature and each hid behind a passing test. They are patterns, so they will
+recur in new code unless deliberately checked for.
+
+1. **Ids handed to a model come back decorated.** The pantry index sent `'i:' + it.id`; the model
+   echoed `i:itm_…` verbatim; `FOOD_ITEMS[id]` missed silently and every natural-language row became
+   "unknown". The plate flow had the identical bug and looked *fine*, because an unmatched dish still
+   produces numbers — it just quietly stopped using the pantry's better values. Ids are now bare, and
+   `aiResolveItem`/`aiResolveMeal` strip decoration anyway. **Never resolve a model-supplied id with a
+   raw map lookup.**
+2. **A whitelist derived from a table drops entries the table doesn't hold.** `lookup` was served by
+   a special branch with no `TASKS` entry, so a derived whitelist rejected it — feature dead on
+   arrival, 400 on every call. There is now an explicit `PUBLIC_TASKS` list *and* a test asserting
+   every name in it reaches a live handler.
+3. **An unknown unit label silently becomes grams.** "3 roti" logged as 3 g (9 kcal instead of 356).
+   Unknown units now fall back to the item's default serving and are flagged for checking.
+4. **Filler-word stripping deletes real words.** Removing `masala`/`sabzi`/`curry` from a query
+   breaks "Masala Dosa" and "Cabbage Sabzi", which are actual pantry names. `foodMatch.js` instead
+   treats them asymmetrically — evidence for when they match, excused when they don't.
+5. **Netlify's 10s function timeout is a hard design constraint, not a tuning knob.** A two-call
+   `lookup` never once succeeded in production. Any new AI path must be one upstream call, with
+   `thinking` omitted; verify latency before assuming it fits.
+6. **`renderMeals()` showing everything.** Seeded starter combos are excluded by id
+   (`FOOD_STARTER_MEAL_IDS`); anything new added to `FOOD_MEALS` shows up in his Meals tab by default.
+ & Debts — WAR MODE
 
 > Environment quirks, calibration debts, deferred work, and risks. Keep current.
 

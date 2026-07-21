@@ -736,6 +736,19 @@ section[id^="food-"] .fsearch-input:focus{border-color:var(--fgreen);box-shadow:
 /* full-width "edit suggestions" button is a block action, not a chip — keep it out of the rail */
 .fsugg-edit.wide{flex:1 0 auto}
 
+/* ── collapsible suggestions ──
+   They now sit BELOW the logged entries and start closed: four slots of always-on
+   chips pushed the actual log off a phone screen. Toggling adds .open rather than
+   re-rendering, so the Chart.js rings above are never destroyed and redrawn. */
+.fsugg-wrap{padding:2px 0 4px}
+.fsugg-toggle{font-family:var(--ffont);font-size:.82rem;font-weight:600;color:var(--fmut);
+  background:none;border:0;padding:7px 2px;cursor:pointer;display:inline-flex;align-items:center;gap:7px}
+.fsugg-toggle:hover{color:var(--fgreen)}
+.fsugg-caret{display:inline-block;font-size:1.05rem;line-height:1;transition:transform .18s ease}
+.fsugg-wrap.open .fsugg-caret{transform:rotate(90deg)}
+.fsugg-wrap .fsugg-row{display:none}
+.fsugg-wrap.open .fsugg-row{display:flex}
+
 /* ═══════════════ PHASE 2 · AI LAYER ═══════════════
    Reuses the food tokens so the AI sheets are indistinguishable from the rest
    of the clean-light system. The only new colour language is the flag strip:
@@ -800,8 +813,36 @@ section[id^="food-"] .fsearch-input:focus{border-color:var(--fgreen);box-shadow:
 .ai-unitnote{margin-top:8px;font-size:.78rem;line-height:1.45;color:var(--famber);background:var(--famber-bg);border-radius:8px;padding:7px 9px}
 .ai-heard{font-size:.86rem;font-style:italic;margin-bottom:12px}
 .ai-total{margin-top:16px;padding-top:14px;border-top:1px solid var(--fline);font-size:.95rem}
-.ai-unknown{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:8px}
-.ai-unknown span{font-weight:600;flex:1 1 auto;min-width:0}
+/* ── plate rows: numbers first, caveats last ──
+   The old order buried the calories under the controls; this puts them where
+   the eye lands and pushes warnings to the bottom of the card. */
+.ai-rowmac.big{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin:0 0 12px;padding-bottom:10px;border-bottom:1px solid var(--fline)}
+.ai-mac-kcal{font-family:var(--fnum,var(--ffont));font-size:1.7rem;font-weight:800;color:var(--fink);line-height:1}
+.ai-mac-kcal small{font-size:.7rem;font-weight:600;color:var(--fmut);margin-left:3px}
+.ai-mac-p{font-size:.9rem;font-weight:600;color:var(--fmut)}
+.fd-chip.tiny{padding:5px 10px;font-size:.76rem}
+.ai-rowsub{margin:-4px 0 10px}
+.ai-badge.edited{background:var(--famber-bg);color:var(--famber);border-color:var(--famber)}
+.ai-rownote{font-size:.78rem;margin-top:8px}
+/* the unit -> grams conversion, stated out loud and editable */
+.ai-convert{display:flex;align-items:center;gap:6px;flex-wrap:wrap;font-size:.82rem;color:var(--fmut);margin-top:8px}
+.ai-convert .ai-gpu{width:64px;padding:6px 8px;font-size:.85rem}
+.ai-convert b{color:var(--fink)}
+/* save-this-plate-as-a-meal */
+.ai-savemeal{margin-top:16px;padding-top:14px;border-top:1px solid var(--fline)}
+.ai-toggle{display:flex;align-items:center;gap:9px;font-size:.9rem;font-weight:600;cursor:pointer}
+.ai-toggle input{width:18px;height:18px;accent-color:var(--fgreen)}
+.ai-savemeal .hide{display:none}
+
+/* An unmatched row is now a small card: what he said, the deterministic
+   "did you mean" suggestions from foodMatch.js, then the escape hatches. */
+.ai-unknown{margin-top:10px;padding:10px;border:1px solid var(--fline);border-radius:var(--fr-sm);background:var(--fcard)}
+.ai-unknown-h{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.ai-unknown-name{font-weight:700;flex:1 1 auto;min-width:0}
+.ai-didyoumean{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-bottom:8px}
+.ai-didyoumean .fd-chip{padding:7px 12px;font-size:.83rem}
+.ai-assume{margin:6px 0 0;padding-left:18px;font-size:.82rem;color:var(--fmut)}
+.ai-assume li{margin:3px 0}
 
 /* meal-name suggestions */
 .fnamerow{display:flex;gap:8px;align-items:center}

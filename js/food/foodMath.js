@@ -14,6 +14,32 @@ const OIL_FAT_PER_G  = 1;
 /* Household oil measures → grams (spec §6). */
 const OIL_UNIT_GRAMS = { tsp: 5, tbsp: 14, g: 1 };
 
+/* Household measures → grams/ml. The plate-photo flow proposes a UNIT rather
+ * than a raw gram estimate ("1 katori", "3 roti", "1 coconut") because that is
+ * how food is actually served and counted — being asked for the gram weight of
+ * a photographed coconut is a question nobody can answer. The model picks the
+ * unit; this table does the arithmetic, so the conversion stays deterministic
+ * and reviewable. Kept in sync with HOUSEHOLD_HINT in netlify/functions/ai.js. */
+const HOUSEHOLD_G = {
+  katori: 150, bowl: 200, plate: 300, glass: 250, cup: 200,
+  tbsp: 15, tsp: 5, scoop: 30, slice: 28, piece: 50
+};
+
+/* grams for a household measure, or null when it isn't one we know. */
+function householdGrams(label){
+  if(!label) return null;
+  const k = String(label).toLowerCase().replace(/[^a-z]/g,'');
+  return HOUSEHOLD_G[k] != null ? HOUSEHOLD_G[k] : null;
+}
+
+/* qty x per-unit weight → base amount. The one place plate-photo portions are
+ * turned into grams. */
+function unitsToBaseAmount(qty, gramsPerUnit){
+  const q = Number(qty) || 0;
+  const g = Number(gramsPerUnit);
+  return q * (isNaN(g) ? 0 : g);
+}
+
 /* ---- rounding: round ONLY for display (spec §5.1) ---- */
 function roundKcal(n){ return Math.round(n || 0); }
 function round1(n){ return Math.round((n || 0) * 10) / 10; }
@@ -92,10 +118,24 @@ function mealTotals(meal, itemsById, overrides, removed){
   return t;
 }
 
-/* Macros for a single log entry (item | meal | adhoc), including its own oil. */
+/* Macros for a single log entry (item | meal | adhoc), including its own oil.
+ *
+ * macroOverride: a one-off correction on THIS entry, used when he fixes the
+ * calories on a plate-photo row that matched an existing pantry item. It
+ * replaces the computed macros for this entry only — the item's own per100 is
+ * left alone, so correcting a bad photo estimate can never overwrite a ⭐
+ * verified item he calibrated by weighing. Oil is still added on top, because
+ * the oil chip is a separate statement about the same entry. */
 function entryMacros(entry, itemsById, mealsById){
   let m = zeroMacros();
   if (!entry) return m;
+  if (entry.macroOverride){
+    const o = entry.macroOverride;
+    m = { kcal:+o.kcal||0, protein:+o.protein||0, carbs:+o.carbs||0, fat:+o.fat||0,
+          fiber:(o.fiber!=null?+o.fiber:0), hasFiber:o.fiber!=null };
+    if (entry.oil && entry.oil.grams) m = addInto(Object.assign(zeroMacros(), m), oilMacros(entry.oil.grams));
+    return m;
+  }
   if (entry.kind === 'item'){
     const it = itemsById[entry.itemId];
     if (it) m = macrosForAmount(it, entry.amount);              // amount stored in base units

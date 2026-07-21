@@ -137,8 +137,9 @@ function renderSuggestManager(){
 function renderSuggestPicker(q){
   const box=document.getElementById('suggPickResults'); if(!box) return;
   q=(q||'').trim().toLowerCase(); if(q.length<1){ box.innerHTML=''; return; }
-  const meals=Object.values(FOOD_MEALS).filter(m=>!m.id.startsWith('__') && m.name.toLowerCase().includes(q)).slice(0,4);
-  const items=Object.values(FOOD_ITEMS).filter(it=>itemMatchesQuery(it,q)).sort((a,b)=>(b.useCount||0)-(a.useCount||0)).slice(0,8);
+  const meals=(typeof foodSearchMeals==='function')?foodSearchMeals(q,4):[];
+  const items=(typeof foodSearchItems==='function')?foodSearchItems(q,8)
+    :Object.values(FOOD_ITEMS).filter(it=>itemMatchesQuery(it,q)).slice(0,8);
   let html='';
   meals.forEach(m=>{ html+=`<div class="frow" onclick="addSuggestion('${_suggestSlot}','meal','${m.id}');renderSuggestManager()"><span class="fbadge meal">🍲 Meal</span><div class="fmain"><div class="fname">${htmlSafe(m.name)}</div></div><div class="fkcal">+</div></div>`; });
   items.forEach(it=>{ html+=`<div class="frow" onclick="addSuggestion('${_suggestSlot}','item','${it.id}');renderSuggestManager()"><span class="fbadge item">🥗 Item</span><div class="fmain"><div class="fname">${htmlSafe(it.name)}</div></div><div class="fkcal">+</div></div>`; });

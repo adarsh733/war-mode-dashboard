@@ -1,29 +1,57 @@
-/* aiLabel.js — photograph a nutrition panel, get a pantry item.
+/* aiLabel.js — any image carrying nutrition info, in; a pantry item, out.
  *
- * The model transcribes ONLY what is printed (basis + values + serving size).
- * aiPer100FromPrinted() does the per-serving→per-100 arithmetic in JS, and
- * aiVetProposal() checks it before anything is shown. Every number stays
- * editable in the confirm card, and nothing is written until the user presses
- * Save. Confirming a label scan produces trust:'verified' — a real label read
- * by a human is the best data this app can hold.
+ * This started as a camera-only label scanner, which was too narrow: most of
+ * the time the numbers are already on a screen — a Blinkit/Zepto product page,
+ * a HealthifyMe entry, a menu — and a screenshot is one tap where re-shooting a
+ * packet is not. So the picker offers camera OR gallery/files, and the model is
+ * told to expect any of those sources.
+ *
+ * The accuracy contract is unchanged: the model transcribes ONLY what the image
+ * shows (basis + values + serving size), aiPer100FromPrinted() does the
+ * per-serving→per-100 arithmetic in JS, and aiVetProposal() checks it before
+ * anything is displayed. Nothing is written until Save is pressed.
+ *
+ * TRUST FOLLOWS THE SOURCE. A printed panel he photographed is the best data
+ * this app can hold → 'verified'. A screenshot of someone else's database is
+ * still someone else's estimate → 'ai', with one tap to promote it if he trusts
+ * it. Conflating the two is how a guess quietly becomes a fact.
  */
 
-let _aiLabel = null;   // { img, reading, per100, editId, saving }
+let _aiLabel = null;   // { img, reading, per100, editId, saving, trustOverride }
 
-/* entry point — used from Add Item and from the "no match" state of search */
+/* Sources we treat as his own reading of a real label. */
+const AI_LABEL_VERIFIED_SOURCES = ['label', 'handwritten'];
+const AI_SOURCE_LABEL = {
+  label: '📄 Nutrition label', app_screenshot: '📱 App screenshot', website: '🛒 Product page',
+  menu: '🍽 Menu', recipe: '📖 Recipe', handwritten: '✍️ Handwritten', other: '🖼 Image'
+};
+
+/* Entry point. Opens the chooser first so it works from Add Item and from the
+ * "no match" state of search without either caller knowing about cameras. */
+function aiAddFromImage() {
+  aiLabelShell(`
+    <div class="ai-flag info"><b>Anything with the numbers on it works.</b>
+      <div>A packet's nutrition panel, a Blinkit or Zepto product page, a HealthifyMe entry, a menu, or your own notes.</div></div>
+    <div class="fd-chips" style="margin-top:14px">
+      <button class="fd-chip on" onclick="aiScanLabel(true)">📷 Take a photo</button>
+      <button class="fd-chip on" onclick="aiScanLabel(false)">🖼 Choose an image</button>
+    </div>`, '');
+}
+
+/* useCamera=false opens the gallery/files picker — that is the screenshot path. */
 async function aiScanLabel(useCamera) {
-  const img = await aiPickImage(useCamera !== false);
+  const img = await aiPickImage(useCamera === true);
   if (!img.ok) { if (img.error) alert(img.error); return; }
 
-  _aiLabel = { img, reading: null, per100: null, editId: null, saving: false };
-  aiLabelShell(aiBusyHtml('Reading the label…'));
+  _aiLabel = { img, reading: null, per100: null, editId: null, saving: false, trustOverride: null };
+  aiLabelShell(aiBusyHtml('Reading the image…'));
   await aiLabelRun(null);
 }
 
 /* run (or re-run with a correction) */
 async function aiLabelRun(correction) {
   const st = _aiLabel; if (!st) return;
-  aiLabelSetBody(aiBusyHtml(correction ? 'Re-reading with your correction…' : 'Reading the label…'));
+  aiLabelSetBody(aiBusyHtml(correction ? 'Re-reading with your correction…' : 'Reading the image…'));
 
   const r = await aiCall('label', {
     imageB64: st.img.imageB64,
@@ -36,8 +64,8 @@ async function aiLabelRun(correction) {
   const reading = r.data;
   if (!reading.found) {
     aiLabelSetBody(aiErrorHtml(
-      (reading.warnings && reading.warnings[0]) || 'No nutrition panel was readable in that photo.',
-      'aiScanLabel(true)'));
+      (reading.warnings && reading.warnings[0]) || 'No nutrition numbers were readable in that image.',
+      'aiAddFromImage()'));
     return;
   }
 
@@ -87,10 +115,12 @@ function aiLabelRenderConfirm() {
     </div>
 
     <div class="ai-printed">
-      <div class="ai-printed-h">📄 What the label printed — ${printedLine}</div>
+      <div class="ai-printed-h">${AI_SOURCE_LABEL[rd.sourceKind] || AI_SOURCE_LABEL.other} — what it showed, ${printedLine}</div>
       <div class="ai-printed-v">${rd.printed.kcal} kcal · ${rd.printed.protein}g P · ${rd.printed.carbs}g C · ${rd.printed.fat}g F${rd.printed.fiber != null ? ' · ' + rd.printed.fiber + 'g fib' : ''}</div>
       ${rd.printedPer === 'serving' ? '<div class="ai-printed-n">Converted to per-100 below by the app, not by the model.</div>' : ''}
     </div>
+
+    <div id="al_trust">${aiLabelTrustHtml()}</div>
 
     <div class="ai-sec">
       <div class="fd-lbl">Saved as — per 100${u} <span class="subtle">(edit anything that looks wrong)</span></div>
@@ -115,6 +145,29 @@ function aiLabelRenderConfirm() {
     <button class="fd-btn primary" id="al_save" ${vet.level === 'fail' ? 'disabled' : ''} onclick="aiLabelSave()">${st.editId ? 'Update item' : 'Save item'}</button>
     <button class="fd-btn" onclick="aiLabelCorrect()">✎ Correct reading</button>
   `);
+}
+
+/* Which trust this reading earns, and why — his own label read beats a
+ * screenshot of someone else's database, and the card says so out loud. */
+function aiLabelTrust() {
+  const st = _aiLabel; if (!st) return 'ai';
+  if (st.trustOverride) return st.trustOverride;
+  return AI_LABEL_VERIFIED_SOURCES.indexOf(st.reading.sourceKind) >= 0 ? 'verified' : 'ai';
+}
+function aiLabelTrustHtml() {
+  const st = _aiLabel; if (!st || !st.reading) return '';
+  const t = aiLabelTrust();
+  if (t === 'verified') {
+    return '<div class="ai-flag ok"><b>⭐ Saves as verified</b><div>You read this off the product itself — that\'s the strongest data this app holds.</div></div>';
+  }
+  return '<div class="ai-flag info"><b>🤖 Saves as AI-estimated</b>'
+    + '<div>These are someone else\'s numbers, not a panel you read, so they stay marked as an estimate.</div>'
+    + '<button class="fd-chip" style="margin-top:8px" onclick="aiLabelPromote()">I trust these — mark ⭐ verified</button></div>';
+}
+function aiLabelPromote() {
+  const st = _aiLabel; if (!st) return;
+  st.trustOverride = 'verified';
+  const box = document.getElementById('al_trust'); if (box) box.innerHTML = aiLabelTrustHtml();
 }
 
 /* live re-validate as the user edits */
@@ -163,10 +216,11 @@ function aiLabelSave() {
     brand: (st.reading.brand || '').trim(),
     basis: st.reading.basis === 'ml' ? 'ml' : 'g',
     per100: st.per100,
-    trust: 'verified',            // a real label, read and confirmed by him
-    source: 'label-scan',
+    trust: aiLabelTrust(),        // a label he read → verified; a screenshot → ai
+    source: 'image-import',
     aiMeta: {
-      source: 'label-scan',
+      source: 'image-import',
+      sourceKind: st.reading.sourceKind,
       model: 'claude-opus-4-8',
       at: new Date().toISOString(),
       printedPer: st.reading.printedPer,
@@ -199,15 +253,15 @@ function aiLabelSave() {
 }
 
 /* ---------- sheet shell ---------- */
-function aiLabelShell(body) {
+function aiLabelShell(body, foot) {
   fdOpen(`
     <div class="fd-hero" style="background:linear-gradient(135deg,var(--fgreen-bg),var(--fcard))">
       <button class="fd-x" onclick="aiLabelClose()">✕</button>
-      <div class="fd-hero-name">📷 Scan a nutrition label</div>
-      <div class="fd-hero-sub">The app does the maths — the model only reads what's printed</div>
+      <div class="fd-hero-name">📸 Add from a photo</div>
+      <div class="fd-hero-sub">The app does the maths — the model only reads what it can see</div>
     </div>
     <div class="fd-body" id="aiLabelBody">${body}</div>
-    <div class="fd-foot" id="aiLabelFoot"></div>
+    <div class="fd-foot" id="aiLabelFoot">${foot || ''}</div>
   `);
 }
 function aiLabelSetBody(body, foot) {

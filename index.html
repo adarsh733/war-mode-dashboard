@@ -8,8 +8,8 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="WAR MODE">
 <meta name="theme-color" content="#eef1ef">
-<link rel="apple-touch-icon" href="appicon-180.png">
-<link rel="icon" type="image/png" sizes="192x192" href="appicon-192.png">
+<link rel="apple-touch-icon" href="assets/appicon-180.png">
+<link rel="icon" type="image/png" sizes="192x192" href="assets/appicon-192.png">
 <link rel="manifest" href="manifest.json">
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
@@ -758,9 +758,9 @@
 <section class="page" id="food-add">
   <div class="kicker">Food · Add Item</div>
   <h1 class="title">Add an Item</h1>
-  <p class="lede">Photograph the nutrition panel and the app reads it for you — or type it in below. Either way you confirm every number before it's saved.</p>
+  <p class="lede">Point a photo or a screenshot at it — a packet's label, a Blinkit page, a HealthifyMe entry — and the app reads the numbers out. Or type them in below. Either way you confirm every number before it's saved.</p>
   <div class="fquick-actions" style="margin-bottom:16px">
-    <button class="fpill-btn ai" onclick="aiScanLabel&&aiScanLabel(true)">📷 Scan a label</button>
+    <button class="fpill-btn ai" onclick="aiAddFromImage&&aiAddFromImage()">📸 Add from a photo</button>
     <button class="fpill-btn ai" onclick="aiLookupFood&&aiLookupFood('')">🔎 Look up a food</button>
     <button class="fpill-btn" onclick="aiTestConnection&&aiTestConnection()">⚡ Test AI connection</button>
   </div>
@@ -788,6 +788,7 @@
 <script src="js/checkin.js"></script>
 <!-- Food section (Phase 1) -->
 <script src="js/food/foodMath.js"></script>
+<script src="js/food/foodMatch.js"></script>
 <script src="js/food/seed.js"></script>
 <script src="js/food/foodData.js"></script>
 <script src="js/food/foodSuggest.js"></script>

@@ -15,7 +15,7 @@
   if either value ever appears in published output.
 - CDNs in `<head>`: Chart.js 4.4.1, `@supabase/supabase-js@2`, Google Fonts
   (**Plus Jakarta Sans** only — the sole font across all four tabs since [ADR-0021](decisions.md)).
-- PWA: `manifest.json` + `appicon-180/192/512.png`; `index.html` links them.
+- PWA: `manifest.json` + `assets/appicon-180/192/512.png`; `index.html` links them.
 
 ## 2. Script model — classic scripts, one global scope
 
@@ -140,5 +140,8 @@ Two invariants worth guarding:
 ## 6. Git
 
 - Repo is the source of truth; committed in stages with descriptive messages ending in the
-  `Co-Authored-By: Claude Opus 4.8` trailer. Private data (`Clinical Records/`, `Physique
-  Progress/`, `*.xlsx`) is gitignored. `Phase 1 Archive/` kept as history.
+  `Co-Authored-By: Claude Opus 4.8` trailer.
+- The repo root is `Health & Medicine/war-mode-dashboard/`. Private medical data is **not in the
+  repo at all** — it sits beside it in `../Medical Records/`, `../Physique Progress/`,
+  `../Trackers/`. `.gitignore` keeps matching patterns only as a backstop.
+- `archive/phase-1/` holds the pre-rewrite standalone HTML dashboards, kept as history.
