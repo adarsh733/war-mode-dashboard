@@ -13,6 +13,11 @@
   protein rings, always-on meal slots with subtotals + `+`, smart recency suggestions, spacious
   detail card, iOS quantity wheel, per-product units, per-day meal overrides, manual "Done for the
   day" push, aliases, hidden Pantry, scroll-hide top bar, Plus Jakarta Sans.
+- **Phase 2 AI layer (built, not yet run live):** Netlify Function proxy with PIN + daily cap +
+  task whitelist; label scan → verified item; natural-language logging; meal-name suggestions; web
+  lookup for unknown foods; draft-only plate photos. All bound by the accuracy contract
+  ([ADR-0024](decisions.md)) and a deterministic validator that passes all 158 seed items with zero
+  false positives.
 
 ## Next — needs the user
 1. **Review the redesigned Food tab on his own device** (screenshots don't work here). Collect
@@ -22,16 +27,16 @@
 4. Decide whether to **replicate the clean-light look** to Fitness/Health/Tracker.
 
 ## Next — engineering
-- **Phase 2 gate (ADR-0011):** one hard-coded Anthropic call from the live Netlify site to test
-  CORS/auth. Report; add a Netlify Function proxy if blocked. **Do this before any AI UI.**
-- Then Phase 2 in order (model `claude-sonnet-4-6`, strict-JSON, code does all math):
-  1. Label scan → negotiation chat → save verified item.
-  2. Screenshot import (same pipeline).
-  3. Natural-language logging ("3 paratha and paneer kebab").
-  4. AI general-estimate fallback → flagged → user-verified → auto-saved to pantry (cache loop).
-  5. **AI dedup:** image of an existing item edits it (use `findItemByNameBrand`), never duplicates.
-- Consider a minimal `foodMath` test harness.
+- **Phase 2 gate:** run ⚡ **Test AI connection** on the deployed site. ADR-0011's "test a direct
+  browser call" is superseded — a public site can't hold an API key, so the proxy was mandatory and
+  the gate is now "does the proxy round-trip work" ([ADR-0023](decisions.md)).
+- Then, once it's green: scan one real label end-to-end and check the numbers against the packet by
+  hand; watch actual spend for a week (`usage` comes back on every call).
 - Bring the meal builder editor up to the clean-light detail-card standard.
+- Possible follow-ups now that the AI layer exists:
+  - Voice input into the natural-language box (Web Speech API — no extra API cost).
+  - Make the daily cap exact via a shared counter row (see [known-issues](known-issues.md)).
+  - Barcode lookup as a cheaper, more reliable path than label OCR for packaged goods.
 
 ## Working-agreement reminders (see CLAUDE.md)
 - Plan mode + approval before multi-step work.

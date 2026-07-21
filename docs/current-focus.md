@@ -6,14 +6,23 @@
 > _Last updated: 2026-07-21_
 
 ## Current feature
-📱 **Mobile-app feel + nav restructure** (just shipped) → next up: 🍽️ Food Phase 2 (AI)
+🤖 **Food Phase 2 — the AI layer** (built; awaiting its first live run on the deployed site)
 
 ## Current sprint
-**Made it behave like a phone app, and put the daily surfaces first.** Nav is now
-**Tracker | Food | ··· More**, with Fitness/Health behind More; four unused pages deleted; iOS
-input-zoom and sideways-scroll drift fixed. See [ADR-0022](decisions.md).
+**All five AI features built behind one Netlify Function proxy.** Label scan · natural-language
+logging · meal naming · web lookup · plate photo. Governed by the accuracy contract
+([ADR-0024](decisions.md)): AI proposes, `foodMath.js` calculates, a deterministic validator checks,
+nothing saves or logs without an explicit confirm.
+**One thing blocks "done":** the live round-trip has never run. Netlify Functions don't exist on the
+local static server, so the real gate test is ⚡ **Test AI connection** on the deployed site.
 
 ## Completed (this arc)
+- ✅ **Phase 2 AI layer** ([ADR-0023/0024/0025](decisions.md)) — proxy (PIN + daily cap + task
+  whitelist) and all five features. Verified locally: **158/158 seed items pass the validator with
+  zero false positives**, 8/8 deliberately corrupted macro sets caught, every proxy guard
+  (405/401/400/429/500) passes, the API key never appears in a response, and no AI path can write
+  to the pantry or the log without a click. Caught and fixed one real bug in the process:
+  "3 roti" was resolving to **3 grams** when the model returned an unknown unit label.
 - ✅ **Mobile correctness + nav restructure** ([ADR-0022](decisions.md)) — top bar now auto-hides on
   *every* tab (was Food-only); all form controls forced ≥16px on touch so iOS stops zooming and
   sticking; `overflow-x:clip` + overscroll containment kills the sideways drift; safe-area insets;
@@ -42,10 +51,14 @@ input-zoom and sideways-scroll drift fixed. See [ADR-0022](decisions.md).
   (white-on-neon is ~3.0:1 by design — see the tradeoff note in [design-system.md](design-system.md))
 - ⬜ Pre-seed his real breakfast/lunch/dinner suggestions (per-slot)
 - ⬜ Calibrate ~15 most-eaten items seed → verified (composite dishes vary by kitchen)
-- ⬜ **Phase 2 gate:** test Anthropic API from Netlify (CORS / proxy) — do before any AI UI
-- ⬜ Phase 2: label scan · screenshot import · natural-language logging · AI estimate + dedup
+- ⬜ **Run ⚡ Test AI connection on the deployed site** — the real Phase 2 gate
+- ⬜ Then scan one real label end-to-end and check the numbers against the packet by hand
+- ⬜ Watch actual API spend for a week (`usage` is returned on every call)
 
 ## Blocked / needs the user
 - 🚧 **Visual review must happen on his device** — screenshot capture is broken here (the preview
   pane reports a 0×0 viewport, so Chart.js canvases never paint). Verify via DOM/computed styles.
 - 🚧 Needs his real per-meal foods + calibrated numbers
+- 🚧 **Stale test rows in the cloud:** `food_log` still holds `2099-01-01` and `2099-01-02` from old
+  test sessions. Harmless (he'd have to navigate to 2099 to see them) but they're junk — awaiting
+  his go-ahead to delete.

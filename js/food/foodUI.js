@@ -130,6 +130,8 @@ function heroHtml(t){
     <input class="fsearch-input" id="quickSearch" placeholder="🔍 Search a food or meal…" autocomplete="off" oninput="renderQuickResults&&renderQuickResults(this.value)">
     <div id="quickResults" class="flist fsearch-results"></div>
     <div class="fquick-actions">
+      <button class="fpill-btn ai" onclick="aiLogText&&aiLogText()">🗣 Log by typing</button>
+      <button class="fpill-btn ai" onclick="aiScanPlate&&aiScanPlate()">🍽 Plate photo</button>
       <button class="fpill-btn" onclick="repeatYesterday&&repeatYesterday()">↻ Repeat yesterday</button>
       <button class="fpill-btn" onclick="go('food-meals')">🍲 Meals</button>
       <button class="fpill-btn" onclick="go('food-add')">＋ New item</button>

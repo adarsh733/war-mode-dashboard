@@ -68,20 +68,32 @@ index.html            markup only (nav, sections, page shells)
 styles.css            all CSS (one unified clean-light + neon-green token system — ADR-0021)
 manifest.json         PWA
 appicon-*.png         PWA icons
+netlify.toml          publish dir + functions dir (no build step for the site itself)
+netlify/functions/
+  ai.js               the ONLY place the Anthropic key exists — PIN gate, daily cap, task whitelist
 supabase/food_tables.sql   one-time SQL for the Food tables
+data/food-seed/       canonical seed JSON + import backups/reports
+scripts/import_food_seed.mjs   deterministic, idempotent seed importer (dry-run by default)
 js/
   config.js dates.js data.js charts.js nav.js tracker.js checkin.js   ← legacy engine
   app.js              ← bootstrap (runs last)
   food/
     foodMath.js       deterministic macro engine (pure, unit-testable)
     foodData.js       local-first cache + Supabase sync + search/dedup helpers
-    seed.js           ~50 vegetarian seed items + aliases
+    seed.js           GENERATED — 158 vegetarian seed items, id-parity with cloud (ADR-0020)
     foodSuggest.js    per-slot suggestions (taught + recency-learned) + manager
     foodUI.js         Today (rings, slots, entries), Pantry, Meals rendering
     foodForm.js       Add/Edit item manual form
     foodLog.js        quick-add search, per-slot add, meal builder, repeat-yesterday
     foodDetail.js     spacious item/meal detail card + iOS quantity wheel + units editor
     bridge.js         Food → Tracker push ("Done for the day")
+    aiClient.js       the one door to the AI proxy (PIN, image downscale, fail-soft) — ADR-0023
+    aiValidate.js     deterministic guards: Atwater check, ranges, veg guard, per-100 conversion
+    aiLabel.js        label photo → ⭐ verified item (+ correction loop)
+    aiParse.js        natural-language logging → editable confirm list
+    aiMealName.js     meal-name suggestions
+    aiLookup.js       web lookup for unknown foods → 🤖 ai item + sources
+    aiPlate.js        plate photo → DRAFT rows, forced grams + oil confirmation (ADR-0025)
 docs/                 the persistent knowledge base (see index above)
 ```
 
@@ -97,7 +109,19 @@ docs/                 the persistent knowledge base (see index above)
 
 ## Current status (2026-07-21)
 
-Food **Phase 1 complete** (no AI). The clean-light aesthetic has been **unified across all four
-tabs** — Plus Jakarta Sans everywhere, light theme, one neon-green accent ([ADR-0021](docs/decisions.md)).
-Phase 2 (AI) not started and is gated on a Netlify→Anthropic connectivity test.
-See [roadmap](docs/roadmap.md).
+Food **Phase 1 complete**; the real seed (158 items / 30 meals) is loaded. The clean-light aesthetic
+is **unified across the whole dashboard** ([ADR-0021](docs/decisions.md)) and the nav is mobile-first
+([ADR-0022](docs/decisions.md)).
+
+**Phase 2 (AI) is BUILT but has never run live.** All five features sit behind one Netlify Function
+proxy ([ADR-0023](docs/decisions.md)). Two things to know before touching it:
+
+- **The API key lives only in Netlify env vars** (`ANTHROPIC_API_KEY`, `WARMODE_AI_PIN`), never in
+  the repo, never in client JS — the site is public. Don't move an AI call into the browser.
+- **The accuracy contract ([ADR-0024](docs/decisions.md)) is non-negotiable:** the model proposes,
+  `foodMath.js` calculates, `aiValidate.js` checks, and nothing saves or logs without an explicit
+  confirm. If you add an AI path, it obeys all six rules or it doesn't ship.
+
+Next step is the gate: run ⚡ **Test AI connection** on the deployed site. AI is inert on
+`localhost` — Netlify Functions aren't served by `python -m http.server`. See
+[current-focus](docs/current-focus.md).

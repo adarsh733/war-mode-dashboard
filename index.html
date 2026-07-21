@@ -758,7 +758,12 @@
 <section class="page" id="food-add">
   <div class="kicker">Food · Add Item</div>
   <h1 class="title">Add an Item</h1>
-  <p class="lede">Manual entry (Phase 1). Label-scan &amp; screenshot import come with the AI layer.</p>
+  <p class="lede">Photograph the nutrition panel and the app reads it for you — or type it in below. Either way you confirm every number before it's saved.</p>
+  <div class="fquick-actions" style="margin-bottom:16px">
+    <button class="fpill-btn ai" onclick="aiScanLabel&&aiScanLabel(true)">📷 Scan a label</button>
+    <button class="fpill-btn ai" onclick="aiLookupFood&&aiLookupFood('')">🔎 Look up a food</button>
+    <button class="fpill-btn" onclick="aiTestConnection&&aiTestConnection()">⚡ Test AI connection</button>
+  </div>
   <div id="addItemBody"><div class="note"><div>The manual add form is being wired next.</div></div></div>
 </section>
 
@@ -791,6 +796,15 @@
 <script src="js/food/foodLog.js"></script>
 <script src="js/food/foodDetail.js"></script>
 <script src="js/food/bridge.js"></script>
+<!-- Phase 2 AI layer. aiClient + aiValidate first (feature modules depend on
+     both); every module is optional — the app works fully with these removed. -->
+<script src="js/food/aiClient.js"></script>
+<script src="js/food/aiValidate.js"></script>
+<script src="js/food/aiLabel.js"></script>
+<script src="js/food/aiParse.js"></script>
+<script src="js/food/aiMealName.js"></script>
+<script src="js/food/aiLookup.js"></script>
+<script src="js/food/aiPlate.js"></script>
 <script src="js/app.js"></script>
 </body>
 </html>

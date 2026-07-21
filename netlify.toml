@@ -1,0 +1,20 @@
+# netlify.toml — WAR MODE
+#
+# The site has NO build step (ADR-0002: plain static files, classic scripts).
+# This file exists only to (a) pin the publish dir explicitly now that we also
+# ship serverless code, and (b) point Netlify at the Functions directory that
+# holds the Anthropic proxy.
+#
+# The Anthropic API key is NEVER in this repo. It lives in the Netlify UI as the
+# environment variable ANTHROPIC_API_KEY (marked "secret"), alongside
+# WARMODE_AI_PIN. See docs/decisions.md (Phase 2 ADRs).
+
+[build]
+  publish = "."
+  # ai.js uses global fetch — Node 18+. Pinned so a Netlify default change
+  # can't silently break the proxy.
+  environment = { NODE_VERSION = "20" }
+
+[functions]
+  directory = "netlify/functions"
+  node_bundler = "esbuild"

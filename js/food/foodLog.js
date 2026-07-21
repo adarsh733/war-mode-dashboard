@@ -42,7 +42,8 @@ function renderQuickResults(q){
     html += `<div class="frow" onclick="openMealLogSheet('${m.id}')">${avatarFor(m.name)}<div class="fmain"><div class="fname">${htmlSafe(m.name)} <span class="fbadge meal">🍲 Meal</span></div><div class="fsub">${t.kcal} kcal · ${t.protein}g P</div></div><div class="fkcal">＋</div></div>`; });
   items.forEach(it=>{ const d=defaultServingMacros(it);
     html += `<div class="frow" onclick="openItemLogSheet('${it.id}')">${avatarFor(it.name)}<div class="fmain"><div class="fname">${htmlSafe(it.name)} <span class="ftrust">${TRUST_DOT[it.trust]||''}</span></div><div class="fsub">${htmlSafe(d.label)} · ${d.m.kcal} kcal · ${d.m.protein}g P</div></div><div class="fkcal">＋</div></div>`; });
-  box.innerHTML = html || `<div class="fempty">No match. <button class="chip" onclick="go('food-add')">+ Add “${htmlSafe(q)}”</button></div>`;
+  box.innerHTML = html || `<div class="fempty">No match. ${typeof aiNoMatchChips==='function'?aiNoMatchChips(q,''):''}
+    <button class="chip" onclick="go('food-add')">✎ Add “${htmlSafe(q)}”</button></div>`;
 }
 
 /* ---------- per-slot add (the ＋ on a meal header) ---------- */
@@ -63,7 +64,8 @@ function renderSlotAddResults(q){
   let html='';
   meals.forEach(m=>{ const t=fmtMacros(mealTotals(m,FOOD_ITEMS)); html+=`<div class="frow" onclick="fsheetClose();openMealDetail('${m.id}',{slot:'${_slotAddSlot}'})">${avatarFor(m.name)}<div class="fmain"><div class="fname">${htmlSafe(m.name)} <span class="fbadge meal">🍲 Meal</span></div><div class="fsub">${t.kcal} kcal · ${t.protein}g P</div></div><div class="fkcal">＋</div></div>`; });
   items.forEach(it=>{ const d=defaultServingMacros(it); html+=`<div class="frow" onclick="fsheetClose();openItemDetail('${it.id}',{slot:'${_slotAddSlot}'})">${avatarFor(it.name)}<div class="fmain"><div class="fname">${htmlSafe(it.name)} <span class="ftrust">${TRUST_DOT[it.trust]||''}</span></div><div class="fsub">${htmlSafe(d.label)} · ${d.m.kcal} kcal · ${d.m.protein}g P</div></div><div class="fkcal">＋</div></div>`; });
-  box.innerHTML = html || `<div class="fempty">No match. <button class="chip" onclick="fsheetClose();go('food-add')">+ New item</button></div>`;
+  box.innerHTML = html || `<div class="fempty">No match. ${typeof aiNoMatchChips==='function'?aiNoMatchChips(q,'fsheetClose();'):''}
+    <button class="chip" onclick="fsheetClose();go('food-add')">✎ New item</button></div>`;
 }
 
 /* ---------- item log sheet (legacy — superseded by foodDetail.js) ---------- */
@@ -181,7 +183,11 @@ function renderMealEditor(){
     <div class="fsheet-grab"></div>
     <div class="fsheet-title"><span class="favatar" style="background:var(--blue-bg);color:var(--blue)">🍽</span><div><div class="fname">${d._id?'Edit meal':'New meal'}</div><div class="fsub">${t.kcal} kcal · ${t.protein}g protein</div></div></div>
     <label class="flabel">Meal name</label>
-    <input class="finput" id="meal_name" placeholder="e.g. Oats Whey Smoothie" value="${htmlSafe(d.name)}" oninput="_mealDraft.name=this.value">
+    <div class="fnamerow">
+      <input class="finput" id="meal_name" placeholder="e.g. Oats Whey Smoothie" value="${htmlSafe(d.name)}" oninput="_mealDraft.name=this.value">
+      <button type="button" class="fchip" id="mealNameAi" onclick="aiSuggestMealName&&aiSuggestMealName()">✨ Suggest</button>
+    </div>
+    <div id="mealNameSuggest"></div>
     <div class="sec-label">Ingredients</div>
     <div id="meal_components">${rows}</div>
     <input class="fsearch-input" id="mealPick" placeholder="🔍 Add ingredient — search pantry…" oninput="renderMealPicker(this.value)" style="margin-top:8px">

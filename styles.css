@@ -735,3 +735,81 @@ section[id^="food-"] .fsearch-input:focus{border-color:var(--fgreen);box-shadow:
 .fslot .fsugg-row{margin-left:-16px;margin-right:-16px;padding-left:16px;padding-right:16px}
 /* full-width "edit suggestions" button is a block action, not a chip — keep it out of the rail */
 .fsugg-edit.wide{flex:1 0 auto}
+
+/* ═══════════════ PHASE 2 · AI LAYER ═══════════════
+   Reuses the food tokens so the AI sheets are indistinguishable from the rest
+   of the clean-light system. The only new colour language is the flag strip:
+   amber = check this, red = can't save, blue = informational. */
+
+.fpill-btn.ai{border-color:var(--fgreen);color:var(--fgreen-ink,var(--fgreen))}
+.fpill-btn.ai:hover{background:var(--fgreen-bg)}
+
+.fd-inp.wide{width:100%;margin-bottom:4px}
+.ai-ta{width:100%;font-family:var(--ffont);font-size:1rem;line-height:1.45;resize:vertical}
+
+/* busy + result states */
+.ai-busy{display:flex;align-items:center;gap:10px;padding:22px 4px;color:var(--fmut);font-weight:600}
+.ai-spin{width:16px;height:16px;border:2px solid var(--fline);border-top-color:var(--fgreen);border-radius:50%;animation:aispin .7s linear infinite;flex:0 0 auto}
+@keyframes aispin{to{transform:rotate(360deg)}}
+.ai-err{background:var(--fred-bg);border:1px solid var(--fred);border-radius:var(--fr-sm);padding:14px;color:var(--fink);font-size:.9rem}
+.ai-err b{display:block;margin-bottom:4px}
+.ai-err .fd-chip{margin-top:10px}
+.ai-ok{background:var(--fgreen-bg);border:1px solid var(--fgreen);border-radius:var(--fr-sm);padding:14px;font-size:.95rem}
+.ai-inline-err{color:var(--fred);font-size:.82rem;padding:6px 0}
+
+/* the honest warning strip */
+.ai-flag{border-radius:var(--fr-sm);padding:12px 14px;margin:12px 0;font-size:.86rem;line-height:1.5}
+.ai-flag b{display:block;margin-bottom:4px}
+.ai-flag ul{margin:6px 0 0;padding-left:18px}
+.ai-flag li{margin:3px 0}
+.ai-flag.warn{background:var(--famber-bg);border:1px solid var(--famber)}
+.ai-flag.fail{background:var(--fred-bg);border:1px solid var(--fred)}
+.ai-flag.info{background:var(--fblue-bg);border:1px solid var(--fblue)}
+
+.ai-sec{margin:16px 0}
+.ai-conf{font-size:.76rem;margin-top:14px;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.ai-usage{font-size:.76rem}
+
+/* label scan — "what was printed" block */
+.ai-printed{background:var(--fbg);border:1px dashed var(--fline2,var(--fline));border-radius:var(--fr-sm);padding:12px 14px;margin:14px 0}
+.ai-printed-h{font-size:.72rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--fmut);margin-bottom:6px}
+.ai-printed-v{font-size:.95rem;font-weight:600;color:var(--fink)}
+.ai-printed-n{font-size:.76rem;color:var(--fmut);margin-top:6px}
+.ai-src{font-size:.78rem;color:var(--fmut);word-break:break-all;padding:3px 0}
+
+/* confirmation rows (NL logging + plate) */
+.ai-row{border:1px solid var(--fline);border-radius:var(--fr-sm);padding:12px;margin:10px 0;background:var(--fcard)}
+.ai-row.off{opacity:.5}
+.ai-rowtop{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.ai-rowname{font-weight:700;font-size:.98rem;flex:1;min-width:0}
+.ai-rowname-inp{flex:1;min-width:0;font-weight:600}
+.ai-alt{flex:1;min-width:0;font-weight:600;padding:8px}
+.ai-rowctl{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.ai-qty{width:78px;flex:0 0 auto}
+.ai-unit{flex:1 1 110px;min-width:0}
+.ai-slot{flex:0 1 120px}
+.ai-rowmac{margin-top:8px;font-size:.86rem;color:var(--fmut);font-weight:600}
+.ai-gramlbl{display:flex;align-items:center;gap:6px;font-size:.76rem;color:var(--fmut);font-weight:700}
+.ai-oilrow{margin-top:10px}
+.ai-oilrow .fd-chips{margin-top:6px}
+.ai-lowconf{width:18px;height:18px;border-radius:50%;background:var(--famber-bg);color:var(--famber);font-size:.72rem;font-weight:800;display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto}
+.ai-badge{font-size:.66rem;font-weight:800;letter-spacing:.04em;text-transform:uppercase;padding:3px 7px;border-radius:20px;flex:0 0 auto}
+.ai-badge.ok{background:var(--fgreen-bg);color:var(--accent-ink,var(--fgreen))}
+.ai-badge.new{background:var(--famber-bg);color:var(--famber)}
+
+.ai-unitnote{margin-top:8px;font-size:.78rem;line-height:1.45;color:var(--famber);background:var(--famber-bg);border-radius:8px;padding:7px 9px}
+.ai-heard{font-size:.86rem;font-style:italic;margin-bottom:12px}
+.ai-total{margin-top:16px;padding-top:14px;border-top:1px solid var(--fline);font-size:.95rem}
+.ai-unknown{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:8px}
+.ai-unknown span{font-weight:600;flex:1 1 auto;min-width:0}
+
+/* meal-name suggestions */
+.fnamerow{display:flex;gap:8px;align-items:center}
+.fnamerow .finput{flex:1;min-width:0}
+.ai-namerow{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:8px}
+
+@media(max-width:420px){
+  .ai-rowctl{gap:6px}
+  .ai-qty{width:66px}
+  .ai-slot{flex:1 1 100px}
+}

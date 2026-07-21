@@ -5,6 +5,14 @@
 ## 1. Deploy & build model
 
 - **No build step.** Plain HTML/CSS/JS served statically. Deploy = push to GitHub → Netlify.
+- **One serverless function** since Phase 2: `netlify/functions/ai.js` (the Anthropic proxy — see
+  [ADR-0023](decisions.md)). `netlify.toml` pins `publish = "."` and `functions =
+  "netlify/functions"`. The static site itself still has no build step; Netlify bundles the function
+  automatically. Functions do **not** run on the local `python -m http.server` — AI is live only on
+  the deployed site, and `aiIsLocalStatic()` says so plainly instead of throwing a 404.
+- **Secrets:** `ANTHROPIC_API_KEY` and `WARMODE_AI_PIN` live in the Netlify UI as *secret*
+  environment variables. They are never in the repo. Netlify's secrets scanning will fail the build
+  if either value ever appears in published output.
 - CDNs in `<head>`: Chart.js 4.4.1, `@supabase/supabase-js@2`, Google Fonts
   (**Plus Jakarta Sans** only — the sole font across all four tabs since [ADR-0021](decisions.md)).
 - PWA: `manifest.json` + `appicon-180/192/512.png`; `index.html` links them.
@@ -21,6 +29,8 @@ All `js/*.js` are **classic `<script>` tags**, not ES modules. They share a sing
 config → dates → data → charts → nav → tracker → checkin           (legacy engine)
 food/foodMath → food/seed → food/foodData → food/foodSuggest
   → food/foodUI → food/foodForm → food/foodLog → food/foodDetail → food/bridge
+food/aiClient → food/aiValidate                                    (AI plumbing)
+  → food/aiLabel → food/aiParse → food/aiMealName → food/aiLookup → food/aiPlate
 app.js   (bootstrap — MUST be last)
 ```
 Rules that keep this safe:
@@ -28,6 +38,9 @@ Rules that keep this safe:
   functions (runtime), so most order is flexible. The **bootstrap** (`app.js`) runs last.
 - `foodDetail.js` loads **after** `foodLog.js` and intentionally **overrides**
   `openItemLogSheet`/`openMealLogSheet` to open the new detail card.
+- The `ai*.js` modules are **entirely optional** — delete every `<script src="js/food/ai*">` tag and
+  the app still works; the AI entry points are all guarded (`aiLogText&&aiLogText()`), so they become
+  no-ops rather than errors. `aiClient` and `aiValidate` must load before the five feature modules.
 
 ## 3. Module map
 
@@ -55,6 +68,18 @@ Rules that keep this safe:
 | `foodLog.js`    | quick-add search, **per-slot add** (`openSlotAdd`), meal builder, repeat-yesterday, bottom-sheet infra (`fsheetOpen`) |
 | `foodDetail.js` | **detail card** (`openItemDetail`/`openMealDetail`/`openEntryDetail`), **quantity wheel**, units editor, commit/save/remove |
 | `bridge.js`     | `finishDay` (manual push), `syncFoodToTracker`, `markDayDirty` |
+
+### AI layer (`js/food/ai*.js` + one function) — Phase 2, see [ADR-0023/0024/0025](decisions.md)
+| File | Responsibility |
+|------|----------------|
+| `netlify/functions/ai.js` | **the only place the API key exists.** PIN gate, daily cap, task whitelist (`ping`/`label`/`nl`/`mealname`/`lookup`/`plate`); builds every system prompt + JSON schema server-side; maps refusal/429/5xx to readable errors |
+| `aiClient.js`   | `aiCall(task, payload)` — PIN storage, client-side image downscale to 2576px, fail-soft errors, `aiTestConnection()`. Never throws |
+| `aiValidate.js` | **pure guards:** `aiCheckMacros` (Atwater + ranges), `aiCheckVegetarian`, `aiPer100FromPrinted` (the per-serving→per-100 arithmetic the model is not allowed to do), `aiVetProposal` |
+| `aiLabel.js`    | label photo → confirm card → `saveItem` as ⭐ verified; correction/negotiation loop; dedup |
+| `aiParse.js`    | natural-language logging: pantry index → mapped rows → editable confirm list → log. Recomputes every row locally |
+| `aiMealName.js` | 3 name suggestions for the meal builder (text only, no numbers) |
+| `aiLookup.js`   | web-search lookup for unknown foods → 🤖 ai item with sources |
+| `aiPlate.js`    | plate photo → **draft** rows with forced grams + oil confirmation |
 
 ## 3b. Navigation model (ADR-0022)
 

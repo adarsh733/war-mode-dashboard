@@ -84,7 +84,11 @@
   deployed Netlify site. If CORS/auth blocks direct browser calls, add a tiny Netlify Function
   proxy.
 - **Reason:** #1 technical risk; the artifact sandbox differs from his deployment. Fail fast.
-- **Status:** Proposed (Phase 2 not started).
+- **Status:** **Superseded by [ADR-0023](#adr-0023--all-ai-traffic-goes-through-a-netlify-function-proxy-with-a-shared-pin).**
+  The premise was wrong: the test would have been moot either way. The site is public, so a key in
+  client JS is readable by any visitor regardless of what CORS permits — a direct browser call was
+  never viable. The proxy is mandatory, not a fallback, and the gate became "does the proxy
+  round-trip work" instead.
 
 ### ADR-0012 — AI dedup by name/brand/alias
 - **Decision:** When AI later reads an image of an item he already created, edit the existing item
@@ -236,3 +240,53 @@
 - **Known pre-existing quirk (not introduced here):** drawer search is first-match-wins over each
   page's full text, so "sleep"/"thyroid" land on `fit-home` because its nav-card labels contain those
   words. Unchanged by this ADR; fix would be to rank matches rather than take the first.
+
+### ADR-0023 — All AI traffic goes through a Netlify Function proxy with a shared PIN
+- **Decision:** The browser never talks to Anthropic. `netlify/functions/ai.js` is the only place
+  the API key exists (Netlify env var `ANTHROPIC_API_KEY`, marked secret). The client posts a **task
+  name + payload**; the function builds the system prompt, JSON schema, model and tool list
+  server-side. Access is gated on a shared PIN (`WARMODE_AI_PIN`, sent as `x-warmode-pin`, stored in
+  localStorage on his device) plus a per-day call cap.
+- **Reason:** The dashboard is a **public** static site — anything in `js/` is readable by every
+  visitor, so a client-side key would be stolen and auto-revoked. The PIN stops a stranger who finds
+  the function URL from spending his credits; the task whitelist stops the endpoint from being used
+  as a free general-purpose Claude relay (a caller cannot choose the model, the prompt, or the
+  tools).
+- **Status:** Accepted. Supersedes [ADR-0011](#adr-0011--phase-2-ai-gated-on-a-netlifyanthropic-connectivity-test).
+  Model: `claude-opus-4-8` for every task (~$0.02–0.04 per action; ~$2–4/month at realistic use).
+  **The daily cap is a best-effort fuse** — Netlify may run several warm instances, so the true
+  ceiling is cap × instances. The hard money guard is the monthly spend limit set in the Anthropic
+  console. Netlify's 10s synchronous-function timeout is why no task requests extended thinking.
+
+### ADR-0024 — The accuracy contract: AI proposes, code calculates, a validator checks
+- **Decision:** Six rules bind every AI path.
+  1. **Structured outputs only** (`output_config.format` + JSON schema) — never free prose to parse.
+  2. **The model never does arithmetic on quantities.** A label reading returns *what is printed*
+     plus the printed serving size; `aiPer100FromPrinted()` in `js/food/aiValidate.js` does the
+     per-serving→per-100 conversion. Natural-language logging recomputes every row locally with
+     `macrosForAmount`/`mealTotals`. `foodMath.js` remains the only source of macro numbers.
+  3. **A deterministic validator gates everything** (`aiValidate.js`): an Atwater cross-check
+     (`4P + 4·net-carbs + 2·fiber + 9F ≈ kcal`, 20%/25 kcal band), range and impossible-mass checks,
+     and a vegetarian guard. `fail` disables the save button; `warn` is shown but overridable.
+  4. **Nothing auto-saves or auto-logs** — every proposal lands in an editable confirm card.
+  5. **`trust:'verified'` is never overwritten without an explicit confirm**; dedup runs first via
+     `findItemByNameBrand` ([ADR-0012](#adr-0012--ai-dedup-by-namebrandalias)).
+  6. **Audit trail** — every AI-created item carries `aiMeta {source, model, at, confidence, …}`.
+- **Reason:** A silent 200–300 kcal error ruins the deficit, and an LLM misreading "2.5g" as "25g"
+  is exactly the failure mode to expect from a photo. The validator catches that class instantly.
+  Trust levels: label scan → ⭐ `verified` (a real label he confirmed), web lookup and plate photo →
+  🤖 `ai` (generic data, not his kitchen).
+- **Status:** Accepted. Validated against all 158 seed items with **zero false positives**, and
+  against 8 deliberately corrupted macro sets, all caught.
+
+### ADR-0025 — Plate photos are draft-only, with forced portion + oil confirmation
+- **Decision:** The plate-photo feature identifies dishes and *proposes* portions, but every row must
+  pass through an explicit grams field and an oil/ghee chip before it can be logged. Dishes that
+  match the pantry use **our** per-100 values, not the model's. Everything logged this way is
+  `trust:'ai'`. The UI states plainly that it is a draft, not a measurement.
+- **Reason:** Food *identification* from a photo is good; *portion mass* is not — a 2D image cannot
+  measure volume or density, and cooking oil is invisible, which is the exact undercount this app
+  was built to fix. Presenting a photo estimate as a measurement would violate the prime directive,
+  so the interaction is designed to make the user supply the two numbers the model cannot see.
+- **Status:** Accepted. Built last, deliberately, so the confirm pipeline was already proven by the
+  label-scan and natural-language flows.

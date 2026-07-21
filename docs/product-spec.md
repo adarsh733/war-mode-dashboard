@@ -106,11 +106,24 @@ Items carry alternate names (e.g. roti↔chapati, dahi↔curd, chole↔chana) so
 ## 8. Phasing
 
 - **Phase 1 — no AI: COMPLETE.** Everything above.
-- **Phase 2 — AI (not started):** photograph a label → parse → negotiate → save verified item;
-  screenshot import; natural-language logging ("3 paratha and paneer kebab"); AI general-estimate
-  fallback that auto-saves to pantry; **AI dedup** (an image of an existing item edits it, not a
-  duplicate — hook `findItemByNameBrand` already exists). Gated on a connectivity test — see
-  [roadmap.md](roadmap.md) and [ADR-0011](decisions.md).
+- **Phase 2 — AI: BUILT, awaiting its first live run.** Five features, all behind one Netlify
+  Function proxy ([ADR-0023](decisions.md)):
+  1. **Label scan** — photograph a nutrition panel → the model transcribes *only what is printed* →
+     the app converts per-serving to per-100 → confirm card → ⭐ verified item. A "✎ correct
+     reading" box re-runs the read with your correction (the negotiate step).
+  2. **Natural-language logging** — "3 roti, a katori of dal, curd" mapped onto *his own* pantry,
+     shown as an editable confirm list, logged only on "Add all".
+  3. **Meal naming** — 3 suggestions in the meal builder, always editable.
+  4. **Web lookup** — an unknown food is researched with web search and saved 🤖 `ai` with sources.
+  5. **Plate photo — draft only** ([ADR-0025](decisions.md)): identifies dishes and proposes
+     portions, but every row must pass an explicit grams field and an oil chip before logging,
+     because a photo can measure neither mass nor oil.
+  **AI dedup** runs on every AI-driven create via `findItemByNameBrand`
+  ([ADR-0012](decisions.md)), and `trust:'verified'` is never overwritten without a confirm.
+  The governing rule is the accuracy contract in [ADR-0024](decisions.md): **AI interprets, code
+  calculates.** The model never multiplies or sums; `foodMath.js` remains the only source of macro
+  numbers, and a deterministic validator (Atwater cross-check, range checks, vegetarian guard) gates
+  everything before it can be saved.
 
 ## 9. Deferred / not doing yet
 
