@@ -13,3 +13,6 @@ desktop.ini
 
 # Node (only if a build step is ever added)
 node_modules/
+
+# Food seed importer — DB snapshots (may contain personal log data)
+data/food-seed/backups/
