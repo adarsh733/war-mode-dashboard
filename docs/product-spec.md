@@ -118,6 +118,7 @@ Items carry alternate names (e.g. roti↔chapati, dahi↔curd, chole↔chana) so
   5. **Plate photo — draft only** ([ADR-0025](decisions.md)): identifies dishes and proposes
      portions, but every row must pass an explicit grams field and an oil chip before logging,
      because a photo can measure neither mass nor oil.
+  6. **AI Usage & Cost Analysis Tab** ([ADR-0037](decisions.md)) — dedicated `Food → AI cost` subtab (`food-ai`) tracking every AI action, tokens spent, Opus 4.8 cost math ($5/$25 per 1M tokens), task breakdown tags, credit balance tracking, and month vs all-time filters.
   **AI dedup** runs on every AI-driven create via `findItemByNameBrand`
   ([ADR-0012](decisions.md)), and `trust:'verified'` is never overwritten without a confirm.
   The governing rule is the accuracy contract in [ADR-0024](decisions.md): **AI interprets, code

@@ -474,7 +474,11 @@ exports.handler = async (event) => {
     });
 
     return reply(200, {
+      /* `model` is echoed back so the spend ledger (ADR-0037) prices a call
+         against the model that actually ran, rather than assuming this file's
+         current constant — the two diverge the moment MODEL is changed. */
       ok: true, task, data: readStructured(resp), usage: resp.usage,
+      model: resp.model || MODEL,
       callsToday: used, dailyCap: DAILY_CAP
     });
 

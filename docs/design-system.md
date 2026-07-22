@@ -110,11 +110,11 @@ rings read it through `cssv()`, which needs a real color string, not a `var()` r
 - Generous padding (cards 16–24px). Airy.
 - Sheets slide up (~.25–.28s); topbar hide/show `.3s`; ring draw ~.45s.
 
-## 4. Gradient usage — restrained
+## 4. Gradient usage — neon & restrained
 
-`--grad` is reserved for **primary interactive surfaces**, not decoration:
+`--grad` and semantic gradients (`--grad-green`, `--grad-amber`, `--grad-red`, `--grad-blue`, `--grad-violet`, `--grad-gold`) are used for **primary interactive surfaces, status pills, and canvas rings** ([ADR-0038](decisions.md)):
 active seg toggle, `.btn-primary` / `.btn-primary.wide`, `.fd-btn.primary`, `.fslot-add`, `.ci-tab.on`,
-`.fseg button.on`, plus the `.wm` wordmark (ink→green) and `--grad-soft` on the command deck.
+`.fseg button.on`, `.fd-chip.on`, plus the `.wm` wordmark (ink→green), `--grad-soft` on the command deck, and **135° canvas linear gradients** for the protein and calorie hero donut rings (`foodRingGradient`).
 Page bodies stay clean white/light.
 
 ## 5. Components
@@ -122,17 +122,17 @@ Page bodies stay clean white/light.
 - **`.card` / `.fcard`** — white, hairline border, soft shadow.
 - **Nav/tabs:** `.seg` top toggle — active = green gradient, **identical on all four tabs** (no
   per-section accent). `.subnav .chip.on` = `--accent-ink` text + bright `--accent` underline.
-- **`.stat`** — value 800; `.bar` left edge uses a semantic token.
+- **`.stat`** — value 800; `.bar` left edge uses a semantic gradient token (`--grad-*`).
 - **`.pill`** (`p-green/amber/red/blue/ink`) — `-bg` tint + `-ink` text.
 - **`.command`** (Tracker daily deck) — light `--grad-soft` card, white panels, green headline number.
 - **`.note`** (`good/warn/bad/info`) — semantic tint with its own dark text.
-- **Food:** hero rings (calories + protein), `.fslot` slot cards with round green `+`, suggestion
+- **Food:** hero rings (calories + protein with 135° neon canvas gradients), `.fslot` slot cards with round green `+`, suggestion
   chips, `.logrow` entries, `.fd-*` detail card, `.qwheel` quantity wheel (item height **46px**, kept
   in sync with `QWHEEL_IH` in `foodDetail.js`).
 - **Badges/legend:** items = green, meals = blue, ad-hoc = amber — a *data* distinction, so these
   stay non-green by design.
 
-**Ring colors:** calories = green, red when over 1,750. Protein = green ≥180, amber 140–180, red <140.
+**Ring colors:** 135° canvas gradients. Calories = neon green gradient, red gradient when over 1,750. Protein = neon green gradient ≥180, amber gradient 140–180, red gradient <140.
 
 ## 5b. Mobile rules (non-negotiable — ADR-0022)
 

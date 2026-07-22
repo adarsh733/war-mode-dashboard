@@ -422,12 +422,31 @@ function doneHtml(day, entries){
 }
 
 /* ---------- calories/protein ring (Chart.js doughnut) ---------- */
+
+/* The rings are canvas, and canvas cannot parse a CSS gradient string — so the
+ * gradient has to be built as a real CanvasGradient against the ring's own box
+ * (ADR-0038). Falls back to the flat colour if anything about the context is
+ * unavailable, which keeps the ring drawn rather than blank. */
+function foodRingGradient(ctx, size, colorVar){
+  const flat=(typeof cssv==='function'&&cssv(colorVar))||'#2f7652';
+  const brightVar={ '--fgreen':'--accent2', '--green':'--green2', '--famber':'--amber2', '--amber':'--amber2', '--fred':'--red2', '--red':'--red2', '--fblue':'--blue2', '--blue':'--blue2', '--violet':'--violet2' }[colorVar];
+  const bright=(brightVar && typeof cssv==='function' && cssv(brightVar)) || null;
+  if(!bright || !ctx || !ctx.createLinearGradient) return flat;
+  try{
+    /* 135deg, matching --grad and every gradient surface around it */
+    const g=ctx.createLinearGradient(0,0,size,size);
+    g.addColorStop(0,bright); g.addColorStop(1,flat);
+    return g;
+  }catch(e){ return flat; }
+}
+
 function foodRing(canvasId, value, target, colorVar){
   const el=document.getElementById(canvasId); if(!el || typeof Chart==='undefined') return;
   if(foodCharts[canvasId]) foodCharts[canvasId].destroy();
   const filled=Math.max(0, Math.min(value, target));
   const remain=Math.max(0.0001, target-value);
-  const col=(typeof cssv==='function'&&cssv(colorVar))||'#2f7652';
+  const ctx=el.getContext&&el.getContext('2d');
+  const col=foodRingGradient(ctx, el.width||104, colorVar);
   const track=(typeof cssv==='function'&&cssv('--paper2'))||'#ece8df';
   foodCharts[canvasId]=new Chart(el,{ type:'doughnut',
     data:{ datasets:[{ data:[filled, remain], backgroundColor:[col, track], borderWidth:0 }] },

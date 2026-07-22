@@ -65,10 +65,13 @@ async function aiCall(task, payload) {
       signal: ctl.signal
     });
   } catch (e) {
+    /* Recorded even though the cost is unknown: a request that timed out may
+       still have been billed upstream, and "lookup timed out 4 times" is the
+       kind of pattern the ledger exists to make visible. */
     if (ctl.signal.aborted) {
-      return { ok: false, code: 'timeout', error: 'That took too long and gave up. Try again — it usually works on the second go.' };
+      return aiRecord(task, { ok: false, code: 'timeout', error: 'That took too long and gave up. Try again — it usually works on the second go.' });
     }
-    return { ok: false, code: 'offline', error: 'Couldn\'t reach the AI service. You\'re offline or the site is still deploying.' };
+    return aiRecord(task, { ok: false, code: 'offline', error: 'Couldn\'t reach the AI service. You\'re offline or the site is still deploying.' });
   } finally {
     clearTimeout(timer);
   }
@@ -86,11 +89,21 @@ async function aiCall(task, payload) {
     if (!body && (res.status === 502 || res.status === 504 || res.status === 408)) {
       msg = 'That took too long to come back. Try again — it usually works on the second go.';
     }
-    return { ok: false, code, error: msg };
+    return aiRecord(task, { ok: false, code, error: msg });
   }
 
   AI_LAST_USAGE = { callsToday: body.callsToday, dailyCap: body.dailyCap };
-  return { ok: true, data: body.data, usage: body.usage, callsToday: body.callsToday, dailyCap: body.dailyCap };
+  return aiRecord(task, { ok: true, data: body.data, usage: body.usage, model: body.model,
+                          callsToday: body.callsToday, dailyCap: body.dailyCap });
+}
+
+/* Every result — success or failure — passes through the ledger on its way back
+ * to the caller (ADR-0037), so no feature can spend money without appearing in
+ * the AI tab. Guarded and try/caught: a broken ledger must never take down an AI
+ * feature, which is the same fail-soft rule the rest of this file follows. */
+function aiRecord(task, res) {
+  try { if (typeof aiUsageRecord === 'function') aiUsageRecord(task, res); } catch (e) {}
+  return res;
 }
 
 /* ---------- images ---------- */

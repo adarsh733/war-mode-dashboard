@@ -469,3 +469,30 @@
   off-scale at 22.4px. Also, the whole **Phase-2 AI block was initially skipped** (~30 raw sizes,
   incl. `.ai-badge` at 10.6px, under the floor). After any size change, check the **computed** value,
   not the rule you edited.
+
+---
+
+### ADR-0034 — Remove ☰ menu bar & drawer
+- **Decision:** Remove the ☰ button, slide-out drawer markup, and dashboard-wide search box from `index.html` and `js/nav.js`.
+- **Reason:** Navigation is fully served by the three top-level tabs (Tracker | Food | More) and their subnav chip rails. Removing unused drawer code declutters the topbar and avoids dead event handlers.
+- **Status:** Accepted.
+
+### ADR-0035 — Freeze date row in Tracker Log week grid
+- **Decision:** Pin the week grid day headers (`Mon 21`, `Tue 22`…) to the top of the viewport under the subnav while scrolling down through grid rows.
+- **Implementation:** Created a sticky header clone `#weekGridHead` outside the horizontal scroller `.tscroll` that locks to top during vertical scrolling and tracks `.tscroll` horizontally.
+- **Status:** Accepted.
+
+### ADR-0036 — Pointer-driven drag to reorder
+- **Decision:** Replace HTML5 `draggable` with unified Pointer Events (`pointerdown`/`pointermove`/`pointerup`) on drag handle `⠿`.
+- **Reason:** HTML5 drag-and-drop does not function on mobile touch screens. Pointer events provide smooth touch and mouse reordering with insertion line indicator (`.fdropline`) and edge auto-scrolling.
+- **Status:** Accepted.
+
+### ADR-0037 — AI Usage & Cost Analysis Tab
+- **Decision:** Dedicated `Food → AI cost` subtab (`#food-ai`, `js/food/aiUsage.js`) tracking token counts, Opus 4.8 spend ($5/$25 per 1M tokens), task breakdown tags (`label`, `nl`, `plate`, `lookup`, `mealname`, `ping`), credit balance entry, and month vs all-time filters.
+- **Reason:** Provides transparent cost accounting per feature; derived from returned `usage` blocks and synced to cloud reserved row `__aiusage__`.
+- **Status:** Accepted.
+
+### ADR-0038 — Dashboard-wide Neon Gradient Styling & Canvas Rings
+- **Decision:** Upgrade solid accent/status colors across pills, badges, progress bars, toggle buttons, and canvas donut rings (`foodRingGradient` in `foodUI.js`) to 135-degree neon gradients (`--grad-green`, `--grad-amber`, `--grad-red`, `--grad-blue`, `--grad-violet`, `--grad-gold`) with WCAG AA text contrast (`-ink` tokens).
+- **Reason:** Delivers a vibrant, modern, high-contrast visual design across all app surfaces.
+- **Status:** Accepted.

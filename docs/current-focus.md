@@ -27,6 +27,9 @@ plate can be saved as a meal ([ADR-0028](decisions.md)). Suggestions moved below
 and collapsed by default.
 
 ## Completed (this arc)
+- ✅ **AI Usage & Cost Analysis Tab & Neon Gradient System (P2)** ([ADR-0037/0038](decisions.md)) — dedicated `Food → AI cost` subtab (`js/food/aiUsage.js`) tracking token spend, Opus 4.8 cost math ($5/$25 per 1M tokens), task breakdown tags, credit balance tracking, and month vs all-time filters; upgraded canvas donut rings and UI surfaces to 135-degree neon gradients with accessible `-ink` contrast tokens.
+- ✅ **Frozen date row, pointer drag, primary units (P1)** ([ADR-0035/0036](decisions.md)) — day header row pins under subnav while scrolling Tracker Log week grid; pointer-driven drag-to-reorder (`⠿`) replacing HTML5 draggable; food item primary units (bread → 1 slice) preserved across quick-add and meal builder.
+- ✅ **Remove ☰ menu bar & drawer + Today density pass (P0)** ([ADR-0034](decisions.md)) — deleted top drawer button, markup, and search drawer handlers; Today tab density refactor (day name + date, compact rings card, dense log rows, regrouped action shortcuts).
 - ✅ **Type scale** ([ADR-0033](decisions.md)) — replaced ~30 ad-hoc font sizes with a 9-step modular
   scale (`--fs-*`). Food rows were cluttered because the kcal value (18.4px) nearly matched the
   "Breakfast" header (19.2px); now 17 / 14 / 15 / 12 with the value emphasised by **weight, not

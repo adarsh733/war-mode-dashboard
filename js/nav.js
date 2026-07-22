@@ -11,7 +11,7 @@ const PAGES={
   'fit-home':'fitness','fit-progress':'fitness','fit-compliance':'fitness','fit-plan':'fitness','fit-sleep':'fitness',
   'h-home':'health','h-thyroid':'health','h-lipids':'health','h-vitamins':'health','h-bloodwork':'health',
   't-log':'tracker','t-history':'tracker','t-checkin':'tracker',
-  'food-today':'food','food-pantry':'food','food-meals':'food','food-add':'food',
+  'food-today':'food','food-pantry':'food','food-meals':'food','food-add':'food','food-ai':'food',
   'more-home':'more'
 };
 const HOME={more:'more-home',fitness:'fit-home',health:'h-home',tracker:'t-log',food:'food-today'};
@@ -64,6 +64,7 @@ function go(id){
   if(id==='food-today'&&typeof renderToday==='function')renderToday();
   if(id==='food-pantry'&&typeof renderPantry==='function')renderPantry();
   if(id==='food-meals'&&typeof renderMeals==='function')renderMeals();
+  if(id==='food-ai'&&typeof renderAiUsage==='function')renderAiUsage();
   if(id==='food-add'&&typeof renderAddItem==='function')renderAddItem();
 }
 document.querySelectorAll('.chip,.navcard').forEach(el=>el.addEventListener('click',()=>go(el.dataset.p)));

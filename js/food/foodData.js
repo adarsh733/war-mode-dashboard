@@ -43,6 +43,7 @@ async function loadFood(){
     foodLocalSaveItems();
   }
   if(typeof loadSuggestionsLocal === 'function') loadSuggestionsLocal();
+  if(typeof aiUsageLoadLocal === 'function') aiUsageLoadLocal();
 
   await foodCloudReconcile();
 }
@@ -116,6 +117,9 @@ async function foodCloudReconcile(){
     // suggestions live in a reserved food_meals row so no extra table is needed
     const sug = (rm.data||[]).find(r => r.id === '__suggestions__');
     if(sug && sug.data && typeof applyCloudSuggestions === 'function') applyCloudSuggestions(sug.data);
+    // ditto the AI spend ledger (ADR-0037)
+    const aiu = (rm.data||[]).find(r => r.id === '__aiusage__');
+    if(aiu && aiu.data && typeof applyCloudAiUsage === 'function') applyCloudAiUsage(aiu.data);
 
     foodLocalSaveItems(); foodLocalSaveMeals(); foodLocalSaveLog();
 
