@@ -15,6 +15,7 @@ function displayNum(v,unit=''){return typeof v==='number'&&!Number.isNaN(v)?(Num
 /* ---- WEEK GRID ---- */
 function renderWeek(){
   if(!weekStart)weekStart=mondayOf(todayStr());
+  measureStickyOffsets();          // the subnav can differ per section/wrap
   paintGoalSummary();
   setupTagPanel();
   renderGoalHistory();
@@ -304,6 +305,11 @@ function measureStickyOffsets(){
   window.addEventListener('resize', on, {passive:true});
   window.addEventListener('orientationchange', on, {passive:true});
   document.addEventListener('DOMContentLoaded', measureStickyOffsets);
+  /* Re-measure once the webfont is in. At DOMContentLoaded the subnav is still
+     laid out in the fallback face and measures ~1.6px short, which parks the
+     pinned row over the subnav's bottom border. */
+  window.addEventListener('load', on);
+  if(document.fonts && document.fonts.ready) document.fonts.ready.then(on);
   /* Capture phase: scroll doesn't bubble, so a delegated listener has to catch it
      on the way down. One listener covers the grid's sideways scroll (sync the
      clone) and the page's vertical scroll (toggle the shadow) without binding to

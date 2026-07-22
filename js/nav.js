@@ -140,7 +140,12 @@ function edgeNudge(){
 function swipeBlocked(target){
   if(document.querySelector('.fsheet-overlay.show,.fd-overlay.show,#lbViewer.show,.lightbox.show'))
     return true;                                           // a sheet/modal owns the screen
+  /* A drag is in flight, or the gesture started on a reorder handle. Without this
+     a sideways flick on ⠿ both reorders the row AND flips the page — and the
+     pointerup then commits the move onto a page you have already left. */
+  if(document.body.classList.contains('freordering')) return true;
   for(let el=target; el&&el!==document.body; el=el.parentElement){
+    if(el.classList && el.classList.contains('fdrag')) return true;
     const tag=el.tagName;
     if(tag==='INPUT'||tag==='TEXTAREA'||tag==='SELECT') return true;   // drag = text selection
     /* A horizontally scrollable ancestor always wins — the week grid, bloodwork tables and the

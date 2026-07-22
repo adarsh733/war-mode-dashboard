@@ -227,7 +227,7 @@ function renderMealDetail(){
 }
 function mealCompRows(){
   const m=FOOD_MEALS[_detail.id];
-  return (m.components||[]).map(c=>{
+  return (m.components||[]).map((c,ci)=>{
     const it=FOOD_ITEMS[c.itemId]; if(!it) return '';
     const removed=_detail.removed.includes(c.itemId);
     const amt=(_detail.overrides[c.itemId]!=null)?_detail.overrides[c.itemId]:c.amount;
@@ -239,17 +239,24 @@ function mealCompRows(){
     const unitLbl=ui>=0?htmlSafe(it.servings[ui].label):u;
     return `<div class="fd-comp ${removed?'removed':''}">
       <div class="fd-compmain"><div class="fd-compname">${htmlSafe(it.name)}</div><div class="fd-compsub">${cm.kcal} kcal · ${cm.protein}g P${ui>=0?` · ${round1(amt)}${u}`:''}</div></div>
-      <input class="fd-inp fd-compamt" type="number" step="any" value="${qty}" ${removed?'disabled':''} oninput="mealCompAmt('${c.itemId}',this.value)"><span class="fd-mini">${unitLbl}</span>
+      <input class="fd-inp fd-compamt" type="number" step="any" value="${qty}" ${removed?'disabled':''} oninput="mealCompAmt('${c.itemId}',this.value,${ci})"><span class="fd-mini">${unitLbl}</span>
       <button class="fd-x2" onclick="mealCompToggle('${c.itemId}')">${removed?'↺':'✕'}</button></div>`;
   }).join('');
 }
 function detailPreview_meal(){ const el=document.getElementById('fdMacros'); if(!el) return; const f=mealDetailTotals();
   el.innerHTML=`<div class="fd-two"><div class="fd-big"><span class="fd-bigv">${f.kcal}</span><span class="fd-bigk">calories</span></div><div class="fd-big"><span class="fd-bigv">${f.protein}<small>g</small></span><span class="fd-bigk">protein</span></div></div>`; }
 /* v arrives in the component's own unit; store the override in base units so
-   mealTotals() keeps working on one consistent scale (ADR-0005/0008). */
-function mealCompAmt(itemId,v){
+   mealTotals() keeps working on one consistent scale (ADR-0005/0008).
+   Resolved by component INDEX, not itemId: a meal may list the same item twice
+   with different units, and matching on itemId would apply the first row's unit
+   to every row of that item (typing "30" into a grams row once stored 840).
+   NOTE the pre-existing limit this exposes — `overrides` is keyed by itemId, so
+   two rows of the same item still share one override. Out of scope here; none of
+   his 35 meals has a duplicate ingredient. */
+function mealCompAmt(itemId,v,ci){
   const m=FOOD_MEALS[_detail.id];
-  const c=((m&&m.components)||[]).find(x=>x.itemId===itemId);
+  const list=(m&&m.components)||[];
+  const c=(ci!=null&&list[ci])?list[ci]:list.find(x=>x.itemId===itemId);
   const it=FOOD_ITEMS[itemId];
   const ui=(c&&it&&typeof mealUnitIndex==='function')?mealUnitIndex(c,it):-1;
   _detail.overrides[itemId]=it?toBaseAmount(it,parseFloat(v)||0,ui):(parseFloat(v)||0);

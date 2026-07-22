@@ -294,10 +294,9 @@ details.acc .acc-body{padding:0 18px 18px}
    margin so it takes NO space in flow and sits precisely on top of the real header
    at rest — you only notice it once it detaches and follows you down the page.
    Its `top` tracks the subnav, including when the topbar auto-hides. */
-.ghead{position:sticky;z-index:60;overflow:hidden;background:var(--paper2);pointer-events:none;
+.ghead{position:sticky;z-index:60;overflow:hidden;background:var(--paper2);
   top:calc(105px + env(safe-area-inset-top) + var(--subnav-h,44px));transition:top .3s ease}
 body.nav-hidden .ghead{top:var(--subnav-h,44px)}
-.ghead::-webkit-scrollbar{display:none}
 .ghead .ghead-table{table-layout:fixed}
 /* it only earns a shadow once it is actually floating over content */
 .ghead.pinned{box-shadow:0 4px 12px rgba(20,30,24,.10)}
@@ -574,9 +573,6 @@ section[id^="food-"] .sec-label,.fsheet .sec-label{font-family:var(--ffont);font
 .logrow .fkcal{font-family:var(--ffont);font-weight:700;font-size:var(--fs-md);white-space:nowrap}
 .logrow .fkcal small{font-family:var(--ffont);font-size:var(--fs-2xs);color:var(--muted);margin-left:2px}
 .logrow .btn-sm{padding:6px 10px}
-.fdrag{cursor:grab;color:var(--line2);font-size:1.1rem;user-select:none;touch-action:none}
-.fdrag:active{cursor:grabbing}
-.logrow.dragover{border-top:2px solid var(--accent)}
 
 /* inline entry editor */
 .enteditor{background:var(--paper2);border-bottom:1px solid var(--line)}
@@ -717,7 +713,6 @@ section[id^="food-"] .fsearch-input:focus{border-color:var(--fgreen);box-shadow:
 .logrow.dragging .fdrag{color:var(--fgreen)}
 /* while a row is in flight nothing else should react to the finger */
 body.freordering{cursor:grabbing;user-select:none}
-body.freordering .logrow:not(.dragging){transition:opacity .15s ease}
 body.freordering .fmain,body.freordering .fx{pointer-events:none}
 .fdropline{position:absolute;display:none;height:2px;border-radius:2px;background:var(--grad);
   z-index:29;pointer-events:none;box-shadow:0 0 0 3px var(--fgreen-bg)}
