@@ -14,9 +14,16 @@ function fsheetOpen(inner){
     document.body.appendChild(ov);
   }
   document.getElementById('fsheet').innerHTML = inner;
-  ov.classList.add('show');
+  ov.style.display = 'flex';
+  setTimeout(()=> ov.classList.add('show'), 10);
 }
-function fsheetClose(){ const ov=document.getElementById('fsheetOverlay'); if(ov) ov.classList.remove('show'); }
+function fsheetClose(){
+  const ov=document.getElementById('fsheetOverlay');
+  if(ov){
+    ov.classList.remove('show');
+    setTimeout(()=>{ if(!ov.classList.contains('show')) ov.style.display='none'; }, 260);
+  }
+}
 
 /* ---------- default meal slot by time (today only) ---------- */
 function defaultSlot(){
@@ -30,10 +37,6 @@ const OIL_CHIPS = [['none','None',0],['tsp','1 tsp',5],['tbsp','1 tbsp',14]];
 function oilChips(sel){ return `<div class="fslot-chips">${OIL_CHIPS.map(([k,l,g])=>`<button type="button" class="fchip ${sel===g?'on':''}" onclick="logSetOil(${g})">${l}</button>`).join('')}<button type="button" class="fchip" onclick="logSetOilCustom()">custom…</button></div>`; }
 
 /* ---------- quick add (search on Today) ---------- */
-/* Search that survives a typo. `itemMatchesQuery` is a plain substring test, so
- * "panner" or "paneer lababdar sabzi" used to return nothing at all — the same
- * failure the AI logger had. foodMatch.js is the shared fix; substring results
- * still come first since an exact hit should never be reordered. */
 function foodSearchItems(q, limit){
   const exact = Object.values(FOOD_ITEMS).filter(it => itemMatchesQuery(it, q))
       .sort((a,b)=>(b.useCount||0)-(a.useCount||0));
@@ -67,24 +70,96 @@ function renderQuickResults(q){
 
 /* ---------- per-slot add (the ＋ on a meal header) ---------- */
 let _slotAddSlot='breakfast';
+let _slotAddTab='meals'; // 'meals' | 'items'
+
 function openSlotAdd(slot){
   _slotAddSlot=slot;
+  _slotAddTab='meals'; // default to Meals tab per requirement
   fsheetOpen(`<div class="fsheet-grab"></div>
-    <div class="fsheet-title"><span class="favatar" style="background:var(--fgreen-bg);color:var(--fgreen)">＋</span><div><div class="fname">Add to ${slotLabel(slot)}</div><div class="fsub">search your foods &amp; meals</div></div></div>
-    <input class="fsearch-input" id="slotAddSearch" placeholder="🔍 Search a food or meal…" autocomplete="off" oninput="renderSlotAddResults(this.value)">
+    <div class="fsheet-title">
+      <span class="favatar" style="background:var(--fgreen-bg);color:var(--fgreen)">＋</span>
+      <div>
+        <div class="fname">Add to ${slotLabel(slot)}</div>
+        <div class="fsub">select a meal or item</div>
+      </div>
+    </div>
+    <div class="fslot-tab-seg" style="margin:8px 0 10px">
+      <button type="button" id="btnSlotTabMeals" class="${_slotAddTab==='meals'?'on':''}" onclick="setSlotAddTab('meals')">🍲 Meals</button>
+      <button type="button" id="btnSlotTabItems" class="${_slotAddTab==='items'?'on':''}" onclick="setSlotAddTab('items')">🥗 Items</button>
+    </div>
+    <input class="fsearch-input" id="slotAddSearch" placeholder="🔍 Search meals…" autocomplete="off" oninput="renderSlotAddResults(this.value)">
     <div id="slotAddResults" class="flist fsearch-results" style="margin-top:10px"></div>`);
-  setTimeout(()=>{ const el=document.getElementById('slotAddSearch'); if(el) el.focus(); }, 60);
+  setTimeout(()=>{
+    const el=document.getElementById('slotAddSearch');
+    if(el) el.focus();
+    renderSlotAddResults('');
+  }, 60);
 }
+
+function setSlotAddTab(tab){
+  _slotAddTab=tab;
+  const bm=document.getElementById('btnSlotTabMeals');
+  const bi=document.getElementById('btnSlotTabItems');
+  if(bm) bm.classList.toggle('on', tab==='meals');
+  if(bi) bi.classList.toggle('on', tab==='items');
+  const inp=document.getElementById('slotAddSearch');
+  if(inp){ inp.placeholder=`🔍 Search ${tab}…`; renderSlotAddResults(inp.value); }
+}
+
 function renderSlotAddResults(q){
   const box=document.getElementById('slotAddResults'); if(!box) return;
-  q=(q||'').trim().toLowerCase(); if(q.length<1){ box.innerHTML=''; return; }
-  const meals=foodSearchMeals(q,4);
-  const items=foodSearchItems(q,10);
+  q=(q||'').trim().toLowerCase();
   let html='';
-  meals.forEach(m=>{ const t=fmtMacros(mealTotals(m,FOOD_ITEMS)); html+=`<div class="frow" onclick="fsheetClose();openMealDetail('${m.id}',{slot:'${_slotAddSlot}'})">${avatarFor(m.name)}<div class="fmain"><div class="fname">${htmlSafe(m.name)} <span class="fkind meal" title="Meal">🍲</span></div><div class="fsub">${t.kcal} kcal · ${t.protein}g P</div></div><div class="fkcal">＋</div></div>`; });
-  items.forEach(it=>{ const d=defaultServingMacros(it); html+=`<div class="frow" onclick="fsheetClose();openItemDetail('${it.id}',{slot:'${_slotAddSlot}'})">${avatarFor(it.name)}<div class="fmain"><div class="fname">${htmlSafe(it.name)} <span class="ftrust">${TRUST_DOT[it.trust]||''}</span></div><div class="fsub">${htmlSafe(d.label)} · ${d.m.kcal} kcal · ${d.m.protein}g P</div></div><div class="fkcal">＋</div></div>`; });
-  box.innerHTML = html || `<div class="fempty">No match. ${typeof aiNoMatchChips==='function'?aiNoMatchChips(q,'fsheetClose();'):''}
-    <button class="chip" onclick="fsheetClose();go('food-add')">✎ New item</button></div>`;
+  
+  if(_slotAddTab==='meals'){
+    let meals;
+    if(q.length<1){
+      meals = (typeof ownMeals==='function'?ownMeals():Object.values(FOOD_MEALS).filter(m=>!String(m.id).startsWith('__')))
+        .sort((a,b)=>(b.useCount||0)-(a.useCount||0) || a.name.localeCompare(b.name))
+        .slice(0, 5);
+    } else {
+      meals = foodSearchMeals(q, 10);
+    }
+    if(!meals.length){
+      box.innerHTML = `<div class="fempty">No meals found${q?' matching “'+htmlSafe(q)+'”':''}.</div>`;
+      return;
+    }
+    meals.forEach(m => {
+      const t=fmtMacros(mealTotals(m,FOOD_ITEMS));
+      html += `<div class="frow" onclick="fsheetClose();openMealDetail('${m.id}',{slot:'${_slotAddSlot}'})">
+        <div class="fmain">
+          <div class="fname">${htmlSafe(m.name)}</div>
+          <div class="fsub">${(m.components||[]).length} items · ${t.kcal} kcal · ${t.protein}g P</div>
+        </div>
+        <div class="fkcal">＋</div>
+      </div>`;
+    });
+  } else {
+    let items;
+    if(q.length<1){
+      items = Object.values(FOOD_ITEMS)
+        .sort((a,b)=>(b.useCount||0)-(a.useCount||0) || a.name.localeCompare(b.name))
+        .slice(0, 5);
+    } else {
+      items = foodSearchItems(q, 10);
+    }
+    if(!items.length){
+      box.innerHTML = `<div class="fempty">No items found${q?' matching “'+htmlSafe(q)+'”':''}. <button class="chip" onclick="fsheetClose();go('food-add')">✎ New item</button></div>`;
+      return;
+    }
+    items.forEach(it => {
+      const d=defaultServingMacros(it);
+      html += `<div class="frow" onclick="fsheetClose();openItemDetail('${it.id}',{slot:'${_slotAddSlot}'})">
+        <div class="fmain">
+          <div class="fname">${htmlSafe(it.name)} <span class="ftrust">${TRUST_DOT[it.trust]||''}</span></div>
+          <div class="fsub">${htmlSafe(d.label)} · ${d.m.kcal} kcal · ${d.m.protein}g P</div>
+        </div>
+        <div class="fkcal">＋</div>
+      </div>`;
+    });
+  }
+  
+  box.innerHTML = html;
 }
 
 /* ---------- item log sheet (legacy — superseded by foodDetail.js) ---------- */
@@ -212,6 +287,12 @@ function renderMealEditor(){
       <button type="button" class="fchip" id="mealNameAi" onclick="aiSuggestMealName&&aiSuggestMealName()">✨ Suggest</button>
     </div>
     <div id="mealNameSuggest"></div>
+    <label class="flabel" style="margin-top:10px">🗣 Or build meal from thoughts (AI)</label>
+    <div class="fnamerow">
+      <input class="finput" id="aiMealText" placeholder="e.g. 2 roti, 1 katori dal, 100g paneer">
+      <button type="button" class="fchip" id="btnAiMealBuild" onclick="aiBuildMealFromText()">✨ AI Build</button>
+    </div>
+    <div id="aiMealStatus"></div>
     <div class="sec-label">Ingredients</div>
     <div id="meal_components">${rows}</div>
     <input class="fsearch-input" id="mealPick" placeholder="🔍 Add ingredient — search pantry…" oninput="renderMealPicker(this.value)" style="margin-top:8px">
@@ -221,6 +302,44 @@ function renderMealEditor(){
       <button class="btn-sm" onclick="fsheetClose()">Cancel</button>
     </div>
   `);
+}
+
+async function aiBuildMealFromText(){
+  const input = document.getElementById('aiMealText');
+  const text = (input ? input.value.trim() : '');
+  if(!text){ alert('Type your meal thoughts first (e.g. "2 roti, 1 katori dal").'); return; }
+  const status = document.getElementById('aiMealStatus');
+  if(status) status.innerHTML = `<div class="subtle" style="margin-top:6px">🤖 AI building meal from your thoughts…</div>`;
+  
+  if(typeof aiCall !== 'function' || typeof aiPantryIndex !== 'function'){
+    if(status) status.innerHTML = `<div class="ai-inline-err" style="margin-top:6px">AI parser not loaded.</div>`;
+    return;
+  }
+  
+  const r = await aiCall('nl', { text, pantry: aiPantryIndex(), localTime: new Date().toLocaleString() });
+  if(!r.ok){
+    if(status) status.innerHTML = `<div class="ai-inline-err" style="margin-top:6px">AI build unavailable: ${htmlSafe(r.error)}</div>`;
+    return;
+  }
+  
+  let addedCount = 0;
+  (r.data.items || []).forEach(x => {
+    const item = (x.matchType === 'item') ? aiResolveItem(x.id) : null;
+    if(item){
+      const u = aiResolveUnit(item, x.unit);
+      const qty = Number(x.qty) > 0 ? Number(x.qty) : 1;
+      const amount = toBaseAmount(item, qty, u.si);
+      _mealDraft.components.push({ itemId: item.id, amount, unitIndex: u.si });
+      addedCount++;
+    }
+  });
+  
+  if(!_mealDraft.name.trim() && r.data.items && r.data.items.length){
+    _mealDraft.name = text.split(',')[0].slice(0, 30);
+  }
+  
+  if(status) status.innerHTML = `<div class="subtle" style="margin-top:6px;color:var(--fgreen)">✓ Added ${addedCount} ingredient(s)! Review and save below.</div>`;
+  setTimeout(() => { renderMealEditor(); }, 400);
 }
 function mealDraftAsMeal(){ return { name:_mealDraft.name, components:_mealDraft.components, addedOil:_mealDraft.addedOil }; }
 function renderMealPicker(q){

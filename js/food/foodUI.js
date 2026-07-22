@@ -107,8 +107,8 @@ function renderToday(){
 
   // draw rings after DOM exists
   const over = totals.kcal > FOOD_TARGETS.kcal;
-  foodRing('ringKcal', totals.kcal, FOOD_TARGETS.kcal, over ? '--fred' : '--fgreen');
-  foodRing('ringProt', totals.protein, FOOD_TARGETS.protein, totals.protein>=FOOD_TARGETS.protein ? '--fgreen' : (totals.protein<FOOD_TARGETS.proteinRed ? '--fred':'--famber'));
+  foodRing('ringKcal', totals.kcal, FOOD_TARGETS.kcal, over ? '--fred' : '--fgreen', 92);
+  foodRing('ringProt', totals.protein, FOOD_TARGETS.protein, totals.protein>=FOOD_TARGETS.protein ? '--fgreen' : (totals.protein<FOOD_TARGETS.proteinRed ? '--fred':'--famber'), 92);
 }
 
 /* "Tue · 22 Jul '26", tagged when it's today or yesterday so the strip answers
@@ -123,21 +123,21 @@ function foodDateLabelHtml(d){
 }
 
 function heroHtml(t){
-  const kcalLeft = FOOD_TARGETS.kcal - t.kcal;
-  const protLeft = Math.max(0, FOOD_TARGETS.protein - t.protein);
+  const kcalLeft = roundKcal(FOOD_TARGETS.kcal - t.kcal);
+  const protLeft = round1(Math.max(0, FOOD_TARGETS.protein - t.protein));
   return `
   <div class="fcard fhero">
     <div class="fhero-rings">
       <div class="fring-col">
         <div class="fring-wrap">
-          <canvas id="ringKcal" width="88" height="88"></canvas>
+          <canvas id="ringKcal" width="92" height="92"></canvas>
           <div class="fring-center"><span class="fring-val">${t.kcal.toLocaleString()}</span><span class="fring-lbl">/ ${FOOD_TARGETS.kcal.toLocaleString()}</span></div>
         </div>
         <div class="fhero-cap">${kcalLeft>=0?`<b>${kcalLeft.toLocaleString()}</b> kcal left`:`<b class="over">${(-kcalLeft).toLocaleString()}</b> over`}</div>
       </div>
       <div class="fring-col">
         <div class="fring-wrap">
-          <canvas id="ringProt" width="88" height="88"></canvas>
+          <canvas id="ringProt" width="92" height="92"></canvas>
           <div class="fring-center"><span class="fring-val">${t.protein}<small>g</small></span><span class="fring-lbl">/ ${FOOD_TARGETS.protein}g</span></div>
         </div>
         <div class="fhero-cap">${protLeft>0?`<b>${protLeft}g</b> protein to go`:`<b class="good">goal hit ✓</b>`}</div>
@@ -437,17 +437,18 @@ function foodRingGradient(ctx, size, colorVar){
   }catch(e){ return flat; }
 }
 
-function foodRing(canvasId, value, target, colorVar){
+function foodRing(canvasId, value, target, colorVar, customSize){
   const el=document.getElementById(canvasId); if(!el || typeof Chart==='undefined') return;
   if(foodCharts[canvasId]) foodCharts[canvasId].destroy();
   const filled=Math.max(0, Math.min(value, target));
   const remain=Math.max(0.0001, target-value);
   const ctx=el.getContext&&el.getContext('2d');
-  const col=foodRingGradient(ctx, el.width||104, colorVar);
-  const track=(typeof cssv==='function'&&cssv('--paper2'))||'#ece8df';
+  const sz=customSize||el.width||92;
+  const col=foodRingGradient(ctx, sz, colorVar);
+  const track=(typeof cssv==='function'&&cssv('--paper2'))||'#e9eeeb';
   foodCharts[canvasId]=new Chart(el,{ type:'doughnut',
     data:{ datasets:[{ data:[filled, remain], backgroundColor:[col, track], borderWidth:0 }] },
-    options:{ cutout:'76%', responsive:false, plugins:{legend:{display:false},tooltip:{enabled:false}}, animation:{duration:450} } });
+    options:{ cutout:'74%', responsive:false, plugins:{legend:{display:false},tooltip:{enabled:false}}, animation:{duration:450} } });
 }
 
 /* ══════════ MEALS ══════════ */

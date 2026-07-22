@@ -208,7 +208,7 @@ function renderMealDetail(){
     <div class="fd-hero" style="background:linear-gradient(135deg,var(${bg}),var(--fcard))">
       <button class="fd-x" onclick="fdClose()">✕</button>
       <div class="fd-hero-name">🍲 ${htmlSafe(m.name)}</div>
-      <div class="fd-hero-sub">${(m.components||[]).length} items · edit just for today</div>
+      <div class="fd-hero-sub">${(m.components||[]).length} items · customize for log or template</div>
     </div>
     <div class="fd-body">
       <div class="fd-qtyrow"><div class="fd-qcol"><label class="fd-lbl">Servings</label>${qwheelHtml(_detail.qty)}</div>
@@ -216,6 +216,14 @@ function renderMealDetail(){
       <label class="fd-lbl">🍳 Oil / ghee added</label><div class="fd-chips" id="fdOil">${[['None',0],['1 tsp',5],['1 tbsp',14]].map(([l,g])=>`<button type="button" class="fd-chip ${_detail.oilGrams==g?'on':''}" onclick="detailSetOil(${g})">${l}</button>`).join('')}</div>
       <label class="fd-lbl" style="margin-top:14px">Ingredients</label>
       <div id="fdComps">${mealCompRows()}</div>
+      <div style="display:flex;gap:14px;flex-wrap:wrap;margin-top:10px">
+        <button type="button" class="fd-editlink" onclick="mealDetailShowAddPicker()">＋ Add ingredient item</button>
+        <button type="button" class="fd-editlink" onclick="saveAsMasterMealTemplate()" style="color:var(--fblue)">💾 Update master meal template</button>
+      </div>
+      <div id="fdAddCompPicker" style="display:none;margin-top:8px">
+        <input class="fd-inp" id="fdAddSearchInp" placeholder="🔍 Search pantry to add item…" oninput="mealDetailFilterAddPicker(this.value)">
+        <div id="fdAddCompResults" class="flist fsearch-results" style="max-height:160px;margin-top:6px"></div>
+      </div>
     </div>
     <div class="fd-foot">
       ${isNew
@@ -225,6 +233,47 @@ function renderMealDetail(){
   `);
   qwheelInit(); detailPreview_meal();
 }
+
+function mealDetailShowAddPicker(){
+  const p=document.getElementById('fdAddCompPicker'); if(!p) return;
+  p.style.display = p.style.display==='none' ? 'block' : 'none';
+  if(p.style.display==='block'){
+    const inp=document.getElementById('fdAddSearchInp');
+    if(inp){ inp.focus(); mealDetailFilterAddPicker(inp.value); }
+  }
+}
+function mealDetailFilterAddPicker(q){
+  const box=document.getElementById('fdAddCompResults'); if(!box) return;
+  q=(q||'').trim().toLowerCase();
+  const items = (typeof foodSearchItems==='function') ? foodSearchItems(q, 6) : Object.values(FOOD_ITEMS).slice(0, 6);
+  if(!items.length){ box.innerHTML='<div class="fempty">No item found.</div>'; return; }
+  box.innerHTML=items.map(it=>`<div class="frow" onclick="mealDetailAddCompItem('${it.id}')"><div class="fmain"><div class="fname">${htmlSafe(it.name)}</div><div class="fsub">per 100${baseUnit(it)}: ${it.per100.kcal} kcal</div></div><div class="fkcal">＋</div></div>`).join('');
+}
+function mealDetailAddCompItem(itemId){
+  const m=FOOD_MEALS[_detail.id]; if(!m) return;
+  const it=FOOD_ITEMS[itemId]; if(!it) return;
+  const p=(typeof primaryServingIndex==='function')?primaryServingIndex(it):-1;
+  const amount = p>=0 ? (Number(it.servings[p].amount)||0) : 100;
+  const exists = (m.components||[]).some(c=>c.itemId===itemId);
+  if(!exists){
+    m.components=m.components||[];
+    m.components.push({ itemId, amount, unitIndex:p });
+  } else {
+    _detail.overrides[itemId]=amount;
+    const remIdx=_detail.removed.indexOf(itemId);
+    if(remIdx>=0) _detail.removed.splice(remIdx, 1);
+  }
+  renderMealDetail();
+}
+function saveAsMasterMealTemplate(){
+  const m=FOOD_MEALS[_detail.id]; if(!m) return;
+  if(!confirm(`Save these ingredient changes to the master template for “${m.name}”?`)) return;
+  if(typeof saveMeal==='function') saveMeal(m);
+  alert(`Master template for “${m.name}” updated!`);
+  renderMealDetail();
+  if(typeof renderMeals==='function') renderMeals();
+}
+
 function mealCompRows(){
   const m=FOOD_MEALS[_detail.id];
   return (m.components||[]).map((c,ci)=>{
@@ -245,14 +294,6 @@ function mealCompRows(){
 }
 function detailPreview_meal(){ const el=document.getElementById('fdMacros'); if(!el) return; const f=mealDetailTotals();
   el.innerHTML=`<div class="fd-two"><div class="fd-big"><span class="fd-bigv">${f.kcal}</span><span class="fd-bigk">calories</span></div><div class="fd-big"><span class="fd-bigv">${f.protein}<small>g</small></span><span class="fd-bigk">protein</span></div></div>`; }
-/* v arrives in the component's own unit; store the override in base units so
-   mealTotals() keeps working on one consistent scale (ADR-0005/0008).
-   Resolved by component INDEX, not itemId: a meal may list the same item twice
-   with different units, and matching on itemId would apply the first row's unit
-   to every row of that item (typing "30" into a grams row once stored 840).
-   NOTE the pre-existing limit this exposes — `overrides` is keyed by itemId, so
-   two rows of the same item still share one override. Out of scope here; none of
-   his 35 meals has a duplicate ingredient. */
 function mealCompAmt(itemId,v,ci){
   const m=FOOD_MEALS[_detail.id];
   const list=(m&&m.components)||[];
@@ -286,7 +327,16 @@ function fdOpen(inner){
   if(!ov){ ov=document.createElement('div'); ov.id='fdOverlay'; ov.className='fd-overlay';
     ov.addEventListener('click',e=>{ if(e.target===ov) fdClose(); });
     const c=document.createElement('div'); c.id='fdCard'; c.className='fd-card'; ov.appendChild(c); document.body.appendChild(ov); }
-  document.getElementById('fdCard').innerHTML=inner; ov.classList.add('show');
+  document.getElementById('fdCard').innerHTML=inner;
+  ov.style.display='flex';
+  setTimeout(()=> ov.classList.add('show'), 10);
 }
-function fdClose(){ const ov=document.getElementById('fdOverlay'); if(ov) ov.classList.remove('show'); _detail=null; }
+function fdClose(){
+  const ov=document.getElementById('fdOverlay');
+  if(ov){
+    ov.classList.remove('show');
+    setTimeout(()=>{ if(!ov.classList.contains('show')) ov.style.display='none'; }, 260);
+  }
+  _detail=null;
+}
 function slotLabel(k){ return ({breakfast:'Breakfast',lunch:'Lunch',dinner:'Dinner',snack:'Snacks'})[k]||'log'; }
