@@ -58,7 +58,7 @@ function renderQuickResults(q){
   const items = foodSearchItems(q, 10);
   let html = '';
   meals.forEach(m=>{ const t=fmtMacros(mealTotals(m,FOOD_ITEMS));
-    html += `<div class="frow" onclick="openMealLogSheet('${m.id}')">${avatarFor(m.name)}<div class="fmain"><div class="fname">${htmlSafe(m.name)} <span class="fbadge meal">🍲 Meal</span></div><div class="fsub">${t.kcal} kcal · ${t.protein}g P</div></div><div class="fkcal">＋</div></div>`; });
+    html += `<div class="frow" onclick="openMealLogSheet('${m.id}')">${avatarFor(m.name)}<div class="fmain"><div class="fname">${htmlSafe(m.name)} <span class="fkind meal" title="Meal">🍲</span></div><div class="fsub">${t.kcal} kcal · ${t.protein}g P</div></div><div class="fkcal">＋</div></div>`; });
   items.forEach(it=>{ const d=defaultServingMacros(it);
     html += `<div class="frow" onclick="openItemLogSheet('${it.id}')">${avatarFor(it.name)}<div class="fmain"><div class="fname">${htmlSafe(it.name)} <span class="ftrust">${TRUST_DOT[it.trust]||''}</span></div><div class="fsub">${htmlSafe(d.label)} · ${d.m.kcal} kcal · ${d.m.protein}g P</div></div><div class="fkcal">＋</div></div>`; });
   box.innerHTML = html || `<div class="fempty">No match. ${typeof aiNoMatchChips==='function'?aiNoMatchChips(q,''):''}
@@ -81,7 +81,7 @@ function renderSlotAddResults(q){
   const meals=foodSearchMeals(q,4);
   const items=foodSearchItems(q,10);
   let html='';
-  meals.forEach(m=>{ const t=fmtMacros(mealTotals(m,FOOD_ITEMS)); html+=`<div class="frow" onclick="fsheetClose();openMealDetail('${m.id}',{slot:'${_slotAddSlot}'})">${avatarFor(m.name)}<div class="fmain"><div class="fname">${htmlSafe(m.name)} <span class="fbadge meal">🍲 Meal</span></div><div class="fsub">${t.kcal} kcal · ${t.protein}g P</div></div><div class="fkcal">＋</div></div>`; });
+  meals.forEach(m=>{ const t=fmtMacros(mealTotals(m,FOOD_ITEMS)); html+=`<div class="frow" onclick="fsheetClose();openMealDetail('${m.id}',{slot:'${_slotAddSlot}'})">${avatarFor(m.name)}<div class="fmain"><div class="fname">${htmlSafe(m.name)} <span class="fkind meal" title="Meal">🍲</span></div><div class="fsub">${t.kcal} kcal · ${t.protein}g P</div></div><div class="fkcal">＋</div></div>`; });
   items.forEach(it=>{ const d=defaultServingMacros(it); html+=`<div class="frow" onclick="fsheetClose();openItemDetail('${it.id}',{slot:'${_slotAddSlot}'})">${avatarFor(it.name)}<div class="fmain"><div class="fname">${htmlSafe(it.name)} <span class="ftrust">${TRUST_DOT[it.trust]||''}</span></div><div class="fsub">${htmlSafe(d.label)} · ${d.m.kcal} kcal · ${d.m.protein}g P</div></div><div class="fkcal">＋</div></div>`; });
   box.innerHTML = html || `<div class="fempty">No match. ${typeof aiNoMatchChips==='function'?aiNoMatchChips(q,'fsheetClose();'):''}
     <button class="chip" onclick="fsheetClose();go('food-add')">✎ New item</button></div>`;

@@ -11,43 +11,6 @@ function scoreFor(d){
 function scoreColor(p){return p>=78?'p-green':p>=50?'p-amber':'p-red';}
 function htmlSafe(v){return String(v==null?'':v).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));}
 function displayNum(v,unit=''){return typeof v==='number'&&!Number.isNaN(v)?(Number.isInteger(v)?v:v.toFixed(1))+unit:'--';}
-function renderTodayCommand(){
-  const root=document.getElementById('todayCommand'); if(!root)return;
-  const dt=todayStr(); const d=DB[dt]||{}; const g=goalOn(dt); const s=scoreFor(d);
-  const score=document.getElementById('cmdScore'); if(score)score.textContent=(DB[dt]?s.pct:'--')+'%';
-  const date=document.getElementById('cmdDate'); if(date)date.textContent=fmtDate(dt)+' · '+(DB[dt]?'logged':'not started');
-  const phase=document.getElementById('cmdPhase'); if(phase)phase.textContent=g.phase||'Current phase';
-  const metrics=[
-    ['Weight',displayNum(d.weight,'kg')],
-    ['Protein',displayNum(d.proteinAmt,'g')],
-    ['Calories',displayNum(d.calories)],
-    ['Sleep',displayNum(d.sleepHrs,'h')],
-    ['Steps',displayNum(d.steps)]
-  ];
-  const m=document.getElementById('cmdMetrics');
-  if(m)m.innerHTML=metrics.map(([k,v])=>`<div class="mini"><b>${k}</b><span>${v}</span></div>`).join('');
-  const missing=HABITS.filter(h=>{
-    if(d.rest&&['gym','cardio'].includes(h.k))return false;
-    return !d[h.k];
-  }).map(h=>h.lbl(g).replace(/^[^\w]+/,'').trim());
-  const miss=document.getElementById('cmdMissing');
-  if(miss)miss.innerHTML=missing.length?missing.slice(0,5).map(x=>`<span>${htmlSafe(x)}</span>`).join(''):`<span class="done">All counted habits done</span>`;
-  let focus='Start with weight, protein, calories, sleep, or steps.';
-  if(DB[dt]){
-    if(!d.protein)focus='Protein is the highest-leverage miss. Lock the meal plan before the day gets away.';
-    else if(!d.under2k)focus='Calories decide the cut today. Keep the ceiling visible.';
-    else if(!d.sleep8)focus='Recovery is the weak link today. Protect the night.';
-    else if(!d.steps10k)focus='Movement is the remaining easy win. Finish the steps.';
-    else if(!d.thyroid)focus='Medication is not optional data. Mark thyroid if it is done.';
-    else focus='Hold the line. Today is clean enough to become boring.';
-  }
-  const f=document.getElementById('cmdFocus'); if(f)f.textContent=focus;
-  const ci=document.getElementById('cmdNextCheckin');
-  if(ci){
-    const n=daysSinceLastCheckin();
-    ci.textContent=n===Infinity?'No check-in yet. Add the first photo set.':(n>=7?`Check-in due: last one was ${n} days ago.`:`Photo check-in: ${7-n} day${7-n===1?'':'s'} until due.`);
-  }
-}
 
 /* ---- WEEK GRID ---- */
 function renderWeek(){
@@ -58,7 +21,6 @@ function renderWeek(){
   renderTagHistory();
   renderStrip();
   renderGrid();
-  renderTodayCommand();
 }
 function setupTagPanel(){
   const sel=document.getElementById('tag_sel'); if(sel&&!sel.dataset.built){sel.innerHTML=TAGS.map(t=>`<option value="${t.k}">${t.label}</option>`).join('');sel.dataset.built='1';}
@@ -120,7 +82,7 @@ function saveGoals(){
   // re-evaluate auto-ticks ONLY for days on/after this date (past periods untouched)
   Object.keys(DB).forEach(dt=>{ if(dt>=from) applyAuto(DB[dt],dt); });
   persist();
-  paintGoalSummary();renderGoalHistory();renderGrid();renderStrip();renderTodayCommand();flashSaved();
+  paintGoalSummary();renderGoalHistory();renderGrid();renderStrip();flashSaved();
 }
 function deletePeriod(i){
   if(PERIODS.length<=1)return;
@@ -129,7 +91,7 @@ function deletePeriod(i){
   // re-evaluate everything since a boundary moved
   Object.keys(DB).forEach(dt=>applyAuto(DB[dt],dt));
   persist();
-  paintGoalSummary();renderGoalHistory();renderGrid();renderStrip();renderTodayCommand();
+  paintGoalSummary();renderGoalHistory();renderGrid();renderStrip();
 }
 
 /* ── Context tags (date-range, informational) ── */
@@ -282,7 +244,7 @@ function toggleRest(dt){
   const d=ensure(dt);
   if(d.rest)delete d.rest;else d.rest=1;
   if(Object.keys(d).length===0)delete DB[dt];
-  persist(dt);renderGrid();renderStrip();renderTodayCommand();flashSaved();
+  persist(dt);renderGrid();renderStrip();flashSaved();
 }
 let measOpen=false;
 function toggleMeasures(){measOpen=!measOpen;document.querySelectorAll('.measrow').forEach(r=>r.style.display=measOpen?'':'none');document.getElementById('measArrow').textContent=measOpen?'▾':'▸';}
@@ -294,15 +256,15 @@ function setNum(dt,k,val){
   applyAuto(d,dt);
   if(Object.keys(d).length===0)delete DB[dt];
   persist(dt);
-  renderGrid();renderStrip();renderTodayCommand();flashSaved();
+  renderGrid();renderStrip();flashSaved();
 }
 function toggleCell(dt,k){
   const d=ensure(dt);
   if(d[k])delete d[k];else d[k]=1;
   if(Object.keys(d).length===0)delete DB[dt];
-  persist(dt);renderGrid();renderStrip();renderTodayCommand();flashSaved();
+  persist(dt);renderGrid();renderStrip();flashSaved();
 }
-function saveWeek(){persist();renderTodayCommand();flashSaved();}
+function saveWeek(){persist();flashSaved();}
 function flashSaved(){const m=document.getElementById('saveMsg');if(!m)return;m.style.opacity='1';clearTimeout(window._sv);window._sv=setTimeout(()=>m.style.opacity='0',1400);}
 
 /* ---- HISTORY & MONTHLY STATS ---- */
@@ -407,7 +369,7 @@ function clearAll(){
     Promise.all(chunks.map(chunk=>supa.from('tracker_days').delete().in('date',chunk)))
       .then(res=>setSyncBadge(res.some(r=>r.error)?'off':'ok')).catch(()=>setSyncBadge('off'));
   }
-  renderHistory();renderTodayCommand();
+  renderHistory();
 }
 
 function exportCSV(){

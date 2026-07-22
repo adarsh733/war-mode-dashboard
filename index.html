@@ -21,7 +21,6 @@
 <!-- frozen top -->
 <div class="topbar">
   <div class="tb-inner">
-    <button class="menu-btn" onclick="openDrawer()">☰</button>
     <div class="masthead">
       <div class="mk"><span>W</span></div>
       <div class="wm">WAR MODE</div>
@@ -65,31 +64,7 @@
   </div>
 </div>
 
-<!-- mobile drawer -->
-<div class="overlay" id="overlay" onclick="closeDrawer()"></div>
-<aside class="drawer" id="drawer">
-  <div class="brand"><div class="mk"><span>W</span></div><div class="nm">WAR MODE<small>NEVER BACK DOWN</small></div></div>
-  <input class="dsearch" id="search" placeholder="Search dashboard…" style="margin-top:16px" autocomplete="off">
-  <h4>📓 Tracker</h4>
-  <button class="dlink" data-p="t-log">Log the Week</button>
-  <button class="dlink" data-p="t-history">History &amp; Stats</button>
-  <button class="dlink" data-p="t-checkin">Check-In</button>
-  <h4>🍽️ Food</h4>
-  <button class="dlink" data-p="food-today">Today</button>
-  <button class="dlink" data-p="food-meals">Meals</button>
-  <h4>🏋️ Fitness</h4>
-  <button class="dlink" data-p="fit-home">Home &amp; Goals</button>
-  <button class="dlink" data-p="fit-progress">Progress &amp; Trends</button>
-  <button class="dlink" data-p="fit-compliance">Habit Compliance</button>
-  <button class="dlink" data-p="fit-plan">Phase Plan &amp; Strategy</button>
-  <button class="dlink" data-p="fit-sleep">Sleep</button>
-  <h4>🩺 Health</h4>
-  <button class="dlink" data-p="h-home">Health Snapshot</button>
-  <button class="dlink" data-p="h-thyroid">Thyroid</button>
-  <button class="dlink" data-p="h-lipids">Lipids &amp; Heart</button>
-  <button class="dlink" data-p="h-vitamins">Vitamins &amp; Blood</button>
-  <button class="dlink" data-p="h-bloodwork">All Bloodwork</button>
-</aside>
+<!-- drawer + hamburger removed (ADR-0034) — the three tabs and their chips are the whole nav -->
 
 <div class="wrap">
 
@@ -507,26 +482,6 @@
 <section class="page active" id="t-log">
   <div class="kicker" style="display:flex;align-items:center;gap:12px">Tracker · Weekly Log <span id="syncBadge" class="pill p-amber" style="margin-left:auto">⟳ Connecting…</span></div>
   <h1 class="title">Log the Week</h1>
-  <p class="lede">A calmer daily cockpit: see today's state first, then log the week below. Every cell still saves on its own and the existing cloud sync stays untouched.</p>
-
-  <div class="command" id="todayCommand" aria-live="polite">
-    <div class="panel">
-      <div class="eyebrow">Today</div>
-      <div class="big" id="cmdScore">--%</div>
-      <div class="sub" id="cmdDate">Loading today...</div>
-      <div class="sub" id="cmdPhase"></div>
-    </div>
-    <div class="panel">
-      <div class="eyebrow">Vitals logged</div>
-      <div class="metricline" id="cmdMetrics"></div>
-      <div class="miss" id="cmdMissing"></div>
-    </div>
-    <div class="panel">
-      <div class="eyebrow">Next best move</div>
-      <div class="focus" id="cmdFocus">Log the first number and the system wakes up.</div>
-      <div class="sub" id="cmdNextCheckin"></div>
-    </div>
-  </div>
 
   <!-- date strip -->
   <div class="datestrip" id="dateStrip"></div>
@@ -543,8 +498,6 @@
     <span id="saveMsg" style="font-size:var(--fs-sm);color:var(--green);font-weight:600;opacity:0;transition:opacity .3s">✓ Saved</span>
     <span class="subtle" style="margin-left:auto">Every cell autosaves instantly — one day or all seven, no need to press anything</span>
   </div>
-
-  <div class="note info" style="margin-top:16px"><span class="ni">i</span><div><b>Saved to the cloud.</b> Every change syncs to your private Supabase database — log on your phone, see it on your laptop. The <b>☁ Synced</b> badge confirms it; if it ever says <b>Local only</b>, you're offline and it'll sync when you're back. Numbers auto-tick their habit; manual toggles still work for water, gym, cardio, omega-3, thyroid. Measurements are in the expandable row — only fill when you measure.</div></div>
 
   <!-- Goal + Context, side by side, below the tracker -->
   <div class="grid g2 stack" style="margin-top:18px;align-items:start">

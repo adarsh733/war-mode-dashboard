@@ -13,7 +13,13 @@ const TRUST_BADGE = {
   seed:     '<span class="pill p-blue" title="Generic seed — calibrate to your kitchen">🌱 Seed</span>'
 };
 const TRUST_DOT = { verified:'⭐', ai:'🤖', seed:'🌱' };
-const KIND_BADGE = { item:'<span class="fbadge item">🥗 Item</span>', meal:'<span class="fbadge meal">🍲 Meal</span>', adhoc:'<span class="fbadge adhoc">✎ Ad-hoc</span>' };
+/* Logged rows use the glyph alone. The words "Item"/"Meal" cost ~60px of row
+ * width and told him nothing the name didn't — the colour and the glyph carry
+ * the same distinction in a quarter of the space. (The full `.fbadge` pill is
+ * still used where a row's kind isn't obvious from context: suggestions and the
+ * Meals tab.) */
+const KIND_ICON = { item:'🥗', meal:'🍲', adhoc:'✎' };
+const KIND_NAME = { item:'Item', meal:'Meal', adhoc:'Ad-hoc' };
 
 const _AVA = ['--green-bg','--amber-bg','--red-bg','--blue-bg','--accent-soft'];
 const _AVA_INK = ['--green','--amber','--red','--blue','--accent'];
@@ -95,7 +101,7 @@ function renderToday(){
   const totals = fmtMacros(dayTotals(day, FOOD_ITEMS, FOOD_MEALS));
 
   const dl = document.getElementById('foodDateLabel');
-  if(dl) dl.textContent = (typeof fmtDate==='function') ? fmtDate(foodDate) : foodDate;
+  if(dl) dl.innerHTML = foodDateLabelHtml(foodDate);
 
   wrap.innerHTML = heroHtml(totals) + slotsHtml(entries) + doneHtml(day, entries);
 
@@ -105,36 +111,53 @@ function renderToday(){
   foodRing('ringProt', totals.protein, FOOD_TARGETS.protein, totals.protein>=FOOD_TARGETS.protein ? '--fgreen' : (totals.protein<FOOD_TARGETS.proteinRed ? '--fred':'--famber'));
 }
 
+/* "Tue · 22 Jul '26", tagged when it's today or yesterday so the strip answers
+ * "which day am I looking at" without arithmetic. */
+function foodDateLabelHtml(d){
+  const pretty = (typeof fmtDate==='function') ? fmtDate(d) : d;
+  const dow    = (typeof dowName==='function') ? dowName(d) : '';
+  const today  = (typeof todayStr==='function') ? todayStr() : null;
+  const tag = d===today ? '<b class="fdate-tag">Today</b>'
+            : (today && typeof addDays==='function' && d===addDays(today,-1)) ? '<b class="fdate-tag">Yesterday</b>' : '';
+  return `<span class="fdate-dow">${dow}</span><span class="fdate-d">${pretty}</span>${tag}`;
+}
+
 function heroHtml(t){
   const kcalLeft = FOOD_TARGETS.kcal - t.kcal;
   const protLeft = Math.max(0, FOOD_TARGETS.protein - t.protein);
   return `
   <div class="fcard fhero">
     <div class="fhero-rings">
-      <div class="fring-wrap">
-        <canvas id="ringKcal" width="132" height="132"></canvas>
-        <div class="fring-center"><span class="fring-val">${t.kcal.toLocaleString()}</span><span class="fring-lbl">/ ${FOOD_TARGETS.kcal.toLocaleString()}</span></div>
+      <div class="fring-col">
+        <div class="fring-wrap">
+          <canvas id="ringKcal" width="104" height="104"></canvas>
+          <div class="fring-center"><span class="fring-val">${t.kcal.toLocaleString()}</span><span class="fring-lbl">/ ${FOOD_TARGETS.kcal.toLocaleString()}</span></div>
+        </div>
+        <div class="fhero-cap">${kcalLeft>=0?`<b>${kcalLeft.toLocaleString()}</b> kcal left`:`<b class="over">${(-kcalLeft).toLocaleString()}</b> over`}</div>
       </div>
-      <div class="fring-wrap">
-        <canvas id="ringProt" width="132" height="132"></canvas>
-        <div class="fring-center"><span class="fring-val">${t.protein}<small>g</small></span><span class="fring-lbl">/ ${FOOD_TARGETS.protein}g</span></div>
+      <div class="fring-col">
+        <div class="fring-wrap">
+          <canvas id="ringProt" width="104" height="104"></canvas>
+          <div class="fring-center"><span class="fring-val">${t.protein}<small>g</small></span><span class="fring-lbl">/ ${FOOD_TARGETS.protein}g</span></div>
+        </div>
+        <div class="fhero-cap">${protLeft>0?`<b>${protLeft}g</b> protein to go`:`<b class="good">goal hit ✓</b>`}</div>
       </div>
     </div>
-    <div class="fhero-caps">
-      <div class="fhero-cap">${kcalLeft>=0?`<b>${kcalLeft.toLocaleString()}</b> kcal left`:`<b class="over">${(-kcalLeft).toLocaleString()}</b> over`}</div>
-      <div class="fhero-cap">${protLeft>0?`<b>${protLeft}g</b> protein to go`:`<b class="good">goal hit ✓</b>`}</div>
-    </div>
-    <div class="fhero-buf">Tracking ${FOOD_TARGETS.kcal.toLocaleString()} kcal · ${FOOD_TARGETS.buffer} kcal buffer for untracked snacks</div>
+    <div class="fhero-buf">${FOOD_TARGETS.kcal.toLocaleString()} kcal target · ${FOOD_TARGETS.buffer} kcal snack buffer</div>
   </div>
   <div class="fquick">
     <input class="fsearch-input" id="quickSearch" placeholder="🔍 Search a food or meal…" autocomplete="off" oninput="renderQuickResults&&renderQuickResults(this.value)">
     <div id="quickResults" class="flist fsearch-results"></div>
-    <div class="fquick-actions">
-      <button class="fpill-btn ai" onclick="aiLogText&&aiLogText()">🗣 Log by typing</button>
-      <button class="fpill-btn ai" onclick="aiScanPlate&&aiScanPlate()">🍽 Plate photo</button>
-      <button class="fpill-btn" onclick="repeatYesterday&&repeatYesterday()">↻ Repeat yesterday</button>
-      <button class="fpill-btn" onclick="go('food-meals')">🍲 Meals</button>
-      <button class="fpill-btn" onclick="go('food-add')">＋ New item</button>
+    <!-- Two families, deliberately different weights: the AI capture routes are the
+         primary pair; repeat/new-item are secondary shortcuts. "Meals" is gone —
+         it is already a subtab at the top of this page. -->
+    <div class="fquick-ai">
+      <button class="fact" onclick="aiLogText&&aiLogText()"><span class="fact-ic">🗣</span>Log by typing</button>
+      <button class="fact" onclick="aiScanPlate&&aiScanPlate()"><span class="fact-ic">🍽</span>Plate photo</button>
+    </div>
+    <div class="fquick-more">
+      <button class="flink" onclick="repeatYesterday&&repeatYesterday()">↻ Repeat yesterday</button>
+      <button class="flink" onclick="go('food-add')">＋ New item</button>
     </div>
   </div>`;
 }
@@ -203,10 +226,10 @@ function entryRowHtml(e,i,slot){
       : `${m.protein}g P`;
   return `<div class="logrow" draggable="true" data-idx="${i}" ondragstart="foodDragStart(event,${i})" ondragover="foodDragOver(event)" ondrop="foodDropRow(event,${i},'${slot}')">
       <span class="fdrag" title="Drag to reorder">⠿</span>
-      ${KIND_BADGE[e.kind]||''}
+      <span class="fkind ${e.kind}" title="${KIND_NAME[e.kind]||''}">${KIND_ICON[e.kind]||''}</span>
       <div class="fmain" onclick="openEntryDetail(${i})"><div class="fname">${htmlSafe(entryName(e))}</div><div class="fsub">${sub}</div></div>
       <div class="fkcal">${m.kcal}<small>kcal</small></div>
-      <button class="btn-sm danger" onclick="event.stopPropagation();removeEntry(${i})" title="Remove">✕</button>
+      <button class="fx" onclick="event.stopPropagation();removeEntry(${i})" title="Remove" aria-label="Remove">✕</button>
     </div>`;
 }
 

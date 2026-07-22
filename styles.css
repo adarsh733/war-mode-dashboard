@@ -62,7 +62,7 @@ button,.chip,.seg button,.navcard,.pill,.tgl,.gcheck,.habit,.dstrip-day,.fsugg-c
 button,.chip,.seg button,.sec-label,.kicker,.fslot-title,.fbadge,.creed-line,.wm{-webkit-user-select:none;user-select:none}
 
 /* 3. Notch / safe areas (installed PWA + modern phones).
-      NOTE: .wrap and .drawer take their insets in their own rules further down — declaring them
+      NOTE: .wrap takes its insets in its own rule further down — declaring them
       here would be dead code, since those rules use the `padding` shorthand and come later. */
 .topbar{padding-top:env(safe-area-inset-top)}
 
@@ -73,7 +73,7 @@ button,.chip,.seg button,.sec-label,.kicker,.fslot-title,.fbadge,.creed-line,.wm
       behaviour, so a phone in landscape (wide viewport) still needs it. Desktop mouse users
       keep the denser designed sizes — notably the week-grid number cells.
       !important is required, not lazy: the designed sizes live in higher-specificity rules
-      (.metric input, table.weekgrid input.gnum, .drawer .dsearch) and a few inline styles,
+      (.metric input, table.weekgrid input.gnum, .fsearch-input) and a few inline styles,
       and an inline style beats any selector — only !important wins over all of them. */
 @media(max-width:640px),(pointer:coarse){
   input,select,textarea{font-size:16px !important}
@@ -98,7 +98,6 @@ canvas{max-width:100%}
   border:none;background:none;cursor:pointer;padding:7px 20px;border-radius:24px;color:var(--ink2);transition:all var(--t);white-space:nowrap}
 /* one unified green identity across every tab */
 .seg button.on{background:var(--grad);color:#fff;box-shadow:0 3px 10px rgba(31,170,93,.28)}
-.menu-btn{position:absolute;left:22px;top:14px;display:none;border:1px solid var(--line2);background:var(--paper);border-radius:8px;width:38px;height:38px;cursor:pointer;font-size:1.1rem}
 
 /* subnav strip — refined pill rail */
 /* top offset must track the topbar's safe-area padding, else the chip rail hides behind it
@@ -239,7 +238,6 @@ details.acc .acc-body{padding:0 18px 18px}
 .boss .bt{font-family:var(--ffont);font-weight:800;font-size:var(--fs-lg);margin:3px 0 1px;letter-spacing:-.015em}
 .boss .bd{font-size:var(--fs-xs);color:var(--ink2);min-height:34px}
 
-.searchhit{background:#fbe9a8!important;border-radius:3px}
 
 /* ── TRACKER form ── */
 .tgl{position:relative;display:inline-block;width:42px;height:24px;flex-shrink:0}
@@ -359,51 +357,18 @@ table.weekgrid input.gnum:focus{background:var(--green-bg)}
 .rowgroup-h td{background:var(--paper2);font-family:var(--ffont);font-weight:600;font-size:var(--fs-2xs);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);text-align:left;padding:6px 11px;position:sticky;left:0}
 .measure-toggle{cursor:pointer;user-select:none}
 
-.overlay{display:none;position:fixed;inset:0;background:rgba(20,15,10,.4);z-index:75}
-.overlay.show{display:block}
-/* mobile slide menu (full nav) */
-.drawer{position:fixed;top:0;left:0;width:280px;max-width:84vw;height:100vh;background:var(--paper);z-index:90;
-  transform:translateX(-100%);transition:transform var(--t);overflow-y:auto;box-shadow:0 0 40px rgba(0,0,0,.25);
-  padding:calc(20px + env(safe-area-inset-top)) 20px calc(20px + env(safe-area-inset-bottom))}
-.drawer.open{transform:none}
-.drawer h4{font-family:var(--ffont);font-weight:600;font-size:var(--fs-2xs);letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin:18px 0 8px}
-.drawer button.dlink{display:block;width:100%;text-align:left;border:none;background:none;font-family:var(--ffont);font-size:var(--fs-sm);color:var(--ink2);padding:9px 10px;border-radius:8px;cursor:pointer}
-.drawer button.dlink.on{background:var(--accent-soft);color:var(--accent);font-weight:600}
-.drawer .dsearch{width:100%;border:1px solid var(--line2);border-radius:8px;padding:9px 12px;font-family:inherit;font-size:.88rem;outline:none}
-
-/* v2 daily command surface — light + neon green */
-.command{
-  margin-top:18px;background:var(--grad-soft);color:var(--ink);border-radius:var(--r);padding:18px;border:1px solid var(--line);
-  box-shadow:var(--shadow);display:grid;grid-template-columns:1.1fr 1.4fr .9fr;gap:14px;align-items:stretch
-}
-.command .panel{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:14px;box-shadow:var(--shadow-sm)}
-.command .eyebrow{font-family:var(--ffont);font-weight:700;font-size:var(--fs-2xs);letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
-.command .big{font-family:var(--ffont);font-size:var(--fs-3xl);font-weight:800;letter-spacing:-.02em;line-height:1;color:var(--accent)}
-.command .sub{font-size:var(--fs-xs);color:var(--muted);margin-top:5px}
-.command .metricline{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
-.command .mini{border-left:2px solid var(--accent-soft);padding-left:9px}
-.command .mini b{display:block;font-family:var(--ffont);font-weight:700;font-size:var(--fs-2xs);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
-.command .mini span{display:block;font-size:var(--fs-sm);font-weight:600;color:var(--ink);margin-top:2px;white-space:nowrap}
-.command .miss{display:flex;flex-wrap:wrap;gap:7px;margin-top:8px}
-.command .miss span{font-size:var(--fs-2xs);font-weight:700;background:var(--paper2);color:var(--ink2);border-radius:999px;padding:4px 9px}
-.command .miss span.done{background:var(--accent-soft);color:var(--accent-ink);border:1px solid rgba(31,170,93,.25)}
-.command .focus{font-family:var(--ffont);font-weight:700;font-size:var(--fs-lg);line-height:1.22;letter-spacing:-.01em}
 .quiet-note{font-size:var(--fs-xs);color:var(--muted);margin-top:8px}
-@media(max-width:860px){.command{grid-template-columns:1fr}.command .metricline{grid-template-columns:repeat(3,1fr)}}
 @media(max-width:520px){
-  .subnav{top:calc(96px + env(safe-area-inset-top))}.command{padding:14px}.command .metricline{grid-template-columns:1fr 1fr}.command .big{font-size:var(--fs-3xl)}
-  /* the ☰ button forces an asymmetric 56px/12px inset, so the rail must shrink to stay
-     inside the viewport — otherwise its right edge is clipped by overflow-x:clip */
+  .subnav{top:calc(96px + env(safe-area-inset-top))}
   .seg{max-width:100%}
   .seg button{padding:7px 10px;font-size:var(--fs-2xs);letter-spacing:.03em}
-  .menu-btn{display:block}.tb-inner{padding-left:56px;padding-right:12px}
+  .tb-inner{padding-left:12px;padding-right:12px}
 }
 
 /* ══════════ FOOD SECTION ══════════ */
 
 .ftoday-top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:6px}
 .fdatestrip{display:flex;align-items:center;justify-content:center;gap:14px;margin:10px 0 16px}
-.fdatestrip .fdate{font-family:var(--ffont);font-weight:600;font-size:var(--fs-md);letter-spacing:.02em;min-width:120px;text-align:center}
 
 .btn-sm{font-family:var(--ffont);font-weight:600;font-size:var(--fs-2xs);letter-spacing:.03em;text-transform:uppercase;
   border:1px solid var(--line2);background:var(--paper);color:var(--ink2);border-radius:8px;padding:6px 12px;cursor:pointer;transition:all var(--t)}
@@ -411,7 +376,6 @@ table.weekgrid input.gnum:focus{background:var(--green-bg)}
 .btn-sm.danger{color:var(--red);border-color:var(--red-bg)}
 
 .fsearchbar{display:flex;gap:8px;align-items:center;margin:14px 0}
-.fsearchbar .dsearch{flex:1;margin:0}
 
 .flist{display:flex;flex-direction:column;gap:0}
 .frow{display:flex;align-items:center;gap:12px;padding:10px 4px;line-height:var(--lh-snug);border-bottom:1px solid var(--line);cursor:pointer;transition:background var(--t)}
@@ -630,31 +594,66 @@ section[id^="food-"] .lede{color:var(--fmut);font-size:var(--fs-md)}
 body.nav-hidden .topbar{transform:translateY(-100%)}
 body.nav-hidden .subnav{top:0}
 
-/* hero */
-.fhero{padding:24px 20px}
-.fhero-rings{display:flex;justify-content:space-around;align-items:center;gap:12px}
-.fring-wrap{position:relative;width:132px;height:132px}
+/* hero — compact.
+   The rings stay the focal point; what was oversized was the FRAME around them
+   (24px padding, a separate caption row, a fat buffer banner). Shrinking the
+   frame and pairing each caption with its own ring cuts ~60px of height without
+   touching the numbers — contrast comes from what surrounds a figure, not from
+   the figure itself (same principle as ADR-0033). */
+.fhero{padding:14px 14px 12px}
+.fhero-rings{display:flex;justify-content:space-around;align-items:flex-start;gap:10px}
+.fring-col{display:flex;flex-direction:column;align-items:center;gap:7px;min-width:0}
+.fring-wrap{position:relative;width:104px;height:104px}
 .fring-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none}
-.fring-val{font-family:var(--ffont);font-weight:800;font-size:var(--fs-3xl);line-height:1;color:var(--fink)}
-.fring-val small{font-size:var(--fs-md);font-weight:700}
-.fring-lbl{font-size:var(--fs-xs);color:var(--fmut);font-weight:600;margin-top:3px}
-.fhero-caps{display:flex;justify-content:space-around;margin-top:16px;text-align:center}
-.fhero-cap{font-size:var(--fs-sm);color:var(--fmut)}
-.fhero-cap b{font-size:var(--fs-lg);color:var(--fink);font-weight:800;display:block}
+.fring-val{font-family:var(--ffont);font-weight:800;font-size:var(--fs-2xl);line-height:1;color:var(--fink)}
+.fring-val small{font-size:var(--fs-sm);font-weight:700}
+.fring-lbl{font-size:var(--fs-2xs);color:var(--fmut);font-weight:600;margin-top:2px}
+.fhero-cap{font-size:var(--fs-2xs);color:var(--fmut);text-align:center;line-height:var(--lh-snug)}
+.fhero-cap b{font-size:var(--fs-md);color:var(--fink);font-weight:800;display:block}
 .fhero-cap b.over{color:var(--fred)} .fhero-cap b.good{color:var(--fgreen)}
-.fhero-buf{margin-top:16px;text-align:center;font-size:var(--fs-xs);color:var(--accent-ink);background:var(--fgreen-bg);border-radius:12px;padding:9px 12px;font-weight:600}
+.fhero-buf{margin-top:10px;text-align:center;font-size:var(--fs-2xs);color:var(--accent-ink);background:var(--fgreen-bg);border-radius:10px;padding:6px 10px;font-weight:600}
 
-/* search + pills */
-section[id^="food-"] .fsearch-input,.fsheet .fsearch-input,.fd-card .fsearch-input{font-family:var(--ffont);border-radius:14px;border:1.5px solid var(--fline);background:var(--fcard);box-shadow:var(--fshadow);font-size:1.02rem;padding:15px 18px;color:var(--fink)}
+/* date strip — day name first, so the day is readable at a glance */
+.fdatestrip{margin:8px 0 12px}
+.fdatestrip .fdate{display:inline-flex;align-items:baseline;gap:7px;min-width:150px;justify-content:center}
+.fdate-dow{font-family:var(--ffont);font-weight:700;font-size:var(--fs-md);color:var(--fink)}
+.fdate-d{font-size:var(--fs-sm);color:var(--fmut);font-weight:600}
+.fdate-tag{font-family:var(--ffont);font-weight:700;font-size:var(--fs-2xs);letter-spacing:.04em;text-transform:uppercase;
+  color:var(--accent-ink);background:var(--fgreen-bg);border-radius:6px;padding:2px 6px}
+
+/* search + quick actions */
+section[id^="food-"] .fsearch-input,.fsheet .fsearch-input,.fd-card .fsearch-input{font-family:var(--ffont);border-radius:14px;border:1.5px solid var(--fline);background:var(--fcard);box-shadow:var(--fshadow);font-size:1rem;padding:12px 15px;color:var(--fink)}
 section[id^="food-"] .fsearch-input:focus{border-color:var(--fgreen);box-shadow:0 0 0 4px var(--fgreen-bg)}
-.fsearch-results:not(:empty){border-radius:16px;border:1px solid var(--fline);box-shadow:var(--fshadow);background:var(--fcard);margin-top:8px;overflow:hidden;max-height:340px;overflow-y:auto}
-.fquick{margin:18px 0}
+.fsearch-results:not(:empty){border-radius:16px;border:1px solid var(--fline);box-shadow:var(--fshadow);background:var(--fcard);margin-top:8px;overflow:hidden;max-height:320px;overflow-y:auto}
+/* A results list is a PICKER, not a reading list — it should show more options in
+   less space, and never push the page it is overlaying off screen. */
+.fsearch-results .frow{padding:8px 12px;gap:10px}
+.fsearch-results .favatar{width:32px;height:32px;border-radius:9px;font-size:.9rem}
+.fsearch-results .fname{font-size:var(--fs-sm);gap:6px}
+.fsearch-results .fsub{font-size:var(--fs-2xs);margin-top:1px}
+.fsearch-results .fkcal{font-size:var(--fs-md);color:var(--fgreen)}
+.fsearch-results .fempty{padding:14px 10px;font-size:var(--fs-xs)}
+
+.fquick{margin:14px 0}
+/* still used by the Add-Item page, where it is NOT inside .fquick */
 .fquick-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+/* Two families, two weights: the AI capture routes are a primary pair; repeat /
+   new-item are quiet text shortcuts. Previously all five sat in one wrapping
+   rail of identical pills, so nothing read as more or less important. */
+.fquick-ai{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+.fact{display:flex;align-items:center;justify-content:center;gap:7px;font-family:var(--ffont);font-weight:700;font-size:var(--fs-sm);
+  border:1px solid var(--fgreen);background:var(--fgreen-bg);color:var(--accent-ink);border-radius:14px;padding:12px 8px;
+  cursor:pointer;line-height:1;transition:filter var(--t)}
+.fact:hover{filter:brightness(.97)}
+.fact-ic{font-size:1.05rem;line-height:1}
+.fquick-more{display:flex;gap:18px;margin-top:6px;padding-left:2px}
+.flink{font-family:var(--ffont);font-weight:600;font-size:var(--fs-xs);border:none;background:none;color:var(--fmut);padding:7px 0;cursor:pointer}
+.flink:hover{color:var(--fgreen)}
 .fpill-btn{font-family:var(--ffont);font-weight:600;font-size:var(--fs-sm);border:1px solid var(--fline);background:var(--fcard);color:var(--fink);border-radius:22px;padding:10px 16px;cursor:pointer;box-shadow:var(--fshadow)}
 .fpill-btn:hover{border-color:var(--fgreen);color:var(--fgreen)}
 
 /* slot cards */
-.fslot{background:var(--fcard);border:1px solid var(--fline);border-radius:var(--fr);box-shadow:var(--fshadow);padding:14px 14px 6px;margin:12px 0}
+.fslot{background:var(--fcard);border:1px solid var(--fline);border-radius:var(--fr);box-shadow:var(--fshadow);padding:12px 14px 4px;margin:10px 0}
 .fslot-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:4px}
 .fslot-title{font-family:var(--ffont);font-weight:700;font-size:var(--fs-lg);color:var(--fink);line-height:var(--lh-tight);letter-spacing:-.01em}
 .fslot-right{display:flex;align-items:center;gap:12px}
@@ -673,14 +672,30 @@ section[id^="food-"] .fsearch-input:focus{border-color:var(--fgreen);box-shadow:
 .fsugg-edit.wide{width:100%;text-align:center;padding:11px}
 .fsugg-edit:hover{color:var(--fgreen);border-color:var(--fgreen)}
 
-/* logged rows */
-.fslot .logrow{padding:10px 2px;border-bottom:1px solid var(--fline);background:transparent;gap:10px;line-height:var(--lh-snug)}
+/* logged rows — dense.
+   The row was competing with its own slot header: 14px name, a 46px-wide
+   "🥗 Item" badge and a bordered uppercase ✕ button. Name drops to 13,
+   sub-line to 11, the badge becomes its glyph alone, and ✕ becomes a bare
+   glyph with padding for the tap target. Header:item ratio stays ~1.3. */
+.fslot .logrow{padding:7px 2px;border-bottom:1px solid var(--fline);background:transparent;gap:8px;line-height:var(--lh-snug)}
 .fslot .logrow:last-child{border-bottom:none}
-.fslot .logrow .fname{font-family:var(--ffont);font-weight:600;font-size:var(--fs-base);color:var(--fink)}
-.fslot .logrow .fsub{font-size:var(--fs-xs);color:var(--fmut)}
-.fslot .logrow .fkcal{font-family:var(--ffont);font-weight:700;font-size:var(--fs-md);color:var(--fink)}
-.fslot .logrow .fkcal small{color:var(--fmut)}
-.fdrag{color:#cdd6d1}
+.fslot .logrow .fname{font-family:var(--ffont);font-weight:600;font-size:var(--fs-sm);color:var(--fink)}
+.fslot .logrow .fsub{font-size:var(--fs-2xs);color:var(--fmut);margin-top:1px}
+.fslot .logrow .fkcal{font-family:var(--ffont);font-weight:700;font-size:var(--fs-base);color:var(--fink)}
+.fslot .logrow .fkcal small{font-size:var(--fs-2xs);color:var(--fmut)}
+.fdrag{color:#d3dbd7;font-size:.9rem}
+
+/* kind marker: the glyph carries what the word did */
+.fkind{flex:none;display:grid;place-items:center;width:24px;height:24px;border-radius:7px;font-size:.8rem;line-height:1}
+.fkind.item{background:var(--fgreen-bg)}
+.fkind.meal{background:var(--fblue-bg)}
+.fkind.adhoc{background:var(--famber-bg)}
+
+/* remove: small glyph, generous padding — reads as ~11px, taps as ~27x26 */
+.fx{flex:none;border:none;background:none;color:#c2ccc6;font-size:.72rem;line-height:1;padding:7px 9px;margin-right:-5px;
+  cursor:pointer;border-radius:8px;transition:color var(--t),background var(--t)}
+.fx:hover{color:var(--fred);background:var(--fred-bg)}
+
 .fbadge{font-family:var(--ffont);font-weight:700;font-size:var(--fs-2xs)}
 .fbadge.item{background:var(--fgreen-bg);color:var(--accent-ink)} .fbadge.meal{background:var(--fblue-bg);color:var(--blue-ink)} .fbadge.adhoc{background:var(--famber-bg);color:var(--amber-ink)}
 

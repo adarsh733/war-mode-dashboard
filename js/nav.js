@@ -1,17 +1,17 @@
-/* nav.js — routing, section nav, drawer, global nav bindings
+/* nav.js — routing, section nav, global nav bindings
 
    Nav model (ADR-0022): three TOP-LEVEL TABS — tracker | food | more — but five SECTIONS.
    Fitness and Health are sections without a tab of their own; they live behind the "More"
    landing and light the More tab via SEC_TAB. Keep "section" and "tab" distinct below. */
-/* Every key MUST have a matching <section id>. The search below walks these ids and
-   calls getElementById(id).textContent — a stale key throws and kills the search. */
+/* Every key MUST have a matching <section id> — go() calls getElementById(id).classList
+   with no null check, so a stale key throws and breaks navigation to that page.
+   (The drawer search that also walked these ids is gone — ADR-0034 — so key ORDER no
+   longer matters here. It still matters in SEC_TAB below, which orders the swipe chain.) */
 const PAGES={
   'fit-home':'fitness','fit-progress':'fitness','fit-compliance':'fitness','fit-plan':'fitness','fit-sleep':'fitness',
   'h-home':'health','h-thyroid':'health','h-lipids':'health','h-vitamins':'health','h-bloodwork':'health',
   't-log':'tracker','t-history':'tracker','t-checkin':'tracker',
   'food-today':'food','food-pantry':'food','food-meals':'food','food-add':'food',
-  /* LAST on purpose: search is a first-match-wins walk over these keys, and the More landing
-     merely lists the words "Fitness"/"Health" — leading with it would hijack those searches. */
   'more-home':'more'
 };
 const HOME={more:'more-home',fitness:'fit-home',health:'h-home',tracker:'t-log',food:'food-today'};
@@ -56,9 +56,7 @@ function go(id){
   document.getElementById(id).classList.add('active');
   paintDirection(fromId,id);
   document.querySelectorAll('.chip').forEach(c=>c.classList.toggle('on',c.dataset.p===id));
-  document.querySelectorAll('.dlink').forEach(c=>c.classList.toggle('on',c.dataset.p===id));
   window.scrollTo({top:0,behavior:'smooth'});
-  closeDrawer();
   buildCharts(id);
   if(id==='t-log')renderWeek();
   if(id==='t-history')renderHistory();
@@ -68,7 +66,7 @@ function go(id){
   if(id==='food-meals'&&typeof renderMeals==='function')renderMeals();
   if(id==='food-add'&&typeof renderAddItem==='function')renderAddItem();
 }
-document.querySelectorAll('.chip,.dlink,.navcard').forEach(el=>el.addEventListener('click',()=>go(el.dataset.p)));
+document.querySelectorAll('.chip,.navcard').forEach(el=>el.addEventListener('click',()=>go(el.dataset.p)));
 
 /* auto-hide the top bar on scroll-down — ALL sections, to free vertical space */
 window.addEventListener('scroll', ()=>{
@@ -108,8 +106,8 @@ function swipeChain(){ return _swipeOrder||(_swipeOrder=buildSwipeOrder()); }
 function swipeIndexOf(id){ return swipeChain().indexOf(id); }
 
 /* Direction-aware page transition. In practice nearly every navigation is directional, because
-   all but the hidden Pantry/Add pages are on the chain — so chip taps, drawer links, nav cards
-   and search all slide too. Only off-chain pages fall back to the plain fade. */
+   all but the hidden Pantry/Add pages are on the chain — so chip taps and nav cards slide too.
+   Only off-chain pages fall back to the plain fade. */
 function paintDirection(fromId,toId){
   const el=document.getElementById(toId); if(!el) return;
   el.classList.remove('nav-fwd','nav-back');
@@ -140,7 +138,7 @@ function edgeNudge(){
    scrollWidth, which force a synchronous layout, and doing that on every tap would put a reflow on
    the tap path. By touchend we already know the gesture was a real horizontal flick. */
 function swipeBlocked(target){
-  if(document.querySelector('.fsheet-overlay.show,.fd-overlay.show,#lbViewer.show,.lightbox.show,.drawer.open'))
+  if(document.querySelector('.fsheet-overlay.show,.fd-overlay.show,#lbViewer.show,.lightbox.show'))
     return true;                                           // a sheet/modal owns the screen
   for(let el=target; el&&el!==document.body; el=el.parentElement){
     const tag=el.tagName;
@@ -183,23 +181,7 @@ function swipeBlocked(target){
   surface.addEventListener('touchcancel',()=>{armed=false;},{passive:true});
 })();
 
-function openDrawer(){document.getElementById('drawer').classList.add('open');document.getElementById('overlay').classList.add('show');}
-function closeDrawer(){document.getElementById('drawer').classList.remove('open');document.getElementById('overlay').classList.remove('show');}
-
-/* search */
-document.getElementById('search').addEventListener('input',function(){
-  const q=this.value.trim().toLowerCase();
-  document.querySelectorAll('.searchhit').forEach(e=>e.classList.remove('searchhit'));
-  if(q.length<2)return;
-  for(const id in PAGES){
-    if(document.getElementById(id).textContent.toLowerCase().includes(q)){
-      go(id);
-      setTimeout(()=>{
-        const w=document.createTreeWalker(document.getElementById(id),NodeFilter.SHOW_TEXT);let n;
-        while(n=w.nextNode()){if(n.nodeValue.toLowerCase().includes(q)&&n.parentElement){n.parentElement.classList.add('searchhit');n.parentElement.scrollIntoView({behavior:'smooth',block:'center'});break;}}
-      },200);
-      break;
-    }
-  }
-});
+/* The hamburger drawer — and with it the dashboard-wide search box — is gone
+   (ADR-0034). PAGES is still the routing table; it just no longer has a second
+   consumer walking it for text matches. */
 
