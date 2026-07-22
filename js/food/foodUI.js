@@ -130,14 +130,14 @@ function heroHtml(t){
     <div class="fhero-rings">
       <div class="fring-col">
         <div class="fring-wrap">
-          <canvas id="ringKcal" width="104" height="104"></canvas>
+          <canvas id="ringKcal" width="88" height="88"></canvas>
           <div class="fring-center"><span class="fring-val">${t.kcal.toLocaleString()}</span><span class="fring-lbl">/ ${FOOD_TARGETS.kcal.toLocaleString()}</span></div>
         </div>
         <div class="fhero-cap">${kcalLeft>=0?`<b>${kcalLeft.toLocaleString()}</b> kcal left`:`<b class="over">${(-kcalLeft).toLocaleString()}</b> over`}</div>
       </div>
       <div class="fring-col">
         <div class="fring-wrap">
-          <canvas id="ringProt" width="104" height="104"></canvas>
+          <canvas id="ringProt" width="88" height="88"></canvas>
           <div class="fring-center"><span class="fring-val">${t.protein}<small>g</small></span><span class="fring-lbl">/ ${FOOD_TARGETS.protein}g</span></div>
         </div>
         <div class="fhero-cap">${protLeft>0?`<b>${protLeft}g</b> protein to go`:`<b class="good">goal hit ✓</b>`}</div>
@@ -148,9 +148,6 @@ function heroHtml(t){
   <div class="fquick">
     <input class="fsearch-input" id="quickSearch" placeholder="🔍 Search a food or meal…" autocomplete="off" oninput="renderQuickResults&&renderQuickResults(this.value)">
     <div id="quickResults" class="flist fsearch-results"></div>
-    <!-- Two families, deliberately different weights: the AI capture routes are the
-         primary pair; repeat/new-item are secondary shortcuts. "Meals" is gone —
-         it is already a subtab at the top of this page. -->
     <div class="fquick-ai">
       <button class="fact" onclick="aiLogText&&aiLogText()"><span class="fact-ic">🗣</span>Log by typing</button>
       <button class="fact" onclick="aiScanPlate&&aiScanPlate()"><span class="fact-ic">🍽</span>Plate photo</button>
@@ -463,12 +460,18 @@ function renderMeals(){
   if(!meals.length){ box.innerHTML=`<div class="fempty">No meals of your own yet. Build reusable bundles like “Blueberry Yeast Protein Smoothie”. <button class="chip" onclick="createMeal&&createMeal()">+ Create a meal</button></div>`+starterNote; return; }
   box.innerHTML = meals.sort((a,b)=>a.name.localeCompare(b.name)).map(meal=>{
     const t=fmtMacros(mealTotals(meal,FOOD_ITEMS));
-    return `<div class="frow">
-      ${avatarFor(meal.name)}
-      <div class="fmain" onclick="openMealLogSheet&&openMealLogSheet('${meal.id}')"><div class="fname">${htmlSafe(meal.name)} <span class="fbadge meal">🍲 Meal</span></div><div class="fsub">${(meal.components||[]).length} items · ${t.kcal} kcal · ${t.protein}g P</div></div>
-      <button class="btn-sm" onclick="openMealLogSheet&&openMealLogSheet('${meal.id}')">＋ log</button>
-      <button class="btn-sm" onclick="editMealById&&editMealById('${meal.id}')">✎</button>
-      <button class="btn-sm danger" onclick="confirmDeleteMeal('${meal.id}')">🗑</button>
+    return `<div class="frow fmeal-row">
+      <div class="fmain" onclick="openMealLogSheet&&openMealLogSheet('${meal.id}')">
+        <div class="fname">${htmlSafe(meal.name)}</div>
+        <div class="fsub">${(meal.components||[]).length} items · ${t.kcal} kcal · ${t.protein}g P</div>
+      </div>
+      <div class="fmeal-actions">
+        <div class="fmeal-stack">
+          <button class="fmeal-btn log" onclick="openMealLogSheet&&openMealLogSheet('${meal.id}')" title="Log meal">＋</button>
+          <button class="fmeal-btn edit" onclick="editMealById&&editMealById('${meal.id}')" title="Edit meal">✎</button>
+        </div>
+        <button class="fmeal-del" onclick="confirmDeleteMeal('${meal.id}')" title="Delete meal">🗑</button>
+      </div>
     </div>`;
   }).join('') + starterNote;
 }

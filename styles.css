@@ -522,37 +522,37 @@ section[id^="food-"] .sec-label,.fsheet .sec-label{font-family:var(--ffont);font
 
 /* ── big aesthetic search ── */
 .fsearch-input{width:100%;border:1.5px solid var(--line2);background:var(--paper);color:var(--ink);
-  border-radius:14px;padding:15px 18px;font-family:var(--ffont);font-size:1.05rem;outline:none;
+  border-radius:12px;padding:9px 13px;font-family:var(--ffont);font-size:var(--fs-sm);outline:none;
   box-shadow:var(--shadow-sm);transition:border var(--t),box-shadow var(--t)}
 .fsearch-input::placeholder{color:var(--muted)}
 .fsearch-input:focus{border-color:var(--accent);box-shadow:0 0 0 4px var(--accent-soft)}
-.fsearchbar{display:flex;gap:10px;align-items:center;margin:16px 0}
+.fsearchbar{display:flex;gap:10px;align-items:center;margin:10px 0}
 .fsearchbar .fsearch-input{flex:1}
 .fsearch-results:not(:empty){margin-top:8px;border:1px solid var(--line);border-radius:14px;background:var(--paper);
-  box-shadow:var(--shadow);overflow:hidden;max-height:360px;overflow-y:auto}
-.fsearch-results .frow{padding:12px 14px}
+  box-shadow:var(--shadow);overflow:hidden;max-height:320px;overflow-y:auto}
+.fsearch-results .frow{padding:8px 12px;gap:10px}
 .fsearch-results .frow:last-child{border-bottom:none}
 
 /* ── hero rings ── */
-.fhero{padding:22px 18px}
-.fhero-rings{display:flex;justify-content:space-around;gap:10px;flex-wrap:wrap}
-.fring-wrap{position:relative;width:132px;height:132px}
+.fhero{padding:10px 12px 6px}
+.fhero-rings{display:flex;justify-content:space-around;gap:8px;flex-wrap:wrap}
+.fring-wrap{position:relative;width:84px;height:84px}
 .fring-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;pointer-events:none}
-.fring-val{font-family:var(--ffont);font-weight:700;font-size:var(--fs-3xl);line-height:1;color:var(--ink)}
-.fring-val small{font-size:var(--fs-md);font-weight:600}
-.fring-lbl{font-family:var(--ffont);font-weight:500;font-size:var(--fs-xs);letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-top:4px}
-.fring-goal{font-size:var(--fs-2xs);color:var(--muted);margin-top:3px}
-.fhero-macros{display:flex;justify-content:center;gap:26px;margin:18px 0 12px}
+.fring-val{font-family:var(--ffont);font-weight:800;font-size:var(--fs-xl);line-height:1;color:var(--ink)}
+.fring-val small{font-size:var(--fs-xs);font-weight:600}
+.fring-lbl{font-family:var(--ffont);font-weight:500;font-size:var(--fs-2xs);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:1px}
+.fring-goal{font-size:var(--fs-2xs);color:var(--muted);margin-top:2px}
+.fhero-macros{display:flex;justify-content:center;gap:20px;margin:10px 0 8px}
 .fmac{text-align:center}
 .fmac-k{display:block;font-family:var(--ffont);font-weight:500;font-size:var(--fs-2xs);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
 .fmac-v{display:block;font-family:var(--ffont);font-weight:700;font-size:var(--fs-md);margin-top:2px}
-.macrobar{height:11px;margin-top:6px}
-.macrolegend{gap:16px;font-size:var(--fs-xs)}
+.macrobar{height:9px;margin-top:4px}
+.macrolegend{gap:12px;font-size:var(--fs-xs)}
 .macrolegend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:middle}
 
 /* ── quick add block ── */
-.fquick{margin:18px 0 6px}
-.fquick .fquick-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.fquick{margin:6px 0 2px}
+.fquick .fquick-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
 
 /* ── meal-slot sections ── */
 .fslot{margin:14px 0;padding:4px 0 8px;border-top:2px solid var(--line)}
@@ -637,21 +637,21 @@ body.nav-hidden .subnav{top:0}
    frame and pairing each caption with its own ring cuts ~60px of height without
    touching the numbers — contrast comes from what surrounds a figure, not from
    the figure itself (same principle as ADR-0033). */
-.fhero{padding:14px 14px 12px}
-.fhero-rings{display:flex;justify-content:space-around;align-items:flex-start;gap:10px}
-.fring-col{display:flex;flex-direction:column;align-items:center;gap:7px;min-width:0}
-.fring-wrap{position:relative;width:104px;height:104px}
+.fhero{padding:10px 12px 6px}
+.fhero-rings{display:flex;justify-content:space-around;align-items:flex-start;gap:8px}
+.fring-col{display:flex;flex-direction:column;align-items:center;gap:4px;min-width:0}
+.fring-wrap{position:relative;width:84px;height:84px}
 .fring-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none}
-.fring-val{font-family:var(--ffont);font-weight:800;font-size:var(--fs-2xl);line-height:1;color:var(--fink)}
-.fring-val small{font-size:var(--fs-sm);font-weight:700}
-.fring-lbl{font-size:var(--fs-2xs);color:var(--fmut);font-weight:600;margin-top:2px}
+.fring-val{font-family:var(--ffont);font-weight:800;font-size:var(--fs-xl);line-height:1;color:var(--fink)}
+.fring-val small{font-size:var(--fs-xs);font-weight:700}
+.fring-lbl{font-size:var(--fs-2xs);color:var(--fmut);font-weight:600;margin-top:1px}
 .fhero-cap{font-size:var(--fs-2xs);color:var(--fmut);text-align:center;line-height:var(--lh-snug)}
-.fhero-cap b{font-size:var(--fs-md);color:var(--fink);font-weight:800;display:block}
+.fhero-cap b{font-size:var(--fs-sm);color:var(--fink);font-weight:800;display:block}
 .fhero-cap b.over{color:var(--fred)} .fhero-cap b.good{color:var(--fgreen)}
-.fhero-buf{margin-top:10px;text-align:center;font-size:var(--fs-2xs);color:var(--accent-ink);background:var(--grad-green-bg);border-radius:10px;padding:6px 10px;font-weight:600}
+.fhero-buf{margin-top:6px;text-align:center;font-size:var(--fs-2xs);color:var(--accent-ink);background:var(--grad-green-bg);border-radius:8px;padding:4px 8px;font-weight:600}
 
 /* date strip — day name first, so the day is readable at a glance */
-.fdatestrip{margin:8px 0 12px}
+.fdatestrip{margin:6px 0 10px}
 .fdatestrip .fdate{display:inline-flex;align-items:baseline;gap:7px;min-width:150px;justify-content:center}
 .fdate-dow{font-family:var(--ffont);font-weight:700;font-size:var(--fs-md);color:var(--fink)}
 .fdate-d{font-size:var(--fs-sm);color:var(--fmut);font-weight:600}
@@ -659,11 +659,9 @@ body.nav-hidden .subnav{top:0}
   color:var(--accent-ink);background:var(--grad-green-bg);border-radius:6px;padding:2px 6px}
 
 /* search + quick actions */
-section[id^="food-"] .fsearch-input,.fsheet .fsearch-input,.fd-card .fsearch-input{font-family:var(--ffont);border-radius:14px;border:1.5px solid var(--fline);background:var(--fcard);box-shadow:var(--fshadow);font-size:1rem;padding:12px 15px;color:var(--fink)}
+section[id^="food-"] .fsearch-input,.fsheet .fsearch-input,.fd-card .fsearch-input{font-family:var(--ffont);border-radius:12px;border:1.5px solid var(--fline);background:var(--fcard);box-shadow:var(--fshadow);font-size:var(--fs-sm);padding:9px 13px;color:var(--fink)}
 section[id^="food-"] .fsearch-input:focus{border-color:var(--fgreen);box-shadow:0 0 0 4px var(--fgreen-bg)}
 .fsearch-results:not(:empty){border-radius:16px;border:1px solid var(--fline);box-shadow:var(--fshadow);background:var(--fcard);margin-top:8px;overflow:hidden;max-height:320px;overflow-y:auto}
-/* A results list is a PICKER, not a reading list — it should show more options in
-   less space, and never push the page it is overlaying off screen. */
 .fsearch-results .frow{padding:8px 12px;gap:10px}
 .fsearch-results .favatar{width:32px;height:32px;border-radius:9px;font-size:.9rem}
 .fsearch-results .fname{font-size:var(--fs-sm);gap:6px}
@@ -671,23 +669,37 @@ section[id^="food-"] .fsearch-input:focus{border-color:var(--fgreen);box-shadow:
 .fsearch-results .fkcal{font-size:var(--fs-md);color:var(--fgreen)}
 .fsearch-results .fempty{padding:14px 10px;font-size:var(--fs-xs)}
 
-.fquick{margin:14px 0}
-/* still used by the Add-Item page, where it is NOT inside .fquick */
-.fquick-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
-/* Two families, two weights: the AI capture routes are a primary pair; repeat /
-   new-item are quiet text shortcuts. Previously all five sat in one wrapping
-   rail of identical pills, so nothing read as more or less important. */
-.fquick-ai{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
-.fact{display:flex;align-items:center;justify-content:center;gap:7px;font-family:var(--ffont);font-weight:700;font-size:var(--fs-sm);
-  border:1px solid var(--fgreen);background:var(--grad-green-bg);color:var(--accent-ink);border-radius:14px;padding:12px 8px;
+.fquick{margin:6px 0 2px}
+.fquick-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.fquick-ai{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+.fact{display:flex;align-items:center;justify-content:center;gap:6px;font-family:var(--ffont);font-weight:700;font-size:var(--fs-xs);
+  border:1px solid var(--fgreen);background:var(--grad-green-bg);color:var(--accent-ink);border-radius:11px;padding:8px 6px;
   cursor:pointer;line-height:1;transition:filter var(--t)}
 .fact:hover{filter:brightness(.97)}
-.fact-ic{font-size:1.05rem;line-height:1}
-.fquick-more{display:flex;gap:18px;margin-top:6px;padding-left:2px}
-.flink{font-family:var(--ffont);font-weight:600;font-size:var(--fs-xs);border:none;background:none;color:var(--fmut);padding:7px 0;cursor:pointer}
+.fact-ic{font-size:.95rem;line-height:1}
+.fquick-more{display:flex;gap:14px;margin-top:3px;padding-left:2px}
+.flink{font-family:var(--ffont);font-weight:600;font-size:var(--fs-2xs);border:none;background:none;color:var(--fmut);padding:3px 0;cursor:pointer}
 .flink:hover{color:var(--fgreen)}
 .fpill-btn{font-family:var(--ffont);font-weight:600;font-size:var(--fs-sm);border:1px solid var(--fline);background:var(--fcard);color:var(--fink);border-radius:22px;padding:10px 16px;cursor:pointer;box-shadow:var(--fshadow)}
 .fpill-btn:hover{border-color:var(--fgreen);color:var(--fgreen)}
+
+/* Meals tab decluttered rows */
+.fmeal-row{display:flex;align-items:center;gap:12px;padding:10px 4px;border-bottom:1px solid var(--fline)}
+.fmeal-row:last-child{border-bottom:none}
+.fmeal-row .fmain{flex:1;min-width:0;cursor:pointer}
+.fmeal-row .fname{font-family:var(--ffont);font-weight:700;font-size:var(--fs-base);color:var(--fink);line-height:1.25}
+.fmeal-row .fsub{font-size:var(--fs-xs);color:var(--fmut);margin-top:2px}
+.fmeal-actions{display:flex;align-items:center;gap:8px;flex:none}
+.fmeal-stack{display:flex;flex-direction:column;gap:3px}
+.fmeal-btn{width:28px;height:24px;border-radius:6px;font-family:var(--ffont);font-weight:700;font-size:var(--fs-sm);
+  display:grid;place-items:center;cursor:pointer;line-height:1;transition:all var(--t)}
+.fmeal-btn.log{background:var(--grad);color:#fff;border:none;box-shadow:0 2px 6px rgba(31,170,93,.3)}
+.fmeal-btn.log:hover{filter:brightness(1.08)}
+.fmeal-btn.edit{background:var(--fcard);color:var(--fmut);border:1px solid var(--fline)}
+.fmeal-btn.edit:hover{border-color:var(--fgreen);color:var(--fgreen)}
+.fmeal-del{width:26px;height:26px;border-radius:6px;border:none;background:var(--fred-bg);color:var(--fred);
+  font-size:var(--fs-xs);display:grid;place-items:center;cursor:pointer;transition:all var(--t)}
+.fmeal-del:hover{background:var(--fred);color:#fff}
 
 /* slot cards */
 .fslot{background:var(--fcard);border:1px solid var(--fline);border-radius:var(--fr);box-shadow:var(--fshadow);padding:12px 14px 4px;margin:10px 0}
