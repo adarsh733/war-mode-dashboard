@@ -65,6 +65,27 @@ function toBaseAmount(item, quantity, servingIndex){
   return s ? q * (Number(s.amount) || 0) : q;
 }
 
+/* The unit an item is normally counted in — "1 slice" for bread, "1 katori" for
+ * dal — as an index into item.servings, or -1 for grams/ml. Every seeded item
+ * defines defaultServingIndex; the fallbacks cover items created later by hand
+ * or by an AI path that forgot to set one, so callers can rely on getting a
+ * sensible unit rather than defaulting to grams. Display layer only — the stored
+ * amount stays in base units, per ADR-0005. */
+function primaryServingIndex(item){
+  if(!item) return -1;
+  const list = item.servings || [];
+  const d = item.defaultServingIndex;
+  if(d != null && d >= 0 && d < list.length) return d;
+  return list.length ? 0 : -1;
+}
+/* How many of that unit a base amount comes to (28g bread → 1 slice). */
+function qtyInServing(item, baseAmount, servingIndex){
+  if(servingIndex == null || servingIndex < 0) return Number(baseAmount) || 0;
+  const s = item && item.servings && item.servings[servingIndex];
+  const per = s ? (Number(s.amount) || 0) : 0;
+  return per ? (Number(baseAmount) || 0) / per : (Number(baseAmount) || 0);
+}
+
 /* Empty macro accumulator. fiber tracked separately; undefined until some item has it. */
 function zeroMacros(){ return { kcal:0, protein:0, carbs:0, fat:0, fiber:0, hasFiber:false }; }
 

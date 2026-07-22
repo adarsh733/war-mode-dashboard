@@ -193,8 +193,13 @@ function renderMealEditor(){
   const rows = d.components.map((c,i)=>{
     const it=FOOD_ITEMS[c.itemId]; if(!it) return '';
     const m=fmtMacros(macrosForAmount(it,c.amount)); const u=baseUnit(it);
-    return `<div class="fserv-row"><div class="fmain"><div class="fname">${htmlSafe(it.name)}</div><div class="fsub">${m.kcal} kcal · ${m.protein}g P</div></div>
-      <input class="finput fserv-amt" type="number" inputmode="decimal" value="${c.amount}" oninput="mealSetAmount(${i},this.value)"><span class="funit">${u}</span>
+    const ui=mealUnitIndex(c,it);
+    const qty=mealFmtQty(qtyInServing(it,c.amount,ui));
+    const opts=(it.servings||[]).map((s,j)=>`<option value="${j}" ${j===ui?'selected':''}>${htmlSafe(s.label)}</option>`).join('')
+      + `<option value="-1" ${ui<0?'selected':''}>${u}</option>`;
+    return `<div class="fserv-row"><div class="fmain"><div class="fname">${htmlSafe(it.name)}</div><div class="fsub">${m.kcal} kcal · ${m.protein}g P${ui>=0?` · ${round1(c.amount)}${u}`:''}</div></div>
+      <input class="finput fserv-amt" type="number" inputmode="decimal" step="any" value="${qty}" oninput="mealSetQty(${i},this.value)">
+      <select class="finput fserv-unit" onchange="mealSetUnit(${i},this.value)">${opts}</select>
       <button type="button" class="btn-sm danger" onclick="mealRemove(${i})">✕</button></div>`;
   }).join('') || `<div class="fempty">No ingredients yet.</div>`;
   const t=fmtMacros(mealTotals(mealDraftAsMeal(),FOOD_ITEMS));
@@ -224,13 +229,63 @@ function renderMealPicker(q){
   const items=foodSearchItems(q,8);
   box.innerHTML=items.map(it=>`<div class="frow" onclick="mealAdd('${it.id}')">${avatarFor(it.name)}<div class="fmain"><div class="fname">${htmlSafe(it.name)}</div><div class="fsub">per 100${baseUnit(it)}: ${it.per100.kcal} kcal</div></div><div class="fkcal">+</div></div>`).join('')||`<div class="fempty">No match.</div>`;
 }
+/* Which unit to SHOW a component in.
+ * `unitIndex` is stored once the user picks one. Components saved before this
+ * existed have only a gram amount, so infer: use the item's primary unit when
+ * the amount is a clean multiple of it (28g bread -> "1 slice"), otherwise stay
+ * in grams — "0.43 katori" of rice is less useful than "65 g". */
+function mealUnitIndex(c, it){
+  if(c.unitIndex != null) return c.unitIndex;
+  const p = primaryServingIndex(it);
+  if(p < 0) return -1;
+  const per = (it.servings[p] || {}).amount || 0;
+  if(!per) return -1;
+  const q = c.amount / per;
+  const clean = Math.abs(q - Math.round(q * 4) / 4) < 0.01;   // whole, half or quarter
+  return (clean && q > 0) ? p : -1;
+}
+/* trim float noise: 1, 1.5, 0.75 — never "1.0000000002" */
+function mealFmtQty(q){ return String(Math.round((Number(q)||0) * 1000) / 1000); }
+
 function mealAdd(itemId){
   const it=FOOD_ITEMS[itemId]; if(!it) return;
-  const di=(it.defaultServingIndex!=null&&it.defaultServingIndex>=0)?it.servings[it.defaultServingIndex].amount:100;
-  _mealDraft.components.push({ itemId, amount:di });
+  /* seed one of whatever the item is normally counted in */
+  const p=primaryServingIndex(it);
+  const amount = p>=0 ? (Number(it.servings[p].amount)||0) : 100;
+  _mealDraft.components.push({ itemId, amount, unitIndex:p });
   document.getElementById('mealPick').value=''; renderMealEditor();
 }
-function mealSetAmount(i,v){ if(_mealDraft.components[i]){ _mealDraft.components[i].amount=parseFloat(v)||0; } }
+/* Quantity is entered in the CHOSEN unit; `amount` stays in base units so
+ * mealTotals() and every downstream macro calc are untouched (ADR-0005). */
+function mealSetQty(i,v){
+  const c=_mealDraft.components[i]; if(!c) return;
+  const it=FOOD_ITEMS[c.itemId]; if(!it) return;
+  const ui=mealUnitIndex(c,it);
+  c.unitIndex=ui;
+  c.amount=toBaseAmount(it, parseFloat(v)||0, ui);
+  mealPaintTotals();
+}
+/* Switching units preserves the MASS and restates the quantity — picking
+ * "slice" on 56g of bread should read 2 slices, not 56 slices. */
+function mealSetUnit(i,v){
+  const c=_mealDraft.components[i]; if(!c) return;
+  c.unitIndex=parseInt(v,10);
+  renderMealEditor();
+}
+/* Update the header total without rebuilding the sheet — a re-render on every
+ * keystroke would steal focus from the input being typed into. */
+function mealPaintTotals(){
+  const el=document.querySelector('.fsheet-title .fsub'); if(!el) return;
+  const t=fmtMacros(mealTotals(mealDraftAsMeal(),FOOD_ITEMS));
+  el.textContent=`${t.kcal} kcal · ${t.protein}g protein`;
+  _mealDraft.components.forEach((c,i)=>{
+    const row=document.querySelectorAll('#meal_components .fserv-row')[i];
+    const it=FOOD_ITEMS[c.itemId]; if(!row||!it) return;
+    const m=fmtMacros(macrosForAmount(it,c.amount)); const u=baseUnit(it);
+    const sub=row.querySelector('.fsub');
+    if(sub) sub.textContent=`${m.kcal} kcal · ${m.protein}g P${c.unitIndex>=0?` · ${round1(c.amount)}${u}`:''}`;
+  });
+}
 function mealRemove(i){ _mealDraft.components.splice(i,1); renderMealEditor(); }
 function saveMealDraft(){
   if(!_mealDraft.name.trim()){ alert('Name the meal.'); return; }

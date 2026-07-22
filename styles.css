@@ -450,7 +450,9 @@ table.weekgrid input.gnum:focus{background:var(--green-bg)}
 .fseg button.on{background:var(--grad);color:#fff}
 .fserv-row{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid var(--line)}
 .fserv-row .fserv-label{flex:2}
-.fserv-row .fserv-amt{flex:1;max-width:88px}
+.fserv-row .fserv-amt{flex:0 0 62px;max-width:62px;text-align:center}
+/* unit picker sits with the quantity it belongs to */
+.fserv-row .fserv-unit{flex:0 0 auto;max-width:118px;padding:9px 8px;font-size:var(--fs-sm)}
 .fserv-row .fmain{flex:2;min-width:0}
 .fserv-def{display:flex;align-items:center;gap:3px;font-size:var(--fs-2xs);color:var(--muted);white-space:nowrap}
 .fcheck{display:flex;align-items:center;gap:8px;font-size:var(--fs-sm);color:var(--ink2);cursor:pointer}
