@@ -189,7 +189,7 @@ function slotsHtml(entries){
       ? `${sugg.length} usual ${label.toLowerCase()} food${sugg.length>1?'s':''}`
       : `Add your usual ${label.toLowerCase()} foods`;
     html += `
-    <section class="fslot" ondragover="foodDragOver(event)" ondrop="foodDropSlot(event,'${k}')">
+    <section class="fslot" data-slot="${k}">
       <div class="fslot-head">
         <div class="fslot-title">${emoji} ${label}</div>
         <div class="fslot-right"><span class="fslot-sub">${st.kcal} kcal · ${st.protein}g P</span><button class="fslot-add" onclick="openSlotAdd('${k}')" title="Add to ${label}">＋</button></div>
@@ -224,8 +224,8 @@ function entryRowHtml(e,i,slot){
       : e.kind==='meal'
       ? `${e.servings||1} serving${(e.servings||1)!=1?'s':''} · ${m.protein}g P${(e.overrides||e.removed)?' · edited':''}${e.oil&&e.oil.grams?` · +${e.oil.grams}g oil`:''}`
       : `${m.protein}g P`;
-  return `<div class="logrow" draggable="true" data-idx="${i}" ondragstart="foodDragStart(event,${i})" ondragover="foodDragOver(event)" ondrop="foodDropRow(event,${i},'${slot}')">
-      <span class="fdrag" title="Drag to reorder">⠿</span>
+  return `<div class="logrow" data-idx="${i}">
+      <span class="fdrag" title="Drag to reorder" aria-label="Drag to reorder">⠿</span>
       <span class="fkind ${e.kind}" title="${KIND_NAME[e.kind]||''}">${KIND_ICON[e.kind]||''}</span>
       <div class="fmain" onclick="openEntryDetail(${i})"><div class="fname">${htmlSafe(entryName(e))}</div><div class="fsub">${sub}</div></div>
       <div class="fkcal">${m.kcal}<small>kcal</small></div>
@@ -236,17 +236,180 @@ function entryRowHtml(e,i,slot){
 function removeEntry(i){ const day=logForDate(foodDate); if(!day) return; day.entries.splice(i,1); markDayDirty(); saveLogDay(foodDate); renderToday(); }
 function foodShiftDate(n){ foodDate = addDays(foodDate, n); renderToday(); }
 
-/* ---------- drag reorder ---------- */
-let _dragIdx=null;
-function foodDragStart(ev,idx){ _dragIdx=idx; ev.dataTransfer.effectAllowed='move'; try{ev.dataTransfer.setData('text','x');}catch(e){} }
-function foodDragOver(ev){ ev.preventDefault(); ev.dataTransfer.dropEffect='move'; }
-function foodDropRow(ev,targetIdx,slot){ ev.preventDefault(); ev.stopPropagation(); if(_dragIdx==null||_dragIdx===targetIdx){_dragIdx=null;return;}
-  const arr=logForDate(foodDate).entries; const [moved]=arr.splice(_dragIdx,1);
-  let ti = _dragIdx<targetIdx ? targetIdx-1 : targetIdx; if(slot) moved.meal=slot; arr.splice(ti,0,moved);
-  _dragIdx=null; markDayDirty(); saveLogDay(foodDate); renderToday(); }
-function foodDropSlot(ev,slot){ ev.preventDefault(); if(_dragIdx==null)return;
-  const arr=logForDate(foodDate).entries; const [moved]=arr.splice(_dragIdx,1); moved.meal=slot; arr.push(moved);
-  _dragIdx=null; markDayDirty(); saveLogDay(foodDate); renderToday(); }
+/* ══════════ drag to reorder (ADR-0036) ══════════
+ * Replaces HTML5 drag-and-drop, which never worked here at all: `draggable` +
+ * dragstart/drop fire on mouse only, so on the phone — the only place this app
+ * is actually used — the handle did nothing. Pointer Events cover mouse, touch
+ * and stylus through one code path.
+ *
+ * Design:
+ * - The drag starts from the ⠿ handle, not a long-press on the row. A long-press
+ *   would race the row's own tap-to-open-detail, and every list that gets this
+ *   right on mobile (Reminders, Todoist) uses an explicit handle.
+ * - The lifted row follows the finger with a transform. Nothing in the DOM moves
+ *   until the drop, so no layout is thrashed mid-gesture and the rects measured
+ *   at pickup stay valid.
+ * - The drop target is shown as an insertion line rather than by animating rows
+ *   apart. Rows here have variable height (a name that wraps is 65px, one that
+ *   doesn't is 48px), so shifting neighbours by "one row height" would lie; the
+ *   line is unambiguous and costs no per-frame layout.
+ * - Dropping into another slot's section reassigns the meal, which is how an
+ *   entry moves between Breakfast and Lunch (ADR-0014 removed the slot chips). */
+
+let _drag = null;                    // active gesture, or null
+
+/* Insertion points, computed once at pickup. Each is a place the row could land:
+ * a y coordinate to compare the finger against, the slot it belongs to, and the
+ * index in day.entries to splice at. */
+function foodBuildDropTargets(){
+  const pts = [];
+  document.querySelectorAll('#todayBody .fslot[data-slot]').forEach(sec=>{
+    const slot = sec.dataset.slot;
+    const rows = [...sec.querySelectorAll('.logrow')];
+    if(!rows.length){
+      const box = sec.querySelector('.fslot-entries') || sec;
+      const r = box.getBoundingClientRect();
+      pts.push({ slot, arrayTarget: null, y: r.top + r.height/2, el: box, edge:'empty' });
+      return;
+    }
+    rows.forEach(row=>{
+      const r = row.getBoundingClientRect();
+      pts.push({ slot, arrayTarget: +row.dataset.idx, y: r.top, el: row, edge:'before' });
+    });
+    const last = rows[rows.length-1];
+    const lr = last.getBoundingClientRect();
+    pts.push({ slot, arrayTarget: +last.dataset.idx + 1, y: lr.bottom, el: last, edge:'after' });
+  });
+  return pts;
+}
+
+function foodDragPickup(ev, row){
+  const day = logForDate(foodDate); if(!day) return;
+  const rect = row.getBoundingClientRect();
+  _drag = {
+    row, fromIdx: +row.dataset.idx,
+    /* anchor in PAGE coords, not client coords: auto-scroll moves the row with
+       the document while the finger stays put, so a client-space delta would let
+       the lifted row drift out from under the finger. */
+    startPageY: ev.clientY + window.scrollY, dy: 0,
+    lastY: ev.clientY,
+    targets: null, pick: null,
+    pointerId: ev.pointerId, moved: false,
+    raf: 0, autoScroll: 0
+  };
+  row.classList.add('dragging');
+  document.body.classList.add('freordering');
+  /* measure AFTER the class lands, so the lift transform is already accounted for */
+  _drag.targets = foodBuildDropTargets();
+  foodDragPaint();
+}
+
+/* nearest insertion point to the finger */
+function foodDragResolve(clientY){
+  const t = _drag.targets; if(!t || !t.length) return null;
+  let best = t[0], bestD = Infinity;
+  for(const p of t){ const d = Math.abs(p.y - clientY); if(d < bestD){ bestD = d; best = p; } }
+  return best;
+}
+
+function foodDragPaint(){
+  const d = _drag; if(!d) return;
+  d.row.style.transform = 'translateY(' + d.dy + 'px)';
+  const line = foodDragLine();
+  if(d.pick){
+    line.style.display = 'block';
+    const r = d.pick.el.getBoundingClientRect();
+    const y = d.pick.edge === 'after' ? r.bottom : d.pick.edge === 'empty' ? r.top + r.height/2 : r.top;
+    line.style.top   = (y + window.scrollY) + 'px';
+    line.style.left  = (r.left + window.scrollX) + 'px';
+    line.style.width = r.width + 'px';
+  } else line.style.display = 'none';
+}
+function foodDragLine(){
+  let el = document.getElementById('fdropline');
+  if(!el){ el = document.createElement('div'); el.id = 'fdropline'; el.className = 'fdropline'; document.body.appendChild(el); }
+  return el;
+}
+
+/* Nudge the page when the finger nears an edge, so a row can travel to a slot
+ * that is off screen without letting go. */
+function foodDragAutoScroll(clientY){
+  const M = 72, SPEED = 12;
+  let v = 0;
+  if(clientY < M) v = -SPEED * (1 - clientY / M);
+  else if(clientY > innerHeight - M) v = SPEED * (1 - (innerHeight - clientY) / M);
+  _drag.autoScroll = v;
+  if(v && !_drag.raf){
+    const step = () => {
+      if(!_drag || !_drag.autoScroll){ if(_drag) _drag.raf = 0; return; }
+      window.scrollBy(0, _drag.autoScroll);
+      /* the page moved under a stationary finger: re-measure the targets, and
+         re-derive dy from the page anchor so the row stays under the finger */
+      _drag.targets = foodBuildDropTargets();
+      _drag.dy = (_drag.lastY + window.scrollY) - _drag.startPageY;
+      _drag.pick = foodDragResolve(_drag.lastY);
+      foodDragPaint();
+      _drag.raf = requestAnimationFrame(step);
+    };
+    _drag.raf = requestAnimationFrame(step);
+  }
+}
+
+function foodDragMove(ev){
+  const d = _drag; if(!d || ev.pointerId !== d.pointerId) return;
+  d.dy = (ev.clientY + window.scrollY) - d.startPageY;
+  d.lastY = ev.clientY;
+  if(!d.moved && Math.abs(d.dy) > 3) d.moved = true;
+  d.pick = foodDragResolve(ev.clientY);
+  foodDragAutoScroll(ev.clientY);
+  foodDragPaint();
+}
+
+function foodDragEnd(commit){
+  const d = _drag; if(!d) return;
+  _drag = null;
+  if(d.raf) cancelAnimationFrame(d.raf);
+  d.row.classList.remove('dragging');
+  d.row.style.transform = '';
+  document.body.classList.remove('freordering');
+  const line = document.getElementById('fdropline'); if(line) line.style.display = 'none';
+
+  if(!commit || !d.moved || !d.pick){ return; }
+
+  const day = logForDate(foodDate); if(!day) return;
+  const arr = day.entries;
+  const from = d.fromIdx;
+  let to = (d.pick.arrayTarget == null) ? arr.length : d.pick.arrayTarget;
+  const slot = d.pick.slot;
+
+  const [moved] = arr.splice(from, 1);
+  if(from < to) to--;                       // the splice shifted everything after it
+  to = Math.max(0, Math.min(to, arr.length));
+  moved.meal = slot;
+  arr.splice(to, 0, moved);
+
+  markDayDirty(); saveLogDay(foodDate); renderToday();
+}
+
+/* Delegated once, on the container that survives every re-render. */
+(function initFoodDrag(){
+  const root = document.body;
+  root.addEventListener('pointerdown', ev=>{
+    const handle = ev.target.closest && ev.target.closest('.fdrag');
+    if(!handle) return;
+    const row = handle.closest('.logrow');
+    if(!row || !row.closest('#todayBody')) return;
+    if(ev.button != null && ev.button !== 0) return;
+    ev.preventDefault();                    // no text selection, no scroll-start
+    try{ handle.setPointerCapture(ev.pointerId); }catch(e){}
+    foodDragPickup(ev, row);
+  });
+  root.addEventListener('pointermove', ev=>{ if(_drag) { ev.preventDefault(); foodDragMove(ev); } });
+  root.addEventListener('pointerup',     ()=>foodDragEnd(true));
+  root.addEventListener('pointercancel', ()=>foodDragEnd(false));
+  /* the OS can steal the gesture; Escape is the desktop escape hatch */
+  window.addEventListener('keydown', e=>{ if(e.key==='Escape' && _drag) foodDragEnd(false); });
+})();
 
 /* ---------- done-for-the-day bar ---------- */
 function doneHtml(day, entries){

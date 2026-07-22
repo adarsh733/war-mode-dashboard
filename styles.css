@@ -705,7 +705,20 @@ section[id^="food-"] .fsearch-input:focus{border-color:var(--fgreen);box-shadow:
 .fslot .logrow .fsub{font-size:var(--fs-2xs);color:var(--fmut);margin-top:1px}
 .fslot .logrow .fkcal{font-family:var(--ffont);font-weight:700;font-size:var(--fs-base);color:var(--fink)}
 .fslot .logrow .fkcal small{font-size:var(--fs-2xs);color:var(--fmut)}
-.fdrag{color:#d3dbd7;font-size:.9rem}
+.fdrag{color:#b9c4bf;font-size:1rem;padding:6px 4px;margin:-6px -2px;cursor:grab;touch-action:none;user-select:none}
+.fdrag:active{cursor:grabbing}
+
+/* drag to reorder (ADR-0036) — pointer-driven, so it works on the phone */
+.logrow.dragging{position:relative;z-index:30;background:var(--fcard);border-radius:10px;
+  box-shadow:0 8px 22px rgba(20,30,24,.18);transform-origin:center;will-change:transform;
+  transition:box-shadow .15s ease}
+.logrow.dragging .fdrag{color:var(--fgreen)}
+/* while a row is in flight nothing else should react to the finger */
+body.freordering{cursor:grabbing;user-select:none}
+body.freordering .logrow:not(.dragging){transition:opacity .15s ease}
+body.freordering .fmain,body.freordering .fx{pointer-events:none}
+.fdropline{position:absolute;display:none;height:2px;border-radius:2px;background:var(--grad);
+  z-index:29;pointer-events:none;box-shadow:0 0 0 3px var(--fgreen-bg)}
 
 /* kind marker: the glyph carries what the word did */
 .fkind{flex:none;display:grid;place-items:center;width:24px;height:24px;border-radius:7px;font-size:.8rem;line-height:1}
