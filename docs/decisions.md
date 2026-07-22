@@ -496,3 +496,13 @@
 - **Decision:** Upgrade solid accent/status colors across pills, badges, progress bars, toggle buttons, and canvas donut rings (`foodRingGradient` in `foodUI.js`) to 135-degree neon gradients (`--grad-green`, `--grad-amber`, `--grad-red`, `--grad-blue`, `--grad-violet`, `--grad-gold`) with WCAG AA text contrast (`-ink` tokens).
 - **Reason:** Delivers a vibrant, modern, high-contrast visual design across all app surfaces.
 - **Status:** Accepted.
+
+### ADR-0039 — Slot Search Sheet Revamp & Category Defaults
+- **Decision:** In `openSlotAdd()`, provide `[ 🍲 Meals | 🥗 Items ]` subtabs with Meals active by default, showing 5 top category items before typing. Slot destination chips removed from header.
+- **Reason:** Prevents result overcrowding and speeds up quick-logging of frequent meals.
+- **Status:** Accepted.
+
+### ADR-0040 — Meal Detail Customization & Master Template Sync
+- **Decision:** Allow adding new pantry items on-the-spot inside `renderMealDetail()`, and provide `💾 Update master meal template` button to persist customized ingredient changes back to the master meal template (`saveMeal()`).
+- **Reason:** Users can tweak or build meal templates directly from the daily logging flow without navigating away to the Meals tab.
+- **Status:** Accepted.
