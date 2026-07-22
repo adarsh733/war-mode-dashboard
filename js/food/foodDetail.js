@@ -281,16 +281,30 @@ function mealCompRows(){
     const removed=_detail.removed.includes(c.itemId);
     const amt=(_detail.overrides[c.itemId]!=null)?_detail.overrides[c.itemId]:c.amount;
     const cm=fmtMacros(macrosForAmount(it,removed?0:amt)); const u=baseUnit(it);
-    /* show the unit the ingredient was entered in — "2 slice", not "56 g".
-       The override itself stays in base units; only the input is restated. */
     const ui=(typeof mealUnitIndex==='function')?mealUnitIndex(c,it):-1;
     const qty=(typeof mealFmtQty==='function')?mealFmtQty(qtyInServing(it,amt,ui)):amt;
-    const unitLbl=ui>=0?htmlSafe(it.servings[ui].label):u;
+    const opts=(it.servings||[]).map((s,j)=>`<option value="${j}" ${j===ui?'selected':''}>${htmlSafe(s.label)}</option>`).join('')
+      + `<option value="-1" ${ui<0?'selected':''}>${u}</option>`;
     return `<div class="fd-comp ${removed?'removed':''}">
       <div class="fd-compmain"><div class="fd-compname">${htmlSafe(it.name)}</div><div class="fd-compsub">${cm.kcal} kcal · ${cm.protein}g P${ui>=0?` · ${round1(amt)}${u}`:''}</div></div>
-      <input class="fd-inp fd-compamt" type="number" step="any" value="${qty}" ${removed?'disabled':''} oninput="mealCompAmt('${c.itemId}',this.value,${ci})"><span class="fd-mini">${unitLbl}</span>
+      <input class="fd-inp fd-compamt" type="number" step="any" value="${qty}" ${removed?'disabled':''} oninput="mealCompAmt('${c.itemId}',this.value,${ci})">
+      <select class="fd-inp fd-compunit" ${removed?'disabled':''} onchange="mealCompUnit('${c.itemId}',this.value,${ci})">${opts}</select>
       <button class="fd-x2" onclick="mealCompToggle('${c.itemId}')">${removed?'↺':'✕'}</button></div>`;
   }).join('');
+}
+
+function mealCompUnit(itemId, unitVal, ci){
+  const m=FOOD_MEALS[_detail.id];
+  const list=(m&&m.components)||[];
+  const c=(ci!=null&&list[ci])?list[ci]:list.find(x=>x.itemId===itemId);
+  const it=FOOD_ITEMS[itemId];
+  if(!c||!it) return;
+  const newUi=parseInt(unitVal,10);
+  const currentAmt=(_detail.overrides[itemId]!=null)?_detail.overrides[itemId]:c.amount;
+  c.unitIndex=newUi;
+  _detail.overrides[itemId]=currentAmt;
+  document.getElementById('fdComps').innerHTML=mealCompRows();
+  detailPreview_meal();
 }
 function detailPreview_meal(){ const el=document.getElementById('fdMacros'); if(!el) return; const f=mealDetailTotals();
   el.innerHTML=`<div class="fd-two"><div class="fd-big"><span class="fd-bigv">${f.kcal}</span><span class="fd-bigk">calories</span></div><div class="fd-big"><span class="fd-bigv">${f.protein}<small>g</small></span><span class="fd-bigk">protein</span></div></div>`; }

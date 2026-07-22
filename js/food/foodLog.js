@@ -110,15 +110,20 @@ function renderSlotAddResults(q){
   const box=document.getElementById('slotAddResults'); if(!box) return;
   q=(q||'').trim().toLowerCase();
   let html='';
+  const scores = (typeof learnedScores==='function') ? learnedScores(_slotAddSlot) : {};
   
   if(_slotAddTab==='meals'){
     let meals;
     if(q.length<1){
       meals = (typeof ownMeals==='function'?ownMeals():Object.values(FOOD_MEALS).filter(m=>!String(m.id).startsWith('__')))
-        .sort((a,b)=>(b.useCount||0)-(a.useCount||0) || a.name.localeCompare(b.name))
-        .slice(0, 5);
+        .slice()
+        .sort((a,b)=>{
+          const sa = (scores['meal:'+a.id] || 0) * 10 + (a.useCount || 0);
+          const sb = (scores['meal:'+b.id] || 0) * 10 + (b.useCount || 0);
+          return sb - sa || a.name.localeCompare(b.name);
+        });
     } else {
-      meals = foodSearchMeals(q, 10);
+      meals = foodSearchMeals(q, 50);
     }
     if(!meals.length){
       box.innerHTML = `<div class="fempty">No meals found${q?' matching “'+htmlSafe(q)+'”':''}.</div>`;
@@ -138,10 +143,14 @@ function renderSlotAddResults(q){
     let items;
     if(q.length<1){
       items = Object.values(FOOD_ITEMS)
-        .sort((a,b)=>(b.useCount||0)-(a.useCount||0) || a.name.localeCompare(b.name))
-        .slice(0, 5);
+        .slice()
+        .sort((a,b)=>{
+          const sa = (scores['item:'+a.id] || 0) * 10 + (a.useCount || 0);
+          const sb = (scores['item:'+b.id] || 0) * 10 + (b.useCount || 0);
+          return sb - sa || a.name.localeCompare(b.name);
+        });
     } else {
-      items = foodSearchItems(q, 10);
+      items = foodSearchItems(q, 50);
     }
     if(!items.length){
       box.innerHTML = `<div class="fempty">No items found${q?' matching “'+htmlSafe(q)+'”':''}. <button class="chip" onclick="fsheetClose();go('food-add')">✎ New item</button></div>`;
