@@ -239,7 +239,81 @@ function renderGrid(){
   });
   rows+='</tbody>';
   document.getElementById('weekGrid').innerHTML=head+rows;
+  paintGridHead(head);
 }
+
+/* ── pinned date row (ADR-0035) ──────────────────────────────────────────────
+   The day columns scroll out of reach long before the Habits rows do, leaving
+   you editing an unlabelled grid. The real <thead> cannot be pinned: it sits
+   inside .tscroll, and `position:sticky` resolves against the nearest scroll
+   container rather than the viewport — .tscroll scrolls horizontally only, so a
+   sticky thead there has nowhere to travel and never detaches (verified: it
+   tracks the page instead of pinning).
+
+   So we pin a CLONE outside the scroller, where the page is the scrollport, and
+   keep it horizontally in step with the real grid. Two details that matter:
+   - widths are COPIED from the rendered header, not guessed. The table is
+     auto-layout, so column widths depend on content (a 5-char habit label vs
+     "Calorie ceiling"); anything else drifts out of alignment.
+   - the clone scrolls (`scrollLeft`) rather than being transformed. A transform
+     would create a containing block and break the `position:sticky;left:0` that
+     holds the "Field" corner cell in place. */
+function paintGridHead(headHtml){
+  const host=document.getElementById('weekGridHead'); if(!host) return;
+  host.innerHTML=`<table class="weekgrid ghead-table">${headHtml}</table>`;
+  syncGridHead();
+}
+/* Copy the real column widths onto the clone. Runs after layout, and again on
+   resize — a font swap or an orientation change re-flows the columns. */
+function syncGridHead(){
+  const host=document.getElementById('weekGridHead');
+  const real=document.getElementById('weekGrid');
+  if(!host||!real) return;
+  const src=real.querySelectorAll('thead th');
+  const dst=host.querySelectorAll('thead th');
+  if(!src.length||src.length!==dst.length) return;
+  host.style.marginBottom='';                                  // measure unshifted
+  host.querySelector('table').style.width=real.getBoundingClientRect().width+'px';
+  src.forEach((th,i)=>{ const w=th.getBoundingClientRect().width; dst[i].style.width=w+'px'; dst[i].style.minWidth=w+'px'; });
+  /* pull it back over the real header so it costs nothing in flow */
+  host.style.marginBottom=(-Math.round(host.getBoundingClientRect().height))+'px';
+  syncGridHeadScroll();
+}
+/* Shadow only while it is genuinely floating — a drop shadow on a header sitting
+   flush on its own table reads as a rendering artefact. */
+function markGridHeadPinned(){
+  const host=document.getElementById('weekGridHead');
+  const wrap=document.querySelector('.gridwrap');
+  if(!host||!wrap||!wrap.offsetParent) return;
+  host.classList.toggle('pinned', wrap.getBoundingClientRect().top < host.getBoundingClientRect().top - 1);
+}
+function syncGridHeadScroll(){
+  const host=document.getElementById('weekGridHead');
+  const sc=document.getElementById('weekScroll');
+  if(host&&sc) host.scrollLeft=sc.scrollLeft;
+}
+/* The pinned row must clear the subnav, whose height isn't fixed (the chip rail
+   can wrap). Measure it instead of hardcoding, and expose it to CSS. */
+function measureStickyOffsets(){
+  const sn=document.querySelector('.subnav');
+  const h=sn?Math.round(sn.getBoundingClientRect().height):44;
+  document.documentElement.style.setProperty('--subnav-h', h+'px');
+}
+(function initGridHead(){
+  const on=()=>{ measureStickyOffsets(); syncGridHead(); };
+  window.addEventListener('resize', on, {passive:true});
+  window.addEventListener('orientationchange', on, {passive:true});
+  document.addEventListener('DOMContentLoaded', measureStickyOffsets);
+  /* Capture phase: scroll doesn't bubble, so a delegated listener has to catch it
+     on the way down. One listener covers the grid's sideways scroll (sync the
+     clone) and the page's vertical scroll (toggle the shadow) without binding to
+     elements this file doesn't own. Passive — the auto-hiding topbar shares this
+     event and must not be blocked. */
+  document.addEventListener('scroll', e=>{
+    if(e.target && e.target.id==='weekScroll') syncGridHeadScroll();
+    else markGridHeadPinned();
+  }, {capture:true, passive:true});
+})();
 function toggleRest(dt){
   const d=ensure(dt);
   if(d.rest)delete d.rest;else d.rest=1;

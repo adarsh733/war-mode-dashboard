@@ -283,10 +283,31 @@ details.acc .acc-body{padding:0 18px 18px}
 @media(max-width:560px){.dstrip-day .dd{font-size:var(--fs-lg)}}
 
 /* ── week grid (spreadsheet) ── */
-.gridwrap{margin-top:14px;border:1px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:var(--shadow-sm)}
+/* `clip`, NOT `hidden` — same reason as html,body in ADR-0022. `hidden` makes this
+   a scroll container, and the pinned date row inside would then resolve its sticky
+   position against THIS box (which never scrolls vertically) instead of the page,
+   silently killing the pin. `clip` still clips the rounded corners. */
+.gridwrap{margin-top:14px;border:1px solid var(--line);border-radius:14px;overflow:clip;box-shadow:var(--shadow-sm);position:relative}
+
+/* ── pinned date row (ADR-0035) ──
+   An exact clone of the real <thead>, pulled up by its own height with a negative
+   margin so it takes NO space in flow and sits precisely on top of the real header
+   at rest — you only notice it once it detaches and follows you down the page.
+   Its `top` tracks the subnav, including when the topbar auto-hides. */
+.ghead{position:sticky;z-index:60;overflow:hidden;background:var(--paper2);pointer-events:none;
+  top:calc(105px + env(safe-area-inset-top) + var(--subnav-h,44px));transition:top .3s ease}
+body.nav-hidden .ghead{top:var(--subnav-h,44px)}
+.ghead::-webkit-scrollbar{display:none}
+.ghead .ghead-table{table-layout:fixed}
+/* it only earns a shadow once it is actually floating over content */
+.ghead.pinned{box-shadow:0 4px 12px rgba(20,30,24,.10)}
 table.weekgrid{width:100%;border-collapse:collapse;font-size:var(--fs-sm);min-width:560px}
 table.weekgrid th,table.weekgrid td{border:1px solid var(--line);padding:0;text-align:center;vertical-align:middle}
-table.weekgrid thead th{background:var(--paper2);font-family:var(--ffont);font-weight:500;font-size:var(--fs-2xs);letter-spacing:.03em;text-transform:uppercase;color:var(--ink2);padding:8px 4px;white-space:nowrap;position:sticky;left:0}
+/* NOTE: no `position:sticky;left:0` here. It used to be on EVERY header cell, which
+   pinned the day columns to the left edge too — scrolled sideways, "Mon" and "Tue"
+   stacked on top of the corner cell while their body columns sat 80px away. Only the
+   corner cell (:first-child, below) is meant to be frozen. */
+table.weekgrid thead th{background:var(--paper2);font-family:var(--ffont);font-weight:500;font-size:var(--fs-2xs);letter-spacing:.03em;text-transform:uppercase;color:var(--ink2);padding:8px 4px;white-space:nowrap}
 table.weekgrid .rowlabel{background:var(--paper);text-align:left;padding:9px 11px;font-weight:600;font-size:var(--fs-sm);color:var(--ink);white-space:nowrap;position:sticky;left:0;z-index:2;border-right:2px solid var(--line2);min-width:118px}
 table.weekgrid thead th:first-child{position:sticky;left:0;z-index:3;background:var(--paper2)}
 table.weekgrid td.daycell{min-width:58px}
@@ -360,6 +381,7 @@ table.weekgrid input.gnum:focus{background:var(--green-bg)}
 .quiet-note{font-size:var(--fs-xs);color:var(--muted);margin-top:8px}
 @media(max-width:520px){
   .subnav{top:calc(96px + env(safe-area-inset-top))}
+  .ghead{top:calc(96px + env(safe-area-inset-top) + var(--subnav-h,44px))}
   .seg{max-width:100%}
   .seg button{padding:7px 10px;font-size:var(--fs-2xs);letter-spacing:.03em}
   .tb-inner{padding-left:12px;padding-right:12px}

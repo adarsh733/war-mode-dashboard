@@ -486,9 +486,16 @@
   <!-- date strip -->
   <div class="datestrip" id="dateStrip"></div>
 
-  <!-- the grid -->
+  <!-- the grid.
+       #weekGridHead is a CLONE of the real <thead>, pinned under the subnav while the
+       grid is on screen (ADR-0035). The real header can't be pinned itself: it lives
+       inside .tscroll, and a sticky element pins to its nearest scroll container, not
+       the viewport — .tscroll never scrolls vertically, so sticky there has zero travel.
+       The clone scrolls sideways in lockstep with .tscroll; the real thead stays in the
+       table so column widths and a11y semantics are unaffected. -->
   <div class="gridwrap">
-    <div class="tscroll">
+    <div class="ghead" id="weekGridHead" aria-hidden="true"></div>
+    <div class="tscroll" id="weekScroll">
       <table class="weekgrid" id="weekGrid"></table>
     </div>
   </div>
